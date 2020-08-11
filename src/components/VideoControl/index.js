@@ -33,7 +33,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Pro
   }
 
   function handleHangupClick(){
-    mSession.session.unpublish(publisher);
+    mSession.unpublish(publisher);
   }
 
   React.useEffect(() => {

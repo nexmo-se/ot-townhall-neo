@@ -39,7 +39,7 @@ function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?
   }
 
   async function unpublish(){
-    if(publisher) mSession.session.unpublish(publisher);
+    if(publisher) mSession.unpublish(publisher);
     else throw new Error("Cannot unpublish. No publisher found");
     layoutManager.layout();
   }
@@ -61,7 +61,7 @@ function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?
         }
       };
       const finalOptions = Object.assign({}, options, extraData);
-      const publisher = mSession.session.publish(containerId,finalOptions);
+      const publisher = mSession.publish(containerId, finalOptions);
       publisher.on("destroyed", handleDestroyed);
       publisher.on("streamCreated", handleStreamCreated);
       publisher.on("streamDestroyed", handleStreamDestroyed);
