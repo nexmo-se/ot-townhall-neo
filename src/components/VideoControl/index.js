@@ -14,11 +14,10 @@ import VideoButton from "components/VideoButton";
 type Props = {
   sizeMultiplier?:number,
   publisher:Publisher|void,
-  hidden?:boolean,
   children?:Node
 }
 
-function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Props){
+function VideoControl({ sizeMultiplier=1, publisher, children }:Props){
   const [ hasAudio, setHasAudio ] = React.useState(true);
   const [ hasVideo, setHasVideo ] = React.useState(true);
   const mSession = useSession();
@@ -61,7 +60,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Pro
 
   if(!publisher) return null;
   return(
-    <div id="video-control" className={mStyles.root}>
+    <div className={mStyles.root}>
       {children}
       <VideoButton 
         hasVideo={hasVideo} 

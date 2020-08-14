@@ -18,12 +18,13 @@ import ChatList from "components/ChatList";
 import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
+import VideoHoverContainer from "components/VideoHoverContainer";
 import AskNameDialog from "components/AskNameDialog";
 import ShareScreenButton from "components/ShareScreenButton";
 import LayoutContainer from "components/LayoutContainer";
 
 function CeoPage(){
-  const [ user, setUser ] = React.useState<User|void>();
+  const [ user, setUser ] = React.useState<User|void>(new User("Frans", "presenter"));
   const [ videoControlVisible, setVideoControlVisible ] = React.useState<boolean>(false);
   const mSession = useSession();
   const mPublisher = usePublisher("cameraContainer", true, false);
@@ -126,6 +127,15 @@ function CeoPage(){
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <LayoutContainer id="cameraContainer" size="big" />
           <WhiteLayer/>
+          <VideoHoverContainer>
+            <VideoControl publisher={mPublisher.publisher}>
+              <ShareScreenButton 
+                style={{ marginRight: 8 }}
+                onClick={handleShareScreenClick}
+                isSharing={!!mScreenPublisher.stream}
+              />
+            </VideoControl>
+          </VideoHoverContainer>
           <div className={mStyles.logoContainer}>
             <LiveBadge/>
           </div>
@@ -141,19 +151,6 @@ function CeoPage(){
         <div className={mStyles.rightContainer}>
           <div className={mStyles.moderator}>
             <LayoutContainer id="moderatorContainer" size="big" />
-          </div>
-          <div className={mStyles.videoControl}>
-            <h4 className="Vlt-center">My Controls</h4>
-            <VideoControl 
-              publisher={mPublisher.publisher} 
-              hidden={!videoControlVisible}
-            >
-              <ShareScreenButton 
-                style={{ marginRight: 8 }}
-                onClick={handleShareScreenClick}
-                isSharing={!!mScreenPublisher.stream}
-              />
-            </VideoControl>
           </div>
           <div className={mStyles.chatContainer}>
             <ChatList/>

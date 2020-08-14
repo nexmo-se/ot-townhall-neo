@@ -21,7 +21,7 @@
     "uuid": "3.3.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=4000 react-scripts start",
     "start:heroku": "serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test",
