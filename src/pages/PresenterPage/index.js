@@ -15,17 +15,16 @@ import useSubscriber from "hooks/subscriber";
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
 import WhiteLayer from "components/WhiteLayer";
-import ChatList from "components/ChatList";
-import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
 import AskNameDialog from "components/AskNameDialog";
 import ShareScreenButton from "components/ShareScreenButton";
 import LayoutContainer from "components/LayoutContainer";
+import RightPanel from "components/RightPanel";
 
-function CeoPage(){
-  const [ user, setUser ] = React.useState<User|void>();
+function PresenterPage(){
+  const [ user, setUser ] = React.useState<User|void>(new User("Frans Presenter", "presenter"));
   const [ videoControlVisible, setVideoControlVisible ] = React.useState<boolean>(false);
   const mSession = useSession();
   const mPublisher = usePublisher("cameraContainer", true, false);
@@ -149,17 +148,9 @@ function CeoPage(){
             }}
           />
         </div>
-        <div className={mStyles.rightContainer}>
-          <div className={mStyles.moderator}>
-            <LayoutContainer id="moderatorContainer" size="big" />
-          </div>
-          <div className={mStyles.chatContainer}>
-            <ChatList/>
-            <ChatInput user={user} byPass={true}/>
-          </div>
-        </div>
+        <RightPanel user={user} />
       </div>
     </React.Fragment>
   )
 }
-export default CeoPage;
+export default PresenterPage;

@@ -14,8 +14,7 @@ import useMessage from "hooks/message";
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
 import WhiteLayer from "components/WhiteLayer";
-import ChatList from "components/ChatList";
-import ChatInput from "components/ChatInput";
+import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
 import AskNameDialog from "components/AskNameDialog";
 import VideoControl from "components/VideoControl";
@@ -124,15 +123,7 @@ function EmployeePage(){
         </div>
         <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
       </div>
-      <div className={mStyles.rightContainer}>
-        <div className={mStyles.moderator}>
-          <LayoutContainer id="moderatorContainer" size="big" />
-        </div>
-        <div className={mStyles.chatContainer}>
-          <ChatList/>
-          <ChatInput user={me} byPass={false}/>
-        </div>
-      </div>
+      <RightPanel user={me} />
     </div>
   )
 }
