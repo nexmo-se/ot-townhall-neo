@@ -19,11 +19,12 @@ import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import AskNameDialog from "components/AskNameDialog";
 import VideoControl from "components/VideoControl";
+import VideoHoverContainer from "components/VideoHoverContainer";
 import RaiseHandButton from "components/RaiseHandButton";
 import LayoutContainer from "components/LayoutContainer";
 
 function EmployeePage(){
-  const [ me, setMe ] = React.useState<User|void>();
+  const [ me, setMe ] = React.useState<User|void>(new User("Frans", "participant"));
   const mSession = useSession();
   const mStyles = useStyles();
   const mPublisher = usePublisher("cameraContainer", true, false);
@@ -112,6 +113,11 @@ function EmployeePage(){
       <div className={mStyles.leftContainer}>
         <LayoutContainer id="cameraContainer" size="big" />        
         <WhiteLayer />
+        {mPublisher.publisher? (
+          <VideoHoverContainer>
+            <VideoControl publisher={mPublisher.publisher} />
+          </VideoHoverContainer>
+        ): null}
         <div className={mStyles.logoContainer}>
           <LiveBadge/>
           {!mPublisher.publisher? <RaiseHandButton />: null}
@@ -121,14 +127,6 @@ function EmployeePage(){
       <div className={mStyles.rightContainer}>
         <div className={mStyles.moderator}>
           <LayoutContainer id="moderatorContainer" size="big" />
-        </div>
-        <div className={mStyles.videoControl}>
-          {!mPublisher.publisher? null: (
-            <React.Fragment>
-              <h4 className="Vlt-center">My Controls</h4>
-              <VideoControl publisher={mPublisher.publisher} />
-            </React.Fragment>
-          )}
         </div>
         <div className={mStyles.chatContainer}>
           <ChatList/>
