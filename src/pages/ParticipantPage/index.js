@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import config from "config";
 import clsx from "clsx";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
@@ -99,7 +100,7 @@ function EmployeePage(){
   if(!me && !mSession.session) {
     return (
       <AskNameDialog 
-        pin="1123"
+        pin={config.participantPin}
         role="participant"
         onSubmit={handleNameSubmit}
       />

@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import clsx from "clsx";
+import config from "config";
 import LayoutManager from "utils/layout-manager";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
@@ -24,7 +25,7 @@ import ShareScreenButton from "components/ShareScreenButton";
 import LayoutContainer from "components/LayoutContainer";
 
 function CeoPage(){
-  const [ user, setUser ] = React.useState<User|void>(new User("Frans", "presenter"));
+  const [ user, setUser ] = React.useState<User|void>();
   const [ videoControlVisible, setVideoControlVisible ] = React.useState<boolean>(false);
   const mSession = useSession();
   const mPublisher = usePublisher("cameraContainer", true, false);
@@ -114,7 +115,7 @@ function CeoPage(){
   if(!user && !mSession.session){
     return (
       <AskNameDialog 
-        pin="3345"
+        pin={config.presenterPin}
         role="presenter"
         onSubmit={handleSubmit}
       />

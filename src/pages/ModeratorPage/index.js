@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import config from "config";
 import clsx from "clsx";
 import LayoutManager from "utils/layout-manager";
 import User from "entities/user";
@@ -69,7 +70,7 @@ function ModeratorPage(){
   if(!me && !mSession.session) {
     return (
       <AskNameDialog 
-        pin="5523"
+        pin={config.moderatorPin}
         role="moderator"
         onSubmit={handleNameSubmit}
       />
