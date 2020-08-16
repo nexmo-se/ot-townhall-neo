@@ -4,17 +4,20 @@ import clsx from "clsx";
 import type { Node } from "react";
 import useStyles from "./styles";
 
-type Props = { children: Node };
+type Props = { 
+  children: Node, 
+  isActive: boolean
+};
 
-function Tab({ children }:Props){
+function Tab({ children, isActive }:Props){
   const mStyles = useStyles();
   
   return (
     <div 
       className={clsx({
-        "Vlt-tabs__content": true,
-        "Vlt-tabs__panel_active": true,
-        [mStyles.panel]: true
+        "Vlt-tabs__panel": true,
+        "Vlt-tabs__panel_active": isActive,
+        [mStyles.panel]: isActive
       })}
     >
       {children}

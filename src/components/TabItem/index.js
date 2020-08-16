@@ -8,9 +8,10 @@ type Props = {
   children: Node | string
 }
 
-function TabItem({ isActive, children }:Props){
+function TabItem({ isActive, children, ...props }:Props){
   return (
     <li 
+      {...props}
       className={clsx({
         "Vlt-tabs__link": true,
         "Vlt-tabs__link_active": isActive

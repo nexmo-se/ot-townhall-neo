@@ -17,16 +17,37 @@ function MainTab({ user }:Props){
   const [ activeTab, setActiveTab ] = React.useState<string>("chats")
   const mStyles = useStyles();
   
+  function handleParticipantsClick(){
+    setActiveTab("participants");
+  }
+  
+  function handleChatsClick(){
+    setActiveTab("chats");
+  }
+  
+  function handleQuestionsClick(){
+    setActiveTab("questions");
+  }
+  
   return (
     <Tab>
       <TabHeader>
-        <TabItem isActive={activeTab === "participants"}>
+        <TabItem 
+          onClick={handleParticipantsClick}
+          isActive={activeTab === "participants"}
+        >
           Participants
         </TabItem>
-        <TabItem isActive={activeTab === "chats"}>
+        <TabItem 
+          onClick={handleChatsClick}
+          isActive={activeTab === "chats"}
+        >
           Chats
         </TabItem>
-        <TabItem isActive={activeTab === "questions"}>
+        <TabItem 
+          onClick={handleQuestionsClick}
+          isActive={activeTab === "questions"}
+        >
           Questions
         </TabItem>
       </TabHeader>
