@@ -2,8 +2,7 @@
 import React from "react";
 import Question from "entities/question";
 import useStyles from "./styles";
-
-import Icon from "components/Icon";
+import Vote from "./Vote";
 
 type Props = { question: Question }
 
@@ -12,11 +11,7 @@ function QuestionItem({ question }:Props){
   
   return (
     <div className={mStyles.root}>
-      <div className={mStyles.voteContainer}>
-        <Icon name="Vlt-icon-up" />
-        <p>{question.vote}</p>
-        <span>Vote</span>
-      </div>
+      <Vote question={question} />
       <div className={mStyles.detailContainer}>
         <p><b>{question.owner.name}</b></p>
         <p>{question.content}</p>

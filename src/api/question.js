@@ -1,9 +1,10 @@
 // @flow
 import config from "config";
 import Question from "entities/question";
+import User from "entities/user";
 
 class QuestionAPI{
-  static async create(sessionID: string, question:Question){
+  static async create(sessionID:string, question:Question){
     const response = await fetch(`${config.apiURL}/questions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -19,6 +20,16 @@ class QuestionAPI{
       });
       return insertedQuestion;
     }else throw new Error(response.statusText);
+  }
+  
+  static async vote(sessionID:string, voter:User, question:Question){
+    const response = await fetch(`${config.apiURL}/questions/${question.id}/vote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionID, voter })
+    });
+    if(response.ok) return;
+    else throw new Error(response.statusText);
   }
 }
 export default QuestionAPI;

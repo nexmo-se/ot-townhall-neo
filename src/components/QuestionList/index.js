@@ -19,7 +19,7 @@ function QuestionList(){
     if(mSession.session){
       const db = Firestore.getInstance();
       const { sessionId: sessionID } = mSession.session;
-      db.collection(`questions_${sessionID}`).onSnapshot((querySnapshot) => {
+      db.collection(`questions_${sessionID}`).orderBy("vote", "desc").onSnapshot((querySnapshot) => {
         const questions = querySnapshot.docs.map((documentSnapshop) => {
           const data = documentSnapshop.data();
           const user = new User();
@@ -28,11 +28,12 @@ function QuestionList(){
           user.role = data.owner.role;
           
           const question = new Question({
-            id: data.id,
+            id: documentSnapshop.id,
             owner: user,
             content: data.content,
             vote: data.vote
           });
+          console.log(question);
           return question;
         });
         setQuestions(questions);
