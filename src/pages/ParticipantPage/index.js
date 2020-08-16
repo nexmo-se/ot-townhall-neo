@@ -10,6 +10,7 @@ import useSession from "hooks/session";
 import useSubscriber from "hooks/subscriber";
 import usePublisher from "hooks/publisher";
 import useMessage from "hooks/message";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
@@ -26,6 +27,7 @@ function EmployeePage(){
   const [ me, setMe ] = React.useState<User|void>(new User("Frans", "participant"));
   const mSession = useSession();
   const mStyles = useStyles();
+  const mMe = useMe();
   const mPublisher = usePublisher("cameraContainer", true, false);
   const mMessage = useMessage();
   const mSubscriber = useSubscriber({
@@ -42,6 +44,7 @@ function EmployeePage(){
     if(me){
       const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
       await mSession.connect(credential);
+      mMe.setMe(me);
     }
   }
 
