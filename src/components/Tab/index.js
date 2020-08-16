@@ -4,13 +4,16 @@ import type { Node } from "react";
 import clsx from "clsx";
 import useStyles from "./styles";
 
-type Props = { children: Node };
+type Props = { 
+  children: Node,
+  className?: any
+};
 
-function Tab({ children }:Props){
+function Tab({ children, className }:Props){
   const mStyles = useStyles();
   
   return (
-    <div className={clsx("Vlt-tabs", mStyles.tabs)}>
+    <div className={clsx("Vlt-tabs", mStyles.tabs, className)}>
       {children}
     </div>
   )

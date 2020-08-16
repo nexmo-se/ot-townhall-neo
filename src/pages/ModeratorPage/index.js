@@ -14,8 +14,6 @@ import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import AskNameDialog from "components/AskNameDialog";
-import ModeratorChatList from "components/ModeratorChatList";
-import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import RaisedHandList from "components/RaisedHandList";
 import ParticipantList from "components/ParticipantList";
@@ -23,6 +21,7 @@ import LiveParticipantList from "components/LiveParticipantList";
 import LiveParticipantItem from "components/LiveParticipantItem";
 import ShareScreenButton from "components/ShareScreenButton";
 import LayoutContainer from "components/LayoutContainer";
+import ModeratorMessageTab from "components/ModeratorMessageTab";
 
 function ModeratorPage(){
   const [ me, setMe ] = React.useState<User|void>(new User("Frans Moderator", "moderator"));
@@ -85,22 +84,20 @@ function ModeratorPage(){
       <div className={mStyles.leftPanel}>
         <div className={mStyles.chat} style={{ 
             borderBottom: "1px solid #e7ebee",
-            flexBasis: "50%"
+            flexBasis: "30%"
           }}
         >
           <h4 className="Vlt-center">RAISING HAND</h4>
           <RaisedHandList />
         </div>
         <div className={mStyles.chat} style={{ 
-            flexBasis: "50%",
+            flexBasis: "70%",
             paddingLeft: 32, 
             paddingRight: 32, 
             paddingTop: 32 
           }}
         >
-          <h4 className="Vlt-center">MESSAGES</h4>
-          <ModeratorChatList filter="approved"/>
-          <ChatInput user={me} byPass={true} />
+          <ModeratorMessageTab />
         </div>
       </div>
       <div className={mStyles.centerPanel}>
