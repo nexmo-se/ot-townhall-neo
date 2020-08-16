@@ -12,11 +12,22 @@ export default makeStyles(() => ({
     borderBottom: "1px solid #e7ebee", 
     position: "relative"
   },
-  otherFunctions: {
+  tabs: {
     flex: 3, 
     display: "flex", 
     flexDirection: "column", 
     padding: 16, 
-    overflowY: "scroll"
+    overflowY: "hidden"
+  },
+  contentContainer: {
+    display: "flex",
+    flex: 1,
+    overflow: "hidden"
+  },
+  tabContent: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    marginTop: 0
   }
 }), { index: 1 })
