@@ -32,6 +32,16 @@ function RecordButton({ size, fontSize, ...props }:Props){
 
   function handleMouseEnter(){ setIsBig(true) }
   function handleMouseLeave(){ setIsBig(false) }
+  async function updateLayout(){
+    if(recording){
+      const layoutType = RecordingAPI.retrieveLayoutType(mSession.streams);
+      if(layoutType === "presentation"){
+        const presentationStreams = RecordingAPI.retrievePresentationStreams(mSession.streams);
+        await RecordingAPI.setPresentationLayout(recording, presentationStreams);
+      }else await RecordingAPI.setBestFitLayout(recording);
+    }
+  }
+  
   async function handleClick(){
     if(isRecording) {
       await RecordingAPI.stopRecording(recording);
@@ -39,12 +49,6 @@ function RecordButton({ size, fontSize, ...props }:Props){
     }else {
       const recording = await RecordingAPI.startRecording(mSession.session);
       setRecording(recording);
-      
-      const layoutType = RecordingAPI.retrieveLayoutType(mSession.streams);
-      if(layoutType === "presentation"){
-        const presentationStreams = RecordingAPI.retrievePresentationStreams(mSession.streams);
-        await RecordingAPI.setPresentationLayout(recording, presentationStreams);
-      }else await RecordingAPI.setBestFitLayout(recording);
     }
     setRefreshStatus(uuid());
   }
@@ -70,6 +74,14 @@ function RecordButton({ size, fontSize, ...props }:Props){
     
     fetchSatus();
   }, [ mSession.session, refreshStatus ]);
+  
+  React.useEffect(() => {
+    updateLayout();
+  }, [ mSession.streams ]);
+  
+  React.useEffect(() => {
+    if(recording) updateLayout();
+  }, [ recording ])
 
   return (
     <Container 
