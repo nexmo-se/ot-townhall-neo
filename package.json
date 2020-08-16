@@ -19,7 +19,7 @@
     "react-scripts": "3.4.0",
     "react-spinners": "0.8.3",
     "serve": "11.3.0",
-    "uuid": "3.3.3"
+    "uuid": "^8.3.0"
   },
   "scripts": {
     "start": "PORT=4000 react-scripts start",

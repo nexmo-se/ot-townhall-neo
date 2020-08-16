@@ -20,6 +20,7 @@ import ParticipantList from "components/ParticipantList";
 import LiveParticipantList from "components/LiveParticipantList";
 import LiveParticipantItem from "components/LiveParticipantItem";
 import ShareScreenButton from "components/ShareScreenButton";
+import RecordButton from "components/RecordButton";
 import LayoutContainer from "components/LayoutContainer";
 import ModeratorMessageTab from "components/ModeratorMessageTab";
 
@@ -109,13 +110,20 @@ function ModeratorPage(){
                 user={me} 
                 publisher={mPublisher.publisher} 
                 additionalControls={(
-                  <ShareScreenButton 
-                    size={32}
-                    fontSize={16}
-                    style={{ marginRight: 8 }}
-                    onClick={handleShareScreenClick}
-                    isSharing={!!mScreenPublisher.stream}
-                  />
+                  <React.Fragment>
+                    <RecordButton 
+                      size={32}
+                      fontSize={16}
+                      style={{ marginRight: 8 }}
+                    />
+                    <ShareScreenButton 
+                      size={32}
+                      fontSize={16}
+                      style={{ marginRight: 8 }}
+                      onClick={handleShareScreenClick}
+                      isSharing={!!mScreenPublisher.stream}
+                    />
+                  </React.Fragment>
                 )}
                 />
               ): null}
