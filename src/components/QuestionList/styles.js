@@ -6,8 +6,6 @@ export default makeStyles(() => ({
     flexDirection: "column",
     overflowY: "scroll",
     width: "100%",
-    flex: 1,
-    paddingTop: 16,
-    paddingBottom: 16
+    flex: 1
   }
 }), { index: 1 })
