@@ -31,9 +31,9 @@ function QuestionList(){
             id: documentSnapshop.id,
             owner: user,
             content: data.content,
-            vote: data.vote
+            vote: data.vote,
+            voters: data.voters
           });
-          console.log(question);
           return question;
         });
         setQuestions(questions);

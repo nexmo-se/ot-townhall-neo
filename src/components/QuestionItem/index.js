@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import clsx from "clsx";
 import Question from "entities/question";
 import useStyles from "./styles";
 import Vote from "./Vote";

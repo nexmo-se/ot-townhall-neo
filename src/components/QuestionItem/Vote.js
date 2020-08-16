@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import clsx from "clsx";
 import QuestionAPI from "api/question";
 
 import User from "entities/user";
@@ -14,6 +15,7 @@ import Icon from "components/Icon";
 type Props = { question: Question };
 
 function Vote({ question }:Props){
+  const [ voted, setVoted ] = React.useState<boolean>(false);
   const mStyles = useStyles();
   const mSession = useSession();
   const mMe = useMe();
@@ -28,13 +30,31 @@ function Vote({ question }:Props){
     await QuestionAPI.vote(sessionID, voter, question);
   }
   
+  React.useEffect(() => {
+    const { connection } = mSession.session;
+    const { connectionId: connectionID } = connection;
+    const foundMe = question.voters.find((voter) => voter.id === connectionID);
+    if(foundMe) setVoted(true);
+    else setVoted(false);
+  }, [ question.voters ])
+  
   return (
     <div 
-      className={mStyles.voteContainer}
+      className={clsx({
+        [mStyles.voteContainer]: true,
+        "Vlt-bg-purple-dark": voted,
+        "Vlt-white": voted
+      })}
       onClick={handleVote}
     >
       <Icon name="Vlt-icon-up" />
-      <p>{question.vote}</p>
+      <p 
+        className={clsx({
+          "Vlt-white": voted    
+        })}
+      >
+        {question.vote}
+      </p>
       <span>Vote</span>
     </div>
   )

@@ -10,6 +10,7 @@ class Question{
     this.content = args.content;
     this.id = args?.id;
     this.vote = args?.vote ?? 0;
+    this.voters = args?.voters ?? [];
   }
   
   toRequest(){
