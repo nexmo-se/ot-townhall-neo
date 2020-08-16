@@ -1,22 +1,25 @@
 // @flow
 import React from "react";
+import Question from "entities/question";
 import useStyles from "./styles";
 
 import Icon from "components/Icon";
 
-function QuestionItem(){
+type Props = { question: Question }
+
+function QuestionItem({ question }:Props){
   const mStyles = useStyles();
   
   return (
     <div className={mStyles.root}>
       <div className={mStyles.voteContainer}>
         <Icon name="Vlt-icon-up" />
-        <p>0</p>
+        <p>{question.vote}</p>
         <span>Vote</span>
       </div>
       <div className={mStyles.detailContainer}>
-        <p><b>Name</b></p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan sit amet neque vel rhoncus. Nulla rhoncus mi eu orci ultrices, eu ullamcorper leo aliquam. </p>
+        <p><b>{question.owner.name}</b></p>
+        <p>{question.content}</p>
       </div>
     </div>
   )

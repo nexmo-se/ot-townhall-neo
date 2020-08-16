@@ -28,6 +28,7 @@ function QuestionInput(){
       content: text
     })
     await QuestionAPI.create(sessionID, question);
+    setText("");
   }
   
   return (

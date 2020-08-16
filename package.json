@@ -8,6 +8,7 @@
     "@material-ui/styles": "4.9.10",
     "@opentok/client": "2.16.3",
     "@vonagevolta/volta2": "0.0.53",
+    "firebase": "^7.18.0",
     "flow-bin": "0.123.0",
     "opentok-layout-js": "3.7.1",
     "react": "16.11.0",
