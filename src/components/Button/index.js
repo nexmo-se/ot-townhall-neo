@@ -1,13 +1,34 @@
+// @flow
 import React from "react";
+import clsx from "clsx";
 
-function Button(props){
-  const { text, style } = props;
+type Props = {
+  text: string, 
+  onClick?: () => void,
+  className?: any
+}
 
-  const handleClick = (e) => {
+function Button({ text, className, onClick, ...props }:Props){
+
+  function handleClick(e){
     e.preventDefault();
-    if(props.onClick) props.onClick();
+    if(onClick) onClick();
   }
 
-  return <button className="Vlt-btn Vlt-btn--primary Vlt-btn--app" style={style} onClick={handleClick} type="submit">{text}</button>
+  return (
+    <button 
+      {...props}
+      className={clsx(
+        "Vlt-btn",
+        "Vlt-btn--primary",
+        "Vlt-btn--app",
+        className
+      )}
+      onClick={handleClick} 
+      type="submit"
+    >
+      {text}
+    </button>
+  )
 }
 export default Button;
