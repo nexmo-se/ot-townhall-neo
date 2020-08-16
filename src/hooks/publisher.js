@@ -27,10 +27,12 @@ function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?
 
   function handleStreamCreated({ stream }){
     setStream(stream);
+    mSession.addStream(stream);
   }
 
-  function handleStreamDestroyed(){
+  function handleStreamDestroyed({ stream }){
     setStream(null);
+    mSession.removeStream(stream);
   }
 
   function handleAccessDenied(){

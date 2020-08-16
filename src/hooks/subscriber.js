@@ -28,12 +28,20 @@ function useSubscriber({ moderator, screen, camera, custom }:Props){
   }
 
   async function subscribe(streams:Array<Stream>, moderatorContainer?:string){
-    setSubscribed(streams);
+    // Do not subscribe my own stream
+    const otherStreams = streams.filter((stream) => {
+      const { connection: streamConnection } = stream;
+      const { connection: myConnection } = mSession.session;
+      if(streamConnection.id !== myConnection.id) return true;
+      else return false;
+    })
+    
+    setSubscribed(otherStreams);
 
-    const streamIDs = streams.map((stream) => stream.id);
+    const streamIDs = otherStreams.map((stream) => stream.id);
     const subscribedIDs = subscribed.map((stream) => stream.id);
 
-    const newStreams = streams.filter((stream) => !subscribedIDs.includes(stream.id))
+    const newStreams = otherStreams.filter((stream) => !subscribedIDs.includes(stream.id))
     const removedStreams = subscribed.filter((stream) => !streamIDs.includes(stream.id));
 
     removedStreams.forEach((stream) => {

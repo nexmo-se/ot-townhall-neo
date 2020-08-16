@@ -19,6 +19,8 @@ type ContextProps = {
   connect: (credential: Credential) => Promise<any>,
   publish: (containerID: string, options:any) => Publisher,
   unpublish: (publisher: Publisher) => void,
+  addStream: (stream: Stream) => void,
+  removeStream: (stream: Stream) => void,
   session: Session,
   changedStream: ChangedStream,
   isConnected: boolean,
@@ -53,15 +55,11 @@ function SessionProvider({ children }:ProviderProps){
   }
 
   function handleStreamCreated({ stream }){
-    setStreams((prevStreams) => [ ...prevStreams, stream]);
+    addStream(stream);
   }
 
   function handleStreamDestroyed({ stream }){
-    setStreams((prevStreams) => {
-      return prevStreams.filter((prevStream) => {
-        return prevStream.id !== stream.id
-      })
-    })
+    removeStream(stream);
   }
 
   async function connect(credential:Credential):Promise<any>{
@@ -102,6 +100,18 @@ function SessionProvider({ children }:ProviderProps){
       setPublishers((prev) => prev.filter((pub) => pub.id !== publisher.id));
     }
   }
+  
+  function addStream(stream:Stream):void{
+    setStreams((prevStreams) => [ ...prevStreams, stream]);
+  }
+  
+  function removeStream(stream:Stream):void{
+    setStreams((prevStreams) => {
+      return prevStreams.filter((prevStream) => {
+        return prevStream.id !== stream.id
+      })
+    })
+  }
 
   return (
     <SessionContext.Provider value={{
@@ -110,6 +120,8 @@ function SessionProvider({ children }:ProviderProps){
       changedStream,
       isConnected,
       streams,
+      addStream,
+      removeStream,
       connections,
       publish,
       unpublish,

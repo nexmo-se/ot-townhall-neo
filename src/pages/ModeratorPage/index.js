@@ -10,6 +10,7 @@ import useStyles from "./styles";
 import useSession from "hooks/session";
 import useSubscriber from "hooks/subscriber";
 import usePublisher from "hooks/publisher";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import AskNameDialog from "components/AskNameDialog";
@@ -27,6 +28,7 @@ function ModeratorPage(){
   const [ me, setMe ] = React.useState<User|void>(new User("Frans Moderator", "moderator"));
   const mStyles = useStyles();
   const mSession = useSession();
+  const mMe = useMe();
   const mPublisher = usePublisher("cameraContainer", true, false);
   const mScreenPublisher = usePublisher("cameraContainer");
   const mSubscriber = useSubscriber({ 
@@ -43,6 +45,7 @@ function ModeratorPage(){
     if(me){
       const credential = await CredentialAPI.generateCredential("moderator", me.toJSON())
       await mSession.connect(credential);
+      mMe.setMe(me);
     }
   }
 
