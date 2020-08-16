@@ -5,15 +5,15 @@ import useStyles from "./styles";
 import ChatList from "components/ChatList";
 import ChatInput from "components/ChatInput";
 
-type Props = { user: User };
+type Props = { me: User };
 
-function Chat({ user }:Props){
+function Chat({ me }:Props){
   const mStyles = useStyles();
   
   return (
     <React.Fragment>
       <ChatList />
-      <ChatInput user={user} byPass />
+      <ChatInput user={me} byPass />
     </React.Fragment>
   )
 }

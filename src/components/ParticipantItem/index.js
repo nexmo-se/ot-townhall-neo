@@ -5,16 +5,17 @@ import User from "entities/user";
 
 import useMessage from "hooks/message";
 import useSession from "hooks/session";
+import useMe from "hooks/me";
 
-type Props = { 
-  user:User
-};
+type Props = { user: User };
+
 function ParticipantItem({ user }:Props){
   const [ isPublishing, setIsPublishing ] = React.useState<boolean>(true);
   const [ isInviting, setIsInviting ] = React.useState<boolean>(false);  
   const [ inviteDisabled, setInviteDisabled ] = React.useState<boolean>(false);
   const mSession = useSession();
   const mMessage = useMessage();
+  const mMe = useMe();
 
   async function handleInviteClick(){
     try{
@@ -51,7 +52,11 @@ function ParticipantItem({ user }:Props){
       const { from:remoteUser } = mMessage.forcePublishFailed;
       if(remoteUser.id === user.id) setInviteDisabled(false);
     }
-  }, [ mMessage.forcePublishFailed ])
+  }, [ mMessage.forcePublishFailed ]);
+  
+  React.useEffect(() => {
+    console.log(mMe.me);
+  }, [ mMe.me ])
 
   return (
     <div className="Vlt-card Vlt-card--plain Vlt-bg-aqua-lighter Vlt-card--lesspadding" style={{ marginTop: 8, marginBottom: 4 }}>

@@ -10,11 +10,12 @@ import TabContent from "components/TabContent";
 import TabPanel from "components/TabPanel";
 import Tab from "components/Tab";
 import Chat from "components/Chat";
+import ParticipantList from "components/ParticipantList";
 
 type Props = { user: User }
 
 function MainTab({ user }:Props){
-  const [ activeTab, setActiveTab ] = React.useState<string>("chats")
+  const [ activeTab, setActiveTab ] = React.useState<string>("participants")
   const mStyles = useStyles();
   
   function handleParticipantsClick(){
@@ -53,7 +54,10 @@ function MainTab({ user }:Props){
       </TabHeader>
       <TabContent>
         <TabPanel isActive={activeTab === "chats"}>
-          <Chat user={user} />
+          <Chat me={user} />
+        </TabPanel>
+        <TabPanel isActive={activeTab === "participants"}>
+          <ParticipantList className={mStyles.participantList} />
         </TabPanel>
       </TabContent>
     </Tab>

@@ -11,6 +11,7 @@ import useSession from "hooks/session";
 import usePublisher from "hooks/publisher";
 import useMessage from "hooks/message";
 import useSubscriber from "hooks/subscriber";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
@@ -31,7 +32,8 @@ function PresenterPage(){
   const mScreenPublisher = usePublisher("cameraContainer");
   const mStyles = useStyles();
   const mMessage = useMessage();
-  const mSubscriber = useSubscriber({ 
+  const mMe = useMe();
+  const mSubscriber = useSubscriber({
     moderator: "moderatorContainer", 
     camera: "cameraContainer", 
     screen: "cameraContainer" 
@@ -66,7 +68,10 @@ function PresenterPage(){
   }
 
   React.useEffect(() => {
-    if(user) connect()
+    if(user) {
+      connect()
+      mMe.setMe(user);
+    }
   }, [ user ]);
 
   React.useEffect(() => {
