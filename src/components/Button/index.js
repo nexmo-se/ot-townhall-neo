@@ -12,7 +12,7 @@ function Button({ text, className, onClick, ...props }:Props){
 
   function handleClick(e){
     e.preventDefault();
-    if(onClick) onClick();
+    if(onClick) onClick(e);
   }
 
   return (
