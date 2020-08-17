@@ -33,7 +33,7 @@ function RecordButton({ size, fontSize, ...props }:Props){
   function handleMouseEnter(){ setIsBig(true) }
   function handleMouseLeave(){ setIsBig(false) }
   async function updateLayout(){
-    if(recording){
+    if(recording && isRecording){
       const layoutType = RecordingAPI.retrieveLayoutType(mSession.streams);
       if(layoutType === "presentation"){
         const presentationStreams = RecordingAPI.retrievePresentationStreams(mSession.streams);
@@ -46,8 +46,10 @@ function RecordButton({ size, fontSize, ...props }:Props){
     if(isRecording) {
       await RecordingAPI.stopRecording(recording);
       setIsRecording(false);
+      setRecording(undefined);
     }else {
       const recording = await RecordingAPI.startRecording(mSession.session);
+      setIsRecording(true);
       setRecording(recording);
     }
     setRefreshStatus(uuid());
