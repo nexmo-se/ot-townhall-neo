@@ -1,16 +1,34 @@
+// @flow
 import React from "react";
+import clsx from "clsx";
 
-function TextInput(props){
-  const { text, placeholder, style, type="text" } = props;
+type Props = {
+  text: string,
+  style?: any,
+  className?: any,
+  onChange?: (value:string) => void
+}
 
-  const handleChange = (e) => {
-    if(props.onChange) props.onChange(e.target.value);
+function TextInput({ text, style, className, onChange, ...props }:Props){
+
+  function handleChange({ target }){
+    if(onChange) onChange(target.value);
   }
 
   return(
-    <div className="Vlt-form__element" style={style}>
+    <div 
+      className={clsx(
+        "Vlt-form__element",
+        className
+      )}
+      style={style}
+    >
       <div className="Vlt-input">
-        <input value={text} onChange={handleChange} type={type} placeholder={placeholder} id="ex-input"/>
+        <input
+          {...props}
+          onChange={handleChange}
+          value={text} 
+        />
       </div>
     </div>  
   )

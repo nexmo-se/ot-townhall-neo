@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import config from "config";
 import clsx from "clsx";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
@@ -9,15 +10,16 @@ import useSession from "hooks/session";
 import useSubscriber from "hooks/subscriber";
 import usePublisher from "hooks/publisher";
 import useMessage from "hooks/message";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
 import WhiteLayer from "components/WhiteLayer";
-import ChatList from "components/ChatList";
-import ChatInput from "components/ChatInput";
+import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
 import AskNameDialog from "components/AskNameDialog";
 import VideoControl from "components/VideoControl";
+import VideoHoverContainer from "components/VideoHoverContainer";
 import RaiseHandButton from "components/RaiseHandButton";
 import LayoutContainer from "components/LayoutContainer";
 
@@ -25,6 +27,7 @@ function EmployeePage(){
   const [ me, setMe ] = React.useState<User|void>();
   const mSession = useSession();
   const mStyles = useStyles();
+  const mMe = useMe();
   const mPublisher = usePublisher("cameraContainer", true, false);
   const mMessage = useMessage();
   const mSubscriber = useSubscriber({
@@ -41,6 +44,7 @@ function EmployeePage(){
     if(me){
       const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
       await mSession.connect(credential);
+      mMe.setMe(me);
     }
   }
 
@@ -99,7 +103,7 @@ function EmployeePage(){
   if(!me && !mSession.session) {
     return (
       <AskNameDialog 
-        pin="1123"
+        pin={config.participantPin}
         role="participant"
         onSubmit={handleNameSubmit}
       />
@@ -111,29 +115,18 @@ function EmployeePage(){
       <div className={mStyles.leftContainer}>
         <LayoutContainer id="cameraContainer" size="big" />        
         <WhiteLayer />
+        {mPublisher.publisher? (
+          <VideoHoverContainer>
+            <VideoControl publisher={mPublisher.publisher} />
+          </VideoHoverContainer>
+        ): null}
         <div className={mStyles.logoContainer}>
           <LiveBadge/>
           {!mPublisher.publisher? <RaiseHandButton />: null}
         </div>
         <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
       </div>
-      <div className={mStyles.rightContainer}>
-        <div className={mStyles.moderator}>
-          <LayoutContainer id="moderatorContainer" size="big" />
-        </div>
-        <div className={mStyles.videoControl}>
-          {!mPublisher.publisher? null: (
-            <React.Fragment>
-              <h4 className="Vlt-center">My Controls</h4>
-              <VideoControl publisher={mPublisher.publisher} />
-            </React.Fragment>
-          )}
-        </div>
-        <div className={mStyles.chatContainer}>
-          <ChatList/>
-          <ChatInput user={me} byPass={false}/>
-        </div>
-      </div>
+      <RightPanel user={me} />
     </div>
   )
 }

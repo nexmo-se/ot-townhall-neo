@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import clsx from "clsx";
 import User from "entities/user";
 
 import useStyles from "./styles";
@@ -7,7 +8,9 @@ import useSession from "hooks/session";
 
 import ParticipantItem from "components/ParticipantItem";
 
-function ParticipantList(){
+type Props = { className?: any }
+
+function ParticipantList({ className }:Props){
   const [ participants, setParticipants ] = React.useState<Array<User>>([]);
   const mSession = useSession();
   const mStyles = useStyles();
@@ -28,7 +31,7 @@ function ParticipantList(){
   }, [ mSession.connections ]);
 
   return (
-    <div className={mStyles.container}>
+    <div className={clsx(mStyles.container, className)}>
       {participants.map((participant) => {
         return <ParticipantItem user={participant} />
       })}

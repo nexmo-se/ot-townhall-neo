@@ -14,11 +14,10 @@ import VideoButton from "components/VideoButton";
 type Props = {
   sizeMultiplier?:number,
   publisher:Publisher|void,
-  hidden?:boolean,
   children?:Node
 }
 
-function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Props){
+function VideoControl({ sizeMultiplier=1, publisher, children }:Props){
   const [ hasAudio, setHasAudio ] = React.useState(true);
   const [ hasVideo, setHasVideo ] = React.useState(true);
   const mSession = useSession();
@@ -33,23 +32,33 @@ function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Pro
   }
 
   function handleHangupClick(){
-    mSession.session.unpublish(publisher);
+    mSession.unpublish(publisher);
   }
-
-  React.useEffect(() => {
-    const { changedStream } = mSession;
-    if(changedStream){
-      const { connection:otherConnection } = changedStream.stream;
-      const { connection:myConnection } = mSession.session;
-      if(otherConnection.id === myConnection.id && publisher?.stream.id === changedStream.stream.id){
-        switch(changedStream.changedProperty){
-          case "hasAudio": return setHasAudio(changedStream.newValue);
-          case "hasVideo": return setHasVideo(changedStream.newValue);
-          default: return;
+  
+  function handleStreamPropertyChanged({ stream: changedStream, newValue, changedProperty }){
+    if(publisher){
+      const { connection: targetConnection } = changedStream;
+      const { connection: myConnection } = mSession.session;
+      console.log("[Townhall][VideoControl][handleStreamPropertyChanged] Target Connection", targetConnection);
+      console.log("[Townhall][VideoControl][handleStreamPropertyChanged] My Connection", myConnection);
+      
+      if(targetConnection.connectionId === myConnection.connectionId){
+        if(publisher.stream.streamId === changedStream.streamId){
+          if(changedProperty === "hasAudio") setHasAudio(newValue);
+          else if(changedProperty === "hasVideo") setHasVideo(newValue);
         }
       }
     }
-  }, [ mSession.changedStream ]);
+  }
+  
+  React.useEffect(() => {
+    const { session } = mSession;
+    console.log("[Townhall][VideoControl] Session", session);
+    if(session) session.on("streamPropertyChanged", handleStreamPropertyChanged);
+    return function cleanup(){
+      if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
+    }
+  }, [ mSession.session, publisher ])
 
   React.useEffect(() => {
     if(publisher) publisher.publishAudio(hasAudio);
@@ -61,7 +70,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children, hidden=true }:Pro
 
   if(!publisher) return null;
   return(
-    <div id="video-control" className={mStyles.root}>
+    <div className={mStyles.root}>
       {children}
       <VideoButton 
         hasVideo={hasVideo} 

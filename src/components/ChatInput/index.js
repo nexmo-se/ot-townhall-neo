@@ -28,7 +28,11 @@ function ChatInput({ user, byPass }:Props){
 
   return (
     <form style={{ display: "flex", flexDirection: "row" }} onSubmit={handleClick}>
-      <TextInput text={text} onChange={setText} style={{ marginRight: 8, flexGrow: 1 }}/>
+      <TextInput 
+        text={text} 
+        onChange={setText} 
+        style={{ marginRight: 8, flexGrow: 1 }}
+      />
       <Button type="submit" text="Send" onClick={handleClick} style={{ flexShrink: 1 }}/>
     </form>
   )

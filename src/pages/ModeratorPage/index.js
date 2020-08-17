@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import config from "config";
 import clsx from "clsx";
 import LayoutManager from "utils/layout-manager";
 import User from "entities/user";
@@ -9,23 +10,25 @@ import useStyles from "./styles";
 import useSession from "hooks/session";
 import useSubscriber from "hooks/subscriber";
 import usePublisher from "hooks/publisher";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import AskNameDialog from "components/AskNameDialog";
-import ModeratorChatList from "components/ModeratorChatList";
-import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import RaisedHandList from "components/RaisedHandList";
 import ParticipantList from "components/ParticipantList";
 import LiveParticipantList from "components/LiveParticipantList";
 import LiveParticipantItem from "components/LiveParticipantItem";
 import ShareScreenButton from "components/ShareScreenButton";
+import RecordButton from "components/RecordButton";
 import LayoutContainer from "components/LayoutContainer";
+import ModeratorMessageTab from "components/ModeratorMessageTab";
 
 function ModeratorPage(){
   const [ me, setMe ] = React.useState<User|void>();
   const mStyles = useStyles();
   const mSession = useSession();
+  const mMe = useMe();
   const mPublisher = usePublisher("cameraContainer", true, false);
   const mScreenPublisher = usePublisher("cameraContainer");
   const mSubscriber = useSubscriber({ 
@@ -42,6 +45,7 @@ function ModeratorPage(){
     if(me){
       const credential = await CredentialAPI.generateCredential("moderator", me.toJSON())
       await mSession.connect(credential);
+      mMe.setMe(me);
     }
   }
 
@@ -69,7 +73,7 @@ function ModeratorPage(){
   if(!me && !mSession.session) {
     return (
       <AskNameDialog 
-        pin="5523"
+        pin={config.moderatorPin}
         role="moderator"
         onSubmit={handleNameSubmit}
       />
@@ -81,22 +85,20 @@ function ModeratorPage(){
       <div className={mStyles.leftPanel}>
         <div className={mStyles.chat} style={{ 
             borderBottom: "1px solid #e7ebee",
-            flexBasis: "50%"
+            flexBasis: "30%"
           }}
         >
           <h4 className="Vlt-center">RAISING HAND</h4>
           <RaisedHandList />
         </div>
         <div className={mStyles.chat} style={{ 
-            flexBasis: "50%",
+            flexBasis: "70%",
             paddingLeft: 32, 
             paddingRight: 32, 
             paddingTop: 32 
           }}
         >
-          <h4 className="Vlt-center">MESSAGES</h4>
-          <ModeratorChatList filter="approved"/>
-          <ChatInput user={me} byPass={true} />
+          <ModeratorMessageTab />
         </div>
       </div>
       <div className={mStyles.centerPanel}>
@@ -108,13 +110,20 @@ function ModeratorPage(){
                 user={me} 
                 publisher={mPublisher.publisher} 
                 additionalControls={(
-                  <ShareScreenButton 
-                    size={32}
-                    fontSize={16}
-                    style={{ marginRight: 8 }}
-                    onClick={handleShareScreenClick}
-                    isSharing={!!mScreenPublisher.stream}
-                  />
+                  <React.Fragment>
+                    <RecordButton 
+                      size={32}
+                      fontSize={16}
+                      style={{ marginRight: 8 }}
+                    />
+                    <ShareScreenButton 
+                      size={32}
+                      fontSize={16}
+                      style={{ marginRight: 8 }}
+                      onClick={handleShareScreenClick}
+                      isSharing={!!mScreenPublisher.stream}
+                    />
+                  </React.Fragment>
                 )}
                 />
               ): null}
@@ -122,7 +131,7 @@ function ModeratorPage(){
         </div>
         <div className={mStyles.chat} style={{ flexBasis: "50%", paddingTop: 32 }}>
           <h4 className="Vlt-center">PARTICIPANTS ({mSession.connections.length})</h4>
-          <ParticipantList/>
+          <ParticipantList />
         </div>
       </div>
       <div className={clsx(

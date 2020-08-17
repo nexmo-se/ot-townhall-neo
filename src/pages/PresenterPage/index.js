@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import clsx from "clsx";
+import config from "config";
 import LayoutManager from "utils/layout-manager";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
@@ -10,19 +11,20 @@ import useSession from "hooks/session";
 import usePublisher from "hooks/publisher";
 import useMessage from "hooks/message";
 import useSubscriber from "hooks/subscriber";
+import useMe from "hooks/me";
 
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
 import WhiteLayer from "components/WhiteLayer";
-import ChatList from "components/ChatList";
-import ChatInput from "components/ChatInput";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
+import VideoHoverContainer from "components/VideoHoverContainer";
 import AskNameDialog from "components/AskNameDialog";
 import ShareScreenButton from "components/ShareScreenButton";
 import LayoutContainer from "components/LayoutContainer";
+import RightPanel from "components/RightPanel";
 
-function CeoPage(){
+function PresenterPage(){
   const [ user, setUser ] = React.useState<User|void>();
   const [ videoControlVisible, setVideoControlVisible ] = React.useState<boolean>(false);
   const mSession = useSession();
@@ -30,7 +32,8 @@ function CeoPage(){
   const mScreenPublisher = usePublisher("cameraContainer");
   const mStyles = useStyles();
   const mMessage = useMessage();
-  const mSubscriber = useSubscriber({ 
+  const mMe = useMe();
+  const mSubscriber = useSubscriber({
     moderator: "moderatorContainer", 
     camera: "cameraContainer", 
     screen: "cameraContainer" 
@@ -65,7 +68,10 @@ function CeoPage(){
   }
 
   React.useEffect(() => {
-    if(user) connect()
+    if(user) {
+      connect()
+      mMe.setMe(user);
+    }
   }, [ user ]);
 
   React.useEffect(() => {
@@ -113,7 +119,7 @@ function CeoPage(){
   if(!user && !mSession.session){
     return (
       <AskNameDialog 
-        pin="3345"
+        pin={config.presenterPin}
         role="presenter"
         onSubmit={handleSubmit}
       />
@@ -126,6 +132,15 @@ function CeoPage(){
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <LayoutContainer id="cameraContainer" size="big" />
           <WhiteLayer/>
+          <VideoHoverContainer>
+            <VideoControl publisher={mPublisher.publisher}>
+              <ShareScreenButton 
+                style={{ marginRight: 8 }}
+                onClick={handleShareScreenClick}
+                isSharing={!!mScreenPublisher.stream}
+              />
+            </VideoControl>
+          </VideoHoverContainer>
           <div className={mStyles.logoContainer}>
             <LiveBadge/>
           </div>
@@ -138,30 +153,9 @@ function CeoPage(){
             }}
           />
         </div>
-        <div className={mStyles.rightContainer}>
-          <div className={mStyles.moderator}>
-            <LayoutContainer id="moderatorContainer" size="big" />
-          </div>
-          <div className={mStyles.videoControl}>
-            <h4 className="Vlt-center">My Controls</h4>
-            <VideoControl 
-              publisher={mPublisher.publisher} 
-              hidden={!videoControlVisible}
-            >
-              <ShareScreenButton 
-                style={{ marginRight: 8 }}
-                onClick={handleShareScreenClick}
-                isSharing={!!mScreenPublisher.stream}
-              />
-            </VideoControl>
-          </div>
-          <div className={mStyles.chatContainer}>
-            <ChatList/>
-            <ChatInput user={user} byPass={true}/>
-          </div>
-        </div>
+        <RightPanel user={user} />
       </div>
     </React.Fragment>
   )
 }
-export default CeoPage;
+export default PresenterPage;
