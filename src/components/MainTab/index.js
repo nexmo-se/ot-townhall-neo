@@ -61,6 +61,9 @@ function MainTab({ user }:Props){
           <ParticipantList className={mStyles.participantList} />
         </TabPanel>
         <TabPanel isActive={activeTab === "questions"}>
+          <p className={clsx(mStyles.textHeader, "Vlt-center")}>
+            You can put your question here. Anyone can vote to increase visibility as well.
+          </p>
           <QuestionPanel />
         </TabPanel>
       </TabContent>
