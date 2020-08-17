@@ -4,7 +4,7 @@ import Recording from "entities/recording";
 import { Session, Stream } from "@opentok/client";
 
 class RecordingAPI{
-  static async startRecording(session:Session):Recording{
+  static async startRecording(session:Session):Promise<Recording>{
     const response = await fetch(`${config.apiURL}/recordings`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -55,11 +55,11 @@ class RecordingAPI{
     else throw new Error(response.statusText)
   }
   
-  static async setPresentationLayout(recording:Recording, streams:Array<Stream>):void{
+  static async setPresentationLayout(recording:Recording, streams:Array<Stream>):Promise<void>{
     return RecordingAPI.setLayout(recording, "presentation", streams)
   }
   
-  static async setBestFitLayout(recording:Recording):void{
+  static async setBestFitLayout(recording:Recording):Promise<void>{
     return RecordingAPI.setLayout(recording, "bestFit");
   }
   

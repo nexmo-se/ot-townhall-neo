@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 type Props = {
   text: string, 
-  onClick?: (e:any) => Promise<any>,
+  onClick?: (e:any) => Promise<any> | void,
   className?: any
 }
 
