@@ -8,6 +8,7 @@ import User from "entities/user";
 import useSession from "hooks/session";
 import { Publisher, Subscriber } from "@opentok/client";
 
+import Hangup from "./Hangup";
 import VideoButton from "components/VideoButton";
 import MuteButton from "components/MuteButton";
 import HangupButton from "components/HangupButton";
@@ -56,39 +57,48 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
       })
     }
   }
-
-  function handleDisconnectClick(){
-    if(subscriber){
-      const { connection } = subscriber.stream;
-      const data = JSON.parse(connection.data);
-      const user = User.fromJSON(data);
-      user.id = connection.id;
-
-      mSession.session.signal({
-        type: "force-unpublish",
-        data: JSON.stringify(user.toJSON())
-      })
-    }
-  }
-
-  React.useEffect(() => {
-    const pubsub = (publisher)? publisher: (subscriber)? subscriber: null;
-    const { changedStream } = mSession;
-    if(pubsub && changedStream){
-      const { connection:localConnection } = pubsub.stream;
-      const { connection:remoteConnection } = mSession.changedStream.stream;
-      const { stream:publisherStream } = pubsub;
-      if(localConnection.id === remoteConnection.id && publisherStream.id === changedStream.stream.id){
-        setHasVideo(mSession.changedStream.stream.hasVideo);
-        setHasAudio(mSession.changedStream.stream.hasAudio);
+  
+  function handleStreamPropertyChanged({ stream: targetStream, newValue, changedProperty }){
+    const streamManager = retrieveStreamManager();
+    console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] Stream Manager", streamManager);
+    
+    if(streamManager){
+      const { stream: myStream } = streamManager;
+      const { connection: targetConnection } = targetStream;
+      const { connection: myConnection } = myStream;
+      console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] Target Connection", targetConnection);
+      console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] My Connection", myConnection);
+      console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] Target Stream", targetStream);
+      console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] My Stream", myStream);
+      
+      if(targetConnection.connectionId === myConnection.connectionId){
+        if(targetStream.streamId === myStream.streamId){
+          if(changedProperty === "hasAudio") setHasAudio(newValue);
+          else if(changedProperty === "hasVideo") setHasVideo(newValue);
+        }
       }
     }
-  }, [ mSession.changedStream, publisher, subscriber ]);
+  }
+  
+  function retrieveStreamManager(){
+    if(publisher) return publisher;
+    else if(subscriber) return subscriber;
+    else return undefined;
+  }
+  
+  React.useEffect(() => {
+    const { session } = mSession;
+    if(session) session.on("streamPropertyChanged", handleStreamPropertyChanged);
+    return function cleanup(){
+      if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
+    }
+  }, [ mSession.session, publisher, subscriber ])
 
   React.useEffect(() => {
-    const pubsub = (publisher)? publisher: (subscriber)? subscriber: null;
-    if(pubsub?.stream){
-      const { hasAudio, hasVideo } = pubsub.stream;
+    const streamManager = retrieveStreamManager();
+    console.log("[Townhall][ParticipantListItem] Stream Manager", streamManager);
+    if(streamManager && streamManager.stream){
+      const { hasAudio, hasVideo } = streamManager.stream;
       setHasAudio(hasAudio);
       setHasVideo(hasVideo);
     }
@@ -122,13 +132,7 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
               onClick={handleAudioClick}
               hasAudio={hasAudio}
             />
-            {subscriber?(
-              <HangupButton 
-                size={32} 
-                fontSize={16} 
-                onClick={handleDisconnectClick}
-              />
-            ):null}
+            <Hangup subscriber={subscriber} />
           </div> 
         </div>
       </div>

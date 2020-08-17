@@ -34,21 +34,31 @@ function VideoControl({ sizeMultiplier=1, publisher, children }:Props){
   function handleHangupClick(){
     mSession.unpublish(publisher);
   }
-
-  React.useEffect(() => {
-    const { changedStream } = mSession;
-    if(changedStream){
-      const { connection:otherConnection } = changedStream.stream;
-      const { connection:myConnection } = mSession.session;
-      if(otherConnection.id === myConnection.id && publisher?.stream.id === changedStream.stream.id){
-        switch(changedStream.changedProperty){
-          case "hasAudio": return setHasAudio(changedStream.newValue);
-          case "hasVideo": return setHasVideo(changedStream.newValue);
-          default: return;
+  
+  function handleStreamPropertyChanged({ stream: changedStream, newValue, changedProperty }){
+    if(publisher){
+      const { connection: targetConnection } = changedStream;
+      const { connection: myConnection } = mSession.session;
+      console.log("[Townhall][VideoControl][handleStreamPropertyChanged] Target Connection", targetConnection);
+      console.log("[Townhall][VideoControl][handleStreamPropertyChanged] My Connection", myConnection);
+      
+      if(targetConnection.connectionId === myConnection.connectionId){
+        if(publisher.stream.streamId === changedStream.streamId){
+          if(changedProperty === "hasAudio") setHasAudio(newValue);
+          else if(changedProperty === "hasVideo") setHasVideo(newValue);
         }
       }
     }
-  }, [ mSession.changedStream ]);
+  }
+  
+  React.useEffect(() => {
+    const { session } = mSession;
+    console.log("[Townhall][VideoControl] Session", session);
+    if(session) session.on("streamPropertyChanged", handleStreamPropertyChanged);
+    return function cleanup(){
+      if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
+    }
+  }, [ mSession.sesion, publisher ])
 
   React.useEffect(() => {
     if(publisher) publisher.publishAudio(hasAudio);

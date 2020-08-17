@@ -39,6 +39,8 @@ function SessionProvider({ children }:ProviderProps){
   const [ publishers, setPublishers ] = React.useState<Array<Publisher>>([]);
 
   function handleStreamPropertyChanged({ stream, changedProperty, newValue, oldValue }){
+    console.log("[Townhall][SessionProvider][handleStreamPropertyChanged] Stream", stream);
+    
     setChangedStream({ stream, changedProperty, newValue, oldValue, token: uuid() });
   }
 
