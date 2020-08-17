@@ -58,7 +58,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children }:Props){
     return function cleanup(){
       if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
     }
-  }, [ mSession.sesion, publisher ])
+  }, [ mSession.session, publisher ])
 
   React.useEffect(() => {
     if(publisher) publisher.publishAudio(hasAudio);

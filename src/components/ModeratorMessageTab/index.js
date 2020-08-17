@@ -25,6 +25,7 @@ function ModeratorMessageTab(){
     setActiveTab("questions");
   }
   
+  if(!mMe.me) return null;
   return (
     <Tab className={mStyles.root}>
       <TabHeader>

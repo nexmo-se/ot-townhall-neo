@@ -21,11 +21,10 @@ function Vote({ question }:Props){
   const mMe = useMe();
   
   async function handleVote(){
+    if(!mMe.me) throw new Error("Ops!");
     const { connection, sessionId: sessionID } = mSession.session;
-    const voter = new User();
+    const voter = new User(mMe.me.name, mMe.me.role);
     voter.id = connection.connectionId;
-    voter.name = mMe.me.name;
-    voter.role = mMe.me.role;
     
     await QuestionAPI.vote(sessionID, voter, question);
   }

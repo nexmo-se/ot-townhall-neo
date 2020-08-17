@@ -5,7 +5,7 @@ import "firebase/firestore";
 import config from "config/firebase";
 
 class Firestore{
-  static instance;
+  static instance:any;
   
   static init(){
     firebase.initializeApp({

@@ -1,9 +1,12 @@
 // @flow
+import User from "entities/user";
+
 class Question{
   id: string;
   owner: User;
   content: string;
   vote: number;
+  voters: Array<User>;
   
   constructor(args:any){
     this.owner = args.owner;

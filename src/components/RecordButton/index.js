@@ -43,7 +43,7 @@ function RecordButton({ size, fontSize, ...props }:Props){
   }
   
   async function handleClick(){
-    if(isRecording) {
+    if(isRecording && recording) {
       await RecordingAPI.stopRecording(recording);
       setIsRecording(false);
       setRecording(undefined);

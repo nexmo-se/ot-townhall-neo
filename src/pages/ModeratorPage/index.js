@@ -131,7 +131,7 @@ function ModeratorPage(){
         </div>
         <div className={mStyles.chat} style={{ flexBasis: "50%", paddingTop: 32 }}>
           <h4 className="Vlt-center">PARTICIPANTS ({mSession.connections.length})</h4>
-          <ParticipantList/>
+          <ParticipantList />
         </div>
       </div>
       <div className={clsx(

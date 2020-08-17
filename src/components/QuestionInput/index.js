@@ -18,6 +18,7 @@ function QuestionInput(){
   
   async function handleSubmit(e){
     e.preventDefault();
+    if(!mMe.me) throw new Error("Ops!");
     const { sessionId: sessionID, connection } = mSession.session;
     const question = new Question({
       owner: {

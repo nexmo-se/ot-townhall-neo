@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import User from "entities/user";
 import type { Node } from "react";
 
 type ProviderProps = { children: Node }

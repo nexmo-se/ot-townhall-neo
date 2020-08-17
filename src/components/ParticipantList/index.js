@@ -8,7 +8,7 @@ import useSession from "hooks/session";
 
 import ParticipantItem from "components/ParticipantItem";
 
-type Props = { className: any }
+type Props = { className?: any }
 
 function ParticipantList({ className }:Props){
   const [ participants, setParticipants ] = React.useState<Array<User>>([]);

@@ -9,8 +9,8 @@ import useMessage from "hooks/message";
 type Props = { user: User }
 
 function InviteLiveButton({ user }:Props){
-  const [ inviteDisabled, setInviteDisabled ] = React.useState<boolean>();
-  const [ isPublishing, setIsPublishing ] = React.useState<boolean>();
+  const [ inviteDisabled, setInviteDisabled ] = React.useState<boolean>(false);
+  const [ isPublishing, setIsPublishing ] = React.useState<boolean>(false);
   const mMe = useMe();
   const mSession = useSession();
   const mMessage = useMessage();
@@ -18,6 +18,7 @@ function InviteLiveButton({ user }:Props){
   async function handleInviteClick(){
     setInviteDisabled(true);
     if(!user.id) throw new Error("User does not have ID. Is someone hack my application");
+    if(!mMe.me) throw new Error("Ops!");
     if(mMe.me.role !== "moderator") throw new Error("User is not moderator. Someone hack my application");
     if(mSession.session){
       await new Promise((resolve, reject) => {

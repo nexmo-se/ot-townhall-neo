@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import User from "entities/user";
 import useStyles from "./styles";
 
 import ChatList from "components/ChatList";
