@@ -2,7 +2,6 @@
 import React from "react";
 import clsx from "clsx";
 import config from "config";
-import LayoutManager from "utils/layout-manager";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
 
@@ -25,8 +24,7 @@ import LayoutContainer from "components/LayoutContainer";
 import RightPanel from "components/RightPanel";
 
 function PresenterPage(){
-  const [ user, setUser ] = React.useState<User|void>();
-  const [ videoControlVisible, setVideoControlVisible ] = React.useState<boolean>(false);
+  const [ user, setUser ] = React.useState<User | void>();
   const mSession = useSession();
   const mPublisher = usePublisher("cameraContainer", true, false);
   const mScreenPublisher = usePublisher("cameraContainer");
@@ -39,16 +37,8 @@ function PresenterPage(){
     screen: "cameraContainer" 
   });
 
-  function handleSubmit(user:User){
+  function handleSubmit(user: User){
     setUser(user);
-  }
-
-  function handleMouseOver(){
-    setVideoControlVisible(true);
-  }
-
-  function handleMouseOut(){
-    setVideoControlVisible(false);
   }
 
   async function connect(){

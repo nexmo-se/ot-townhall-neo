@@ -1,11 +1,12 @@
-// @flow
 import { makeStyles } from "@material-ui/styles";
 export default makeStyles(() => ({
-  root: {
-    flex: 3, 
+  container: {
     display: "flex", 
     flexDirection: "column", 
-    padding: 16, 
-    overflowY: "scroll" 
+    overflowY: "scroll",
+    width: "100%", 
+    flex: 1, 
+    paddingTop: 16, 
+    paddingBottom: 16
   }
 }), { index: 1 })

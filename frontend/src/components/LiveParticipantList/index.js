@@ -8,12 +8,12 @@ import { Subscriber } from "@opentok/client";
 
 import LiveParticipantItem from "components/LiveParticipantItem";
 
-type Props = {
+type ILiveParticipantList = {
   children?:Node,
   subscribers:Array<Subscriber>
 }
 
-function LiveParticipantList({ children, subscribers }:Props){
+function LiveParticipantList({ children, subscribers }: ILiveParticipantList){
   const [ participants, setParticipants ] = React.useState<Array<User>>([]);
   const mStyles = useStyles();
 

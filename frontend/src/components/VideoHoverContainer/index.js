@@ -4,11 +4,8 @@ import clsx from "clsx";
 import useStyles from "./styles";
 import type { Node } from "react";
 
-import VideoControl from "components/VideoControl";
-
-type Props = { children: Node };
-
-function VideoHoverContainer({ children }:Props){
+interface IVideoHoverContainer { children: Node };
+function VideoHoverContainer({ children }: IVideoHoverContainer){
   const [ visible, setVisible ] = React.useState<boolean>(false);
   const mStyles = useStyles();
 

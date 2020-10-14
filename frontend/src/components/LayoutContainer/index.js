@@ -1,18 +1,16 @@
 // @flow
 import React from "react";
-import type { Node } from "react";
-
 import clsx from "clsx";
 import useStyles from "./styles";
 
-type Props = { 
-  id:string,
-  size:"big"|"small",
-  hidden?:boolean,
-  screen?:boolean
+interface ILayoutContainer { 
+  id: string; 
+  size: "big"|"small";
+  hidden?: boolean;
+  screen?: boolean;
 }
 
-function LayoutContainer({ id, size, hidden, screen }:Props){
+function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
   const [ isBig, setIsBig ] = React.useState<boolean>(true);
   const mStyles = useStyles();
 

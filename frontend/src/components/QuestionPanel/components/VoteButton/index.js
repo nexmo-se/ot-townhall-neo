@@ -12,9 +12,8 @@ import useSession from "hooks/session";
 
 import Icon from "components/Icon";
 
-type Props = { question: Question };
-
-function Vote({ question }:Props){
+interface IVote { question: Question };
+function Vote({ question }: IVote){
   const [ voted, setVoted ] = React.useState<boolean>(false);
   const mStyles = useStyles();
   const mSession = useSession();
@@ -35,7 +34,7 @@ function Vote({ question }:Props){
     const foundMe = question.voters.find((voter) => voter.id === connectionID);
     if(foundMe) setVoted(true);
     else setVoted(false);
-  }, [ question.voters ])
+  }, [ question.voters, mSession.session ])
   
   return (
     <div 

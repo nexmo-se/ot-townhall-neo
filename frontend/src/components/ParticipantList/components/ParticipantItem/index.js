@@ -4,12 +4,11 @@ import clsx from "clsx";
 import useStyles from "./styles";
 import User from "entities/user";
 
-import InviteLiveButton from "./InviteLiveButton";
+import InviteLiveButton from "../InviteLiveButton";
 import Avatar from "components/Avatar";
 
-type Props = { user: User };
-
-function ParticipantItem({ user }:Props){
+interface IParticipantItem { user: User };
+function ParticipantItem({ user }: IParticipantItem){
   const mStyles = useStyles();
 
   return (

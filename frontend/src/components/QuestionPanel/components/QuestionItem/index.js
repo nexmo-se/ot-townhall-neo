@@ -1,13 +1,12 @@
 // @flow
 import React from "react";
-import clsx from "clsx";
 import Question from "entities/question";
 import useStyles from "./styles";
-import Vote from "./Vote";
 
-type Props = { question: Question }
+import Vote from "../VoteButton";
 
-function QuestionItem({ question }:Props){
+interface IQuestionItem { question: Question }
+function QuestionItem({ question }: IQuestionItem){
   const mStyles = useStyles();
   
   return (

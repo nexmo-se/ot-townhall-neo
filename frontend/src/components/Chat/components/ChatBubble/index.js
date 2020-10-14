@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import clsx from "clsx";
 import useStyles from "./styles";
 import User from "entities/user";
 
@@ -15,12 +16,20 @@ function ChatBubble({ name, message }:ChatBubbleProps){
   const mStyles = useStyles();
 
   return (
-    <div className="Vlt-card Vlt-card--plain Vlt-bg-orange-lighter Vlt-card--lesspadding" style={{ marginTop: 8, marginBottom: 4 }}>
+    <div 
+      className={clsx(
+        "Vlt-card",
+        "Vlt-card--plain",
+        "Vlt-bg-orange-lighter",
+        "Vlt-card--lespadding",
+        mStyles.root
+      )} 
+    >
       <div className="Vlt-card__content" style={{ display: "flex", flexDirection: "row" }}>
         <Avatar user={user} size={50} className={mStyles.avatar} />
-        <div style={{ display: "flex", flexDirection: "column", maxWidth: 200  }}>
+        <div style={mStyles.chat}>
           <p><b>{name}</b></p>
-          <p style={{ wordBreak: "break-word", whiteSpace: "normal" }}>{message}</p>
+          <p style={mStyles.message}>{message}</p>
         </div>
       </div>
     </div>

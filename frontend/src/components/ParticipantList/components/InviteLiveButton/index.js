@@ -6,9 +6,8 @@ import useMe from "hooks/me";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
 
-type Props = { user: User }
-
-function InviteLiveButton({ user }:Props){
+interface IInviteLiveButton { user: User }
+function InviteLiveButton({ user }: IInviteLiveButton){
   const [ inviteDisabled, setInviteDisabled ] = React.useState<boolean>(false);
   const [ isPublishing, setIsPublishing ] = React.useState<boolean>(false);
   const mMe = useMe();
@@ -50,7 +49,7 @@ function InviteLiveButton({ user }:Props){
       const { from:remoteUser } = mMessage.forcePublishFailed;
       if(remoteUser.id === user.id) setInviteDisabled(false);
     }
-  }, [ mMessage.forcePublishFailed ]);
+  }, [ mMessage.forcePublishFailed, user.id ]);
   
   // Do not show invite live button when you are not moderators
   // Only moderator can invite live

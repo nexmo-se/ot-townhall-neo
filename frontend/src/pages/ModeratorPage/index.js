@@ -2,7 +2,6 @@
 import React from "react";
 import config from "config";
 import clsx from "clsx";
-import LayoutManager from "utils/layout-manager";
 import User from "entities/user";
 import CredentialAPI from "api/credential";
 
@@ -12,7 +11,7 @@ import useSubscriber from "hooks/subscriber";
 import usePublisher from "hooks/publisher";
 import useMe from "hooks/me";
 
-import ModeratorParticipantItem from "./ModeratorParticipantItem";
+import ModeratorParticipantItem from "./components/ModeratorParticipantItem";
 import LiveBadge from "components/LiveBadge";
 import AskNameDialog from "components/AskNameDialog";
 import FullPageLoading from "components/FullPageLoading";
@@ -28,7 +27,6 @@ function ModeratorPage(){
   const mSession = useSession();
   const mMe = useMe();
   const mPublisher = usePublisher("cameraContainer", true, false);
-  const mScreenPublisher = usePublisher("cameraContainer");
   const mSubscriber = useSubscriber({ 
     moderator: "cameraContainer", 
     camera: "cameraContainer", 

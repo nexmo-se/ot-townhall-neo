@@ -1,8 +1,8 @@
 // @flow
 import React from "react";
 
-import QuestionInput from "components/QuestionInput";
-import QuestionList from "components/QuestionList";
+import QuestionInput from "./components/QuestionInput";
+import QuestionList from "./components/QuestionList";
 
 function QuestionPanel(){
   return (

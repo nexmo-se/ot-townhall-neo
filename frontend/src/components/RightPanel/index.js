@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import clsx from "clsx";
 import User from "entities/user";
 import useStyles from "./styles";
 

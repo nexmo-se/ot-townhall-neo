@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import clsx from "clsx";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
 
@@ -12,7 +11,7 @@ import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo"
 import BlackLayer from "components/BlackLayer";
 import WhiteLayer from "components/WhiteLayer";
-import ChatList from "components/ChatList";
+import Chat from "components/Chat";
 import FullPageLoading from "components/FullPageLoading";
 import LayoutContainer from "components/LayoutContainer";
 
@@ -26,20 +25,19 @@ function EmployeePage(){
     screen: "cameraContainer"
   });
 
-  async function connect(){
-    if(me){
-      const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
-      await mSession.connect(credential);
-    }
-  }
-
   React.useEffect(() => {
+    async function connect(){
+      if(me){
+        const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
+        await mSession.connect(credential);
+      }
+    }
     connect();
-  }, [ me ]);
+  }, [ me, mSession ]);
 
   React.useEffect(() => {
     if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session ]);
+  }, [ mSession.streams, mSession.session, mSubscriber ]);
 
   if(me && !mSession.session) return <FullPageLoading />
   else if(me && mSession.session) return (
@@ -58,7 +56,7 @@ function EmployeePage(){
           <LayoutContainer id="moderatorContainer" size="big" />
         </div>
         <div className={mStyles.chatContainer}>
-          <ChatList/>
+          <Chat withInput={false} />
         </div>
       </div>
     </div>

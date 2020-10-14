@@ -11,8 +11,6 @@ type Props = {
 function LiveBadge({ style, className }:Props){
   const [ isVisible, setIsVisible ] = React.useState(true);
   
-  const toggleVisible = () => setIsVisible((isVisible) => !isVisible);
-
   const Circle = posed.span({
     hidden: { opacity: 0 },
     visible: { opacity: 1 }

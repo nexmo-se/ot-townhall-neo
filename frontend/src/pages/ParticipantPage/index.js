@@ -1,7 +1,5 @@
 // @flow
 import React from "react";
-import config from "config";
-import clsx from "clsx";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
 
@@ -23,7 +21,7 @@ import VideoHoverContainer from "components/VideoHoverContainer";
 import RaiseHandButton from "components/RaiseHandButton";
 import LayoutContainer from "components/LayoutContainer";
 
-function EmployeePage(){
+function ParticipantPage(){
   const [ me, setMe ] = React.useState<User|void>();
   const mSession = useSession();
   const mStyles = useStyles();
@@ -129,4 +127,4 @@ function EmployeePage(){
     </div>
   )
 }
-export default EmployeePage;
+export default ParticipantPage;

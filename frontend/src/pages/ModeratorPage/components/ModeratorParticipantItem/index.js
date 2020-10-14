@@ -11,12 +11,12 @@ import RecordButton from "components/RecordButton";
 import ShareScreenButton from "components/ShareScreenButton";
 import VODButton from "components/VODButton";
 
-type ModeratorParticipantItemProps = {
+interface IModeratorParticipantItem {
   user: User,
   publisher: Publisher
 }
 
-function ModeratorParticipantItem({ user, publisher }: ModeratorParticipantItemProps){
+function ModeratorParticipantItem({ user, publisher }: IModeratorParticipantItem){
   const mScreenPublisher = usePublisher("cameraContainer");
   const mSession = useSession();
 

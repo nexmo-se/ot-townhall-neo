@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import clsx from "clsx";
 import type { Node } from "react";
 
 import useStyles from "./styles";
@@ -11,13 +10,13 @@ import HangupButton from "components/HangupButton";
 import MuteButton from "components/MuteButton";
 import VideoButton from "components/VideoButton";
 
-type Props = {
-  sizeMultiplier?:number,
-  publisher:Publisher|void,
-  children?:Node
+interface IVideoControl {
+  sizeMultiplier?: number;
+  publisher?: Publisher;
+  children?: Node
 }
 
-function VideoControl({ sizeMultiplier=1, publisher, children }:Props){
+function VideoControl({ sizeMultiplier=1, publisher, children }: IVideoControl){
   const [ hasAudio, setHasAudio ] = React.useState(true);
   const [ hasVideo, setHasVideo ] = React.useState(true);
   const mSession = useSession();

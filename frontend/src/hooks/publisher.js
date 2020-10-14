@@ -1,9 +1,9 @@
 // @flow
 import React from "react";
 import LayoutManager from "utils/layout-manager";
-import OT, { Publisher, Stream } from "@opentok/client";
 import User from "entities/user";
 import useSession from "hooks/session";
+import { Publisher, Stream } from "@opentok/client";
 
 type ReturnValue = {
   publish:Function,
@@ -17,9 +17,8 @@ function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?
   const [ publisher, setPublisher ] = React.useState<Publisher>();
   const [ user, setUser ] = React.useState<User | void>();
   const [ stream, setStream ] = React.useState<Stream>();
-  const [ layoutManager, setLayoutManager ] = React.useState<LayoutManager>(new LayoutManager(containerId));
+  const [ layoutManager ] = React.useState<LayoutManager>(new LayoutManager(containerId));
   const [ onAccessDenied, setOnAccessDenied ] = React.useState<Function|void>();
-  const [ nameDisplayMode, setNameDisplayMode ] = React.useState<boolean>(displayName);
   const mSession = useSession();
 
   function handleDestroyed(){

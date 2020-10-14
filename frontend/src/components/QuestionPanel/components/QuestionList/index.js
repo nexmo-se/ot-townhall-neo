@@ -7,8 +7,7 @@ import User from "entities/user";
 
 import useStyles from "./styles";
 import useSession from "hooks/session";
-
-import QuestionItem from "components/QuestionItem";
+import QuestionItem from "../QuestionItem";
 
 function QuestionList(){
   const [ questions, setQuestions ] = React.useState<Array<Question>>([]);

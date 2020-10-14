@@ -15,8 +15,8 @@ type Props = {
 function useSubscriber({ moderator, screen, camera, custom }:Props){
   const [ subscribed, setSubscribed ] = React.useState<Array<Stream>>([]);
   const [ subscribers, setSubscribers ] = React.useState<Array<Subscriber>>([]);
-  const [ cameraLayout, setCameraLayout ] = React.useState<LayoutManager>(new LayoutManager(camera));
-  const [ screenLayout, setScreenLayout ] = React.useState<LayoutManager>(new LayoutManager(screen));
+  const [ cameraLayout ] = React.useState<LayoutManager>(new LayoutManager(camera));
+  const [ screenLayout ] = React.useState<LayoutManager>(new LayoutManager(screen));
   const mSession = useSession();
 
   function getContainerId(user:User, videoType:string){

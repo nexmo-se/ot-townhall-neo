@@ -6,7 +6,7 @@ import User from "entities/user";
 import useStyles from "./styles";
 import useSession from "hooks/session";
 
-import ParticipantItem from "components/ParticipantItem";
+import ParticipantItem from "./components/ParticipantItem";
 
 type Props = { className?: any }
 

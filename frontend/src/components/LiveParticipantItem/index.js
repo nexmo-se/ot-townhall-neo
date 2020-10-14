@@ -13,7 +13,6 @@ import Hangup from "./Hangup";
 import Avatar from "components/Avatar";
 import VideoButton from "components/VideoButton";
 import MuteButton from "components/MuteButton";
-import HangupButton from "components/HangupButton";
 
 type Props = {
   user:User,
