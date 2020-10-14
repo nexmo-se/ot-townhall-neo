@@ -1,0 +1,17 @@
+// @flow
+import OpenTok from "opentok";
+import config from "config/opentok";
+
+class OT{
+  static instance: any;
+  
+  static init(){
+    OT.instance = new OpenTok(config.apiKey, config.apiSecret);
+  }
+  
+  static getInstance(){
+    if(!OT.instance) OT.init();
+    return OT.instance;
+  }
+}
+export default OT;

@@ -1,0 +1,15 @@
+// @flow
+class Participant{
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyName: string;
+
+  constructor(args: any){
+    this.firstName = args.firstName;
+    this.lastName = args.lastName;
+    this.email = args.email;
+    this.companyName = args.companyName;
+  }
+}
+export default Participant;
