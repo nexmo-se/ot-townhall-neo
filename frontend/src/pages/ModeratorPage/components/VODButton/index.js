@@ -61,7 +61,7 @@ function VODButton({ size, fontSize, ...props }: VODButtonProps){
 
     if(videoRef) publish();
     else if(!videoRef && mPublisher.publisher) unpublish();
-  }, [ videoRef ]);
+  }, [ videoRef, mPublisher ]);
 
   React.useEffect(() => {
     if(inputRef) inputRef.value = "";

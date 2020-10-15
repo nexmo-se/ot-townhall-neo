@@ -37,25 +37,25 @@ function ModeratorPage(){
     setMe(user);
   }
 
-  async function connect(){
-    if(me){
-      const credential = await CredentialAPI.generateCredential("moderator", me.toJSON())
-      await mSession.connect(credential);
-      mMe.setMe(me);
-    }
-  }
-
   React.useEffect(() => {
+    async function connect(){
+      if(me){
+        const credential = await CredentialAPI.generateCredential("moderator", me.toJSON())
+        await mSession.connect(credential);
+        mMe.setMe(me);
+      }
+    }
+    
     if(me) connect();
-  }, [ me ]);
+  }, [ me, mMe, mSession ]);
 
   React.useEffect(() => {
     if(mSession.session) mPublisher.publish(me);
-  }, [ mSession.session ])
+  }, [ mSession.session, mPublisher, me ])
 
   React.useEffect(() => {
     if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session ]);
+  }, [ mSession.streams, mSession.session, mSubscriber ]);
 
   if(!me && !mSession.session) {
     return (

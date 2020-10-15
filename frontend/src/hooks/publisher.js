@@ -5,7 +5,7 @@ import User from "entities/user";
 import useSession from "hooks/session";
 import { Publisher, Stream } from "@opentok/client";
 
-type ReturnValue = {
+interface IReturnValue {
   publish:Function,
   unpublish:Function,
   publisher:Publisher,
@@ -13,7 +13,7 @@ type ReturnValue = {
   layoutManager:LayoutManager
 }
 
-function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?:boolean=true):ReturnValue{
+function usePublisher(containerId: string, autoLayout?: boolean = true, displayName?: boolean = true): IReturnValue{
   const [ publisher, setPublisher ] = React.useState<Publisher>();
   const [ user, setUser ] = React.useState<User | void>();
   const [ stream, setStream ] = React.useState<Stream>();
@@ -87,7 +87,7 @@ function usePublisher(containerId:string, autoLayout?:boolean=true, displayName?
     }catch(err){
       console.log(err.stack);
     }
-  }, [ publisher, stream ])
+  }, [ publisher, stream, autoLayout, layoutManager, user ])
 
   return { 
     unpublish, 

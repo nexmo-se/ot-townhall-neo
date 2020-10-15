@@ -6,10 +6,10 @@ import { Publisher } from "@opentok/client";
 import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 
+import VODButton from "../VODButton";
+import RecordButton from "../RecordButton";
 import LiveParticipantItem from "components/LiveParticipantItem";
-import RecordButton from "components/RecordButton";
 import ShareScreenButton from "components/ShareScreenButton";
-import VODButton from "components/VODButton";
 
 interface IModeratorParticipantItem {
   user: User,

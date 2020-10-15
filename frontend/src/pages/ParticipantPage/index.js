@@ -38,30 +38,21 @@ function ParticipantPage(){
     setMe(user);
   }
 
-  async function connect(){
-    if(me){
-      const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
-      await mSession.connect(credential);
-      mMe.setMe(me);
-    }
-  }
-
-  function handleAccessDenied(){
-    if(me){
-      mSession.session.signal({
-        type: "force-publish-failed",
-        data: JSON.stringify(me.toJSON())
-      })
-    }
-  }
-
   React.useEffect(() => {
+    async function connect(){
+      if(me){
+        const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
+        await mSession.connect(credential);
+        mMe.setMe(me);
+      }
+    }
+
     connect();
-  }, [ me ]);
+  }, [ me, mMe, mSession ]);
 
   React.useEffect(() => {
     if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session ]);
+  }, [ mSession.streams, mSession.session, mSubscriber ]);
 
   React.useEffect(() => {
     if(mMessage.forceVideo){
@@ -69,7 +60,7 @@ function ParticipantPage(){
         mPublisher.publisher.publishVideo(mMessage.forceVideo.hasVideo)
       } 
     }
-  }, [ mMessage.forceVideo ]);
+  }, [ mMessage.forceVideo, mPublisher.publisher, mSession.session ]);
 
   React.useEffect(() => {
     if(mMessage.forceAudio){
@@ -77,9 +68,18 @@ function ParticipantPage(){
         mPublisher.publisher.publishAudio(mMessage.forceAudio.hasAudio)
       } 
     }
-  }, [ mMessage.forceAudio ]);
+  }, [ mMessage.forceAudio, mPublisher.publisher, mSession.session ]);
 
   React.useEffect(() => {
+    function handleAccessDenied(){
+      if(me){
+        mSession.session.signal({
+          type: "force-publish-failed",
+          data: JSON.stringify(me.toJSON())
+        })
+      }
+    }
+
     if(mSession.session && mMessage.forcePublish){
       const { connection:localConnection } = mSession.session;
       const { user } = mMessage.forcePublish;
@@ -87,7 +87,7 @@ function ParticipantPage(){
         mPublisher.publish("cameraContainer", user, handleAccessDenied);
       }
     }
-  }, [ mSession.session, mMessage.forcePublish ]);
+  }, [ mSession.session, mMessage.forcePublish, mPublisher, me ]);
 
   React.useEffect(() => {
     if(mMessage.forceUnpublish){
@@ -96,7 +96,7 @@ function ParticipantPage(){
         mPublisher.unpublish()
       }
     }
-  }, [ mMessage.forceUnpublish ]);
+  }, [ mMessage.forceUnpublish, mPublisher.publisher, mSession.session, mPublisher ]);
 
   if(!me && !mSession.session) {
     return (

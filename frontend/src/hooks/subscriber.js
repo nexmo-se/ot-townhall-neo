@@ -5,14 +5,14 @@ import LayoutManager from "utils/layout-manager";
 import useSession from "hooks/session";
 import { Stream, Subscriber } from "@opentok/client";
 
-type Props = {
-  moderator:string,
-  camera:string,
-  screen:string,
-  custom?:string
+type ISubscriber = {
+  moderator: string,
+  camera: string,
+  screen: string,
+  custom?: string
 }
 
-function useSubscriber({ moderator, screen, camera, custom }:Props){
+function useSubscriber({ moderator, screen, camera, custom }: ISubscriber){
   const [ subscribed, setSubscribed ] = React.useState<Array<Stream>>([]);
   const [ subscribers, setSubscribers ] = React.useState<Array<Subscriber>>([]);
   const [ cameraLayout ] = React.useState<LayoutManager>(new LayoutManager(camera));
@@ -83,7 +83,7 @@ function useSubscriber({ moderator, screen, camera, custom }:Props){
     }catch(err){
       console.log(err.stack);
     }
-  }, [ subscribers ]);
+  }, [ subscribers, cameraLayout, screenLayout ]);
 
   return { subscribe, subscribers }
 }

@@ -59,8 +59,14 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
       })
     }
   }
+
+  const retrieveStreamManager = React.useCallback(() => {
+    if(publisher) return publisher;
+    else if(subscriber) return subscriber;
+    else return undefined;
+  }, [ publisher, subscriber ]);
   
-  function handleStreamPropertyChanged({ stream: targetStream, newValue, changedProperty }){
+  const handleStreamPropertyChanged = React.useCallback(({ stream: targetStream, newValue, changedProperty }) => {
     const streamManager = retrieveStreamManager();
     console.log("[Townhall][LiveParticipantItem][handleStreamPropertyChanged] Stream Manager", streamManager);
     
@@ -80,13 +86,7 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
         }
       }
     }
-  }
-  
-  function retrieveStreamManager(){
-    if(publisher) return publisher;
-    else if(subscriber) return subscriber;
-    else return undefined;
-  }
+  }, [ retrieveStreamManager ])
   
   React.useEffect(() => {
     const { session } = mSession;
@@ -94,7 +94,7 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
     return function cleanup(){
       if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
     }
-  }, [ mSession.session, publisher, subscriber ])
+  }, [ mSession.session, publisher, subscriber, handleStreamPropertyChanged, mSession ])
 
   React.useEffect(() => {
     const streamManager = retrieveStreamManager();
@@ -104,7 +104,7 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
       setHasAudio(hasAudio);
       setHasVideo(hasVideo);
     }
-  }, [ publisher, subscriber ])
+  }, [ publisher, subscriber, retrieveStreamManager ])
 
   return (
     <div 

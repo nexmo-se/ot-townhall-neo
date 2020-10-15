@@ -34,7 +34,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children }: IVideoControl){
     mSession.unpublish(publisher);
   }
   
-  function handleStreamPropertyChanged({ stream: changedStream, newValue, changedProperty }){
+  const handleStreamPropertyChanged = React.useCallback(({ stream: changedStream, newValue, changedProperty }) => {
     if(publisher){
       const { connection: targetConnection } = changedStream;
       const { connection: myConnection } = mSession.session;
@@ -48,7 +48,7 @@ function VideoControl({ sizeMultiplier=1, publisher, children }: IVideoControl){
         }
       }
     }
-  }
+  }, [ publisher, mSession.session ])
   
   React.useEffect(() => {
     const { session } = mSession;
@@ -57,15 +57,15 @@ function VideoControl({ sizeMultiplier=1, publisher, children }: IVideoControl){
     return function cleanup(){
       if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
     }
-  }, [ mSession.session, publisher ])
+  }, [ mSession.session, publisher, handleStreamPropertyChanged, mSession ])
 
   React.useEffect(() => {
     if(publisher) publisher.publishAudio(hasAudio);
-  }, [ hasAudio ])
+  }, [ hasAudio, publisher ])
 
   React.useEffect(() => {
     if(publisher) publisher.publishVideo(hasVideo);
-  }, [ hasVideo ]);
+  }, [ hasVideo, publisher ]);
 
   if(!publisher) return null;
   return(

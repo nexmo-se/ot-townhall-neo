@@ -41,12 +41,12 @@ function PresenterPage(){
     setUser(user);
   }
 
-  async function connect(){
+  const connect = React.useCallback(async () => {
     if(user){
       const credential = await CredentialAPI.generateCredential("publisher", user.toJSON());
       await mSession.connect(credential);
     }
-  }
+  }, [ mSession, user ])
 
   async function handleShareScreenClick(){
     if(mSession.session && !mScreenPublisher.stream){
@@ -62,15 +62,15 @@ function PresenterPage(){
       connect()
       mMe.setMe(user);
     }
-  }, [ user ]);
+  }, [ user, connect, mMe ]);
 
   React.useEffect(() => {
     if(mSession.session) mPublisher.publish(user);
-  }, [ mSession.session ]);
+  }, [ mSession.session, mPublisher, user ]);
 
   React.useEffect(() => {
     if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session ]);
+  }, [ mSession.streams, mSession.session, mSubscriber ]);
 
   React.useEffect(() => {
     if(mMessage.forceVideo){
@@ -78,7 +78,7 @@ function PresenterPage(){
         mPublisher.publisher.publishVideo(mMessage.forceVideo.hasVideo)
       } 
     }
-  }, [ mMessage.forceVideo ]);
+  }, [ mMessage.forceVideo, mSession.session, mPublisher.publisher ]);
 
   React.useEffect(() => {
     if(mMessage.forceAudio){
@@ -86,7 +86,7 @@ function PresenterPage(){
         mPublisher.publisher.publishAudio(mMessage.forceAudio.hasAudio)
       } 
     }
-  }, [ mMessage.forceAudio ]);
+  }, [ mMessage.forceAudio, mSession.session, mPublisher.publisher ]);
 
   React.useEffect(() => {
     if(mMessage.forceUnpublish){
@@ -94,7 +94,7 @@ function PresenterPage(){
         mPublisher.unpublish();
       }
     }
-  }, [ mMessage.forceUnpublish ])
+  }, [ mMessage.forceUnpublish, mSession.session, mPublisher ])
 
   React.useEffect(() => {
     if(mSession.session && mMessage.forcePublish){
@@ -104,7 +104,7 @@ function PresenterPage(){
         mPublisher.publish(user);
       }
     }
-  }, [ mSession.session, mMessage.forcePublish ]);
+  }, [ mSession.session, mMessage.forcePublish, mPublisher ]);
 
   if(!user && !mSession.session){
     return (
