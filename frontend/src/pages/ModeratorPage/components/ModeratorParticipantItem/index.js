@@ -18,34 +18,39 @@ interface IModeratorParticipantItem {
 
 function ModeratorParticipantItem({ user, publisher }: IModeratorParticipantItem){
   const [ sharing, setSharing ] = React.useState<boolean>(false);
-  const mScreenPublisher = usePublisher({ containerID: "cameraContainer" });
-  const mSession = useSession();
+  const { publisher: screenPublisher, publish, unpublish } = usePublisher({ containerID: "cameraContainer" });
+  const { session } = useSession();
 
   async function handleShareScreenClick(){
-    if(mSession.session && !mScreenPublisher.publisher){
+    if(session && !sharing){
       const screenUser = new User({ name: "sharescreen", role: "sharescreen" });
-      await mScreenPublisher.publish({ 
-        session: mSession.session, 
+      await publish({ 
+        session: session, 
         user: screenUser,
         extraData: { videoSource: "screen" }
       });
-    }else if(mSession.session && mScreenPublisher.publisher){
-      mScreenPublisher.unpublish({ session: mSession.session });
+      setSharing(true);
+    }else if(session && sharing){
+      await unpublish({ session: session });
+      setSharing(false);
     }
   }
 
   const streamCreatedListener = React.useCallback(() => setSharing(true), []);
-  const streamDestroyedListener = React.useCallback(() => setSharing(false), []);
+  const streamDestroyedListener = React.useCallback(async () => {
+    await unpublish({ session: session });
+    setSharing(false)
+  }, [ session, unpublish ]);
 
   React.useEffect(() => {
-    if(mScreenPublisher.publisher) mScreenPublisher.publisher.on("streamCreated", streamCreatedListener);
-    if(mScreenPublisher.publisher) mScreenPublisher.publisher.on("streamDestroyed", streamDestroyedListener);
+    if(screenPublisher) screenPublisher.on("streamCreated", streamCreatedListener);
+    if(screenPublisher) screenPublisher.on("streamDestroyed", streamDestroyedListener);
 
     return function cleanup(){
-      if(mScreenPublisher.publisher) mScreenPublisher.publisher.off("streamCreated", streamCreatedListener);
-      if(mScreenPublisher.publisher) mScreenPublisher.publisher.off("streamDestroyed", streamDestroyedListener);
+      if(screenPublisher) screenPublisher.off("streamCreated", streamCreatedListener);
+      if(screenPublisher) screenPublisher.off("streamDestroyed", streamDestroyedListener);
     }
-  }, [ mScreenPublisher.publisher, streamCreatedListener, streamDestroyedListener ])
+  }, [ screenPublisher, streamCreatedListener, streamDestroyedListener ])
 
   return (
     <LiveParticipantItem 

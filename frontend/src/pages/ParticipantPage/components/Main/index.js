@@ -2,6 +2,7 @@
 import React from "react";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
+import { v4 as uuid } from "uuid";
 
 import useStyles from "./styles";
 import useMe from "hooks/me";
@@ -22,6 +23,9 @@ import VonageLogo from "components/VonageLogo";
 
 interface IParam { tenant: string }
 function Main(){
+  // eslint-disable-next-line
+  const [ refreshToken, setRefreshToken ] = React.useState<string>(uuid());
+  
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
@@ -30,17 +34,18 @@ function Main(){
   const mStyles = useStyles();
 
   const forcePublishListener = React.useCallback(({ data }) => {
-    if(intendedForMe({ data }) && !cameraPublisher){
+    if(intendedForMe({ data })){
       const user = User.fromJSON(JSON.parse(data));
       publishCamera({ session, user });
     }
-  }, [ cameraPublisher, publishCamera, intendedForMe, session ]);
+  }, [ publishCamera, intendedForMe, session ]);
 
-  const forceUnpublishListener = React.useCallback(({ data }) => {
-    if(intendedForMe({ data }) && cameraPublisher){
-      unpublish({ session });
+  const forceUnpublishListener = React.useCallback(async ({ data }) => {
+    if(intendedForMe({ data })){
+      await unpublish({ session });
+      setRefreshToken(uuid())
     }
-  }, [ session, cameraPublisher, unpublish, intendedForMe ])
+  }, [ session, unpublish, intendedForMe ])
 
   React.useEffect(() => {
     async function connect(){
