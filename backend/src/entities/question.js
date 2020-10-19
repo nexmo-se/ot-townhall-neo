@@ -1,13 +1,16 @@
 // @flow
-import moment from "moment";
 import User from "entities/user";
+import moment from "moment";
+import { v4 as uuid } from "uuid";
 
+export type TStatus = "answered" | "open" | "selected";
 interface QuestionProps{
-  id?: string,
-  owner: User,
-  content: string,
-  voters?: Array<User>,
-  vote?: number
+  id?: string;
+  owner: User;
+  content: string;
+  voters?: Array<User>;
+  vote?: number;
+  status?: TStatus
 }
 
 class Question implements QuestionProps{
@@ -16,13 +19,15 @@ class Question implements QuestionProps{
   content: string;
   voters: Array<User>;
   vote: number;
+  status: TStatus;
   
-  constructor(args:any){
+  constructor(args: QuestionProps){
     this.owner = args.owner;
     this.content = args.content;
     this.voters = args?.voters || [];
     this.vote = args?.vote || 0;
-    this.id = args?.id;
+    this.id = args?.id ?? uuid();
+    this.status = args?.status ?? "open"
   }
   
   toDatabase(){
@@ -34,6 +39,7 @@ class Question implements QuestionProps{
       },
       content: this.content,
       created_at: new moment().unix(),
+      status: this.status,
       vote: 0
     }
     return JSON.parse(JSON.stringify(jsonData))

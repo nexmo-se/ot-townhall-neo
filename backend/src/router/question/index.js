@@ -9,5 +9,6 @@ import Validator from "./validation";
 const router = express.Router();
 router.post("/", validate(Validator.create), ash(QuestionListener.create));
 router.post("/:question_id/vote", validate(Validator.vote), ash(QuestionListener.vote));
+router.post("/:question_id/mark_as", ash(QuestionListener.markAs));
 
 export default router;
