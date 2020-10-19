@@ -1,27 +1,32 @@
 // @flow
 import React from "react";
+import FetchHelper from "helper/fetch";
 import StreamHelper from "utils/stream-helper";
 import User from "entities/user";
 
 import useStyles from "./styles";
 import usePublisher from "hooks/publisher";
+import useSession from "hooks/session";
+import useMe from "hooks/me";
 
 import TheatersIcon from '@material-ui/icons/Theaters';
 import ControlButton from "components/ControlButton";
 
-type VODButtonProps = {
+interface IVODButton {
   size?: number,
   fontSize?: number,
   style?: any
 }
 
-function VODButton({ size, fontSize, ...props }: VODButtonProps){
+function VODButton({ size, fontSize, ...props }: IVODButton){
   const [ isPublishing, setIsPublishing ] = React.useState<boolean>(false);
   const [ inputRef, setInputRef ] = React.useState<any>();
-  const [ videoRef, setVideoRef ] = React.useState<any>();
   const [ videoSource, setVideoSource ] = React.useState<string | void>();
   const mStyles = useStyles();
-  const mPublisher = usePublisher("cameraContainer");
+  const mMe = useMe();
+  const mPublisher = usePublisher({ containerID: "cameraContainer", name: `${mMe.me?.name ?? ""}'s Video` });
+  const mSession = useSession();
+  const videoRef = React.useRef();
 
   function handleClick(){
     if(!isPublishing){
@@ -37,31 +42,35 @@ function VODButton({ size, fontSize, ...props }: VODButtonProps){
 
   React.useEffect(() => {
     async function publish(){
-      await videoRef.play();
-      
-      const videoStream = StreamHelper.getStream(videoRef);
+      await videoRef.current?.play();
+
+      const videoStream = StreamHelper.getStream(videoRef.current);
       if(videoStream){
+        setIsPublishing(true);
         const [ videoTrack ] = videoStream.getVideoTracks();
         const [ audioTrack ] = videoStream.getAudioTracks();
 
-        const user = new User("vod", "vod");
-        await mPublisher.publish(user, {
-          fitMode: "contain",
-          videoSource: videoTrack,
-          audioSource: audioTrack? audioTrack: false
-        });
-        setIsPublishing(true);
+        const user = new User({ name: "vod", role: "vod" });
+        FetchHelper.fetch(mPublisher.publish, undefined, {
+          user,
+          session: mSession.session,
+          extraData: {
+            fitMode: "contain",
+            videoSource: videoTrack,
+            audioSource: audioTrack? audioTrack: false
+          }
+        })
       }
     }
 
     async function unpublish(){
-      await mPublisher.unpublish();
       setIsPublishing(false);
+      FetchHelper.fetch(mPublisher.unpublish, undefined, { session: mSession.session });
     }
 
-    if(videoRef) publish();
-    else if(!videoRef && mPublisher.publisher) unpublish();
-  }, [ videoRef, mPublisher ]);
+    if(videoSource && !isPublishing && mSession.session) publish();
+    else if(!videoSource && isPublishing && mSession.session) unpublish();
+  }, [ videoSource, isPublishing, mPublisher.publish, mPublisher.unpublish, mSession.session ]);
 
   React.useEffect(() => {
     if(inputRef) inputRef.value = "";
@@ -77,13 +86,11 @@ function VODButton({ size, fontSize, ...props }: VODButtonProps){
         accept="video/mp4,video/x-m4v,video/*"
         className={mStyles.invisible}
       />
-      {!!videoSource && (
-        <video 
-          ref={setVideoRef}
-          className={mStyles.invisible}
-          src={videoSource}
-        />
-      )}
+      <video 
+        ref={videoRef}
+        className={mStyles.invisible}
+        src={videoSource}
+      />
       <ControlButton
         { ...props }
         size={size}

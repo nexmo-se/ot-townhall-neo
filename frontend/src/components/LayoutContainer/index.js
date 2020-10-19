@@ -1,7 +1,10 @@
 // @flow
 import React from "react";
+import LayoutManager from "utils/layout-manager";
 import clsx from "clsx";
+
 import useStyles from "./styles";
+import useSession from "hooks/session";
 
 interface ILayoutContainer { 
   id: string; 
@@ -12,20 +15,41 @@ interface ILayoutContainer {
 
 function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
   const [ isBig, setIsBig ] = React.useState<boolean>(true);
+  const { streams, session } = useSession();
   const mStyles = useStyles();
+  const containerRef = React.useRef();
+  const layoutRef = React.useRef<any>();
 
   React.useEffect(() => {
     setIsBig(size === "big");
   }, [ size ]);
 
+  React.useEffect(() => {
+    layoutRef.current = new LayoutManager(id);
+    const observer = new MutationObserver((mutationList => {
+      for(const mutation of mutationList){
+        if(mutation.type === "childList") layoutRef.current.layout(session, streams);
+      }
+    }));
+    if(containerRef.current) observer.observe(containerRef.current, { childList: true });
+  }, [ id, session, streams ]);
+
+  React.useEffect(() => {
+    if(layoutRef.current) layoutRef.current.layout(session, streams)
+  }, [ session, streams ])
+
   return (
-    <div id={id} className={clsx(
-      mStyles.container,
-      mStyles.black,
-      (isBig)? mStyles.big: {},
-      (hidden)? mStyles.hidden: {},
-      (screen)? mStyles.screen: {}
-    )}/>
+    <div 
+      id={id} 
+      ref={containerRef}
+      className={clsx({
+        [mStyles.container]: true,
+        [mStyles.black]: true,
+        [mStyles.big]: isBig,
+        [mStyles.hidden]: hidden,
+        [mStyles.screen]: screen
+      })}
+    />
   );
 }
 export default LayoutContainer;

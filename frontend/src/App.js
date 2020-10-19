@@ -1,31 +1,27 @@
 // @flow
 import React from 'react';
 
-import SessionProvider from 'contexts/session';
 import MeProvider from "contexts/me";
-import MessageProvider from 'contexts/message';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import PresenterPage from "pages/PresenterPage";
 import ParticipantPage from "pages/ParticipantPage";
 import ModeratorPage from "pages/ModeratorPage";
 import GhostRiderPage from "pages/GhostRiderPage";
+import LoginPage from "pages/LoginPage";
 
 function App() {
   return (
     <BrowserRouter>
-      <SessionProvider>
-        <MessageProvider>
-          <MeProvider>
-            <Switch>
-              <Route path="/presenter" component={PresenterPage} />
-              <Route path="/participant" component={ParticipantPage} />
-              <Route path="/moderator" component={ModeratorPage} />
-              <Route path="/ghostrider" component={GhostRiderPage} />
-            </Switch>
-          </MeProvider>
-        </MessageProvider>
-      </SessionProvider>
+      <MeProvider>
+        <Switch>
+          <Route exact path="/:tenant/presenter" component={PresenterPage} />
+          <Route exact path="/:tenant/participant" component={ParticipantPage} />
+          <Route exact path="/:tenant/moderator" component={ModeratorPage} />
+          <Route exact path="/:tenant/ghostrider" component={GhostRiderPage} />
+          <Route exact path="/:tenant/:role/login" component={LoginPage} />
+        </Switch>
+      </MeProvider>
     </BrowserRouter>
   );
 }

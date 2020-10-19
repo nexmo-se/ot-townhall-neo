@@ -12,7 +12,7 @@ type ChatBubbleProps = {
 }
 
 function ChatBubble({ name, message }:ChatBubbleProps){
-  const [ user ] = React.useState<User>(new User(name, "unknown"));
+  const [ user ] = React.useState<User>(new User({ name, role: "unknown" }));
   const mStyles = useStyles();
 
   return (
@@ -27,9 +27,9 @@ function ChatBubble({ name, message }:ChatBubbleProps){
     >
       <div className="Vlt-card__content" style={{ display: "flex", flexDirection: "row" }}>
         <Avatar user={user} size={50} className={mStyles.avatar} />
-        <div style={mStyles.chat}>
+        <div className={mStyles.chat}>
           <p><b>{name}</b></p>
-          <p style={mStyles.message}>{message}</p>
+          <p className={mStyles.message}>{message}</p>
         </div>
       </div>
     </div>

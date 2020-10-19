@@ -5,6 +5,7 @@ import User from "entities/user";
 import display from "config/display";
 import useStyles from "./styles";
 
+import PollingPanel from "./components/PollingPanel";
 import TabItem from "components/TabItem";
 import TabHeader from "components/TabHeader";
 import TabContent from "components/TabContent";
@@ -17,7 +18,7 @@ import QuestionPanel from "components/QuestionPanel";
 type Props = { user: User }
 
 function MainTab({ user }:Props){
-  const [ activeTab, setActiveTab ] = React.useState<string>("chats")
+  const [ activeTab, setActiveTab ] = React.useState<string>("polling")
   const mStyles = useStyles();
   
   function handleParticipantsClick(){
@@ -30,6 +31,10 @@ function MainTab({ user }:Props){
   
   function handleQuestionsClick(){
     setActiveTab("questions");
+  }
+
+  function handlePollingClick(){
+    setActiveTab("polling");
   }
   
   return (
@@ -59,7 +64,14 @@ function MainTab({ user }:Props){
             Questions
           </TabItem>
         )}
-        
+        {display.pollingTab && (
+          <TabItem
+            onClick={handlePollingClick}
+            isActive={activeTab === "polling"}
+          >
+            Polling
+          </TabItem>
+        )}
       </TabHeader>
       <TabContent>
         {display.chatTab && (
@@ -78,6 +90,11 @@ function MainTab({ user }:Props){
               You can put your question here. Anyone can vote to increase visibility as well.
             </p>
             <QuestionPanel />
+          </TabPanel>
+        )}
+        {display.pollingTab && (
+          <TabPanel isActive={activeTab === "polling"}>
+            <PollingPanel />
           </TabPanel>
         )}
       </TabContent>

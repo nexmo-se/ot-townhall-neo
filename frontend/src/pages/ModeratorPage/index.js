@@ -1,118 +1,37 @@
 // @flow
 import React from "react";
-import config from "config";
-import clsx from "clsx";
-import User from "entities/user";
-import CredentialAPI from "api/credential";
 
-import useStyles from "./styles";
-import useSession from "hooks/session";
-import useSubscriber from "hooks/subscriber";
-import usePublisher from "hooks/publisher";
 import useMe from "hooks/me";
+import { useHistory, useParams } from "react-router-dom";
 
-import ModeratorParticipantItem from "./components/ModeratorParticipantItem";
-import LiveBadge from "components/LiveBadge";
-import AskNameDialog from "components/AskNameDialog";
-import FullPageLoading from "components/FullPageLoading";
-import RaisedHandList from "components/RaisedHandList";
-import ParticipantList from "components/ParticipantList";
-import LiveParticipantList from "components/LiveParticipantList";
-import LayoutContainer from "components/LayoutContainer";
-import ModeratorMessageTab from "components/ModeratorMessageTab";
+import SessionProvider from "contexts/session";
+import MessageProvider from "contexts/message";
+import PollingProvider from "contexts/polling";
+import Main from "./components/Main";
 
+interface IParam { tenant: string };
 function ModeratorPage(){
-  const [ me, setMe ] = React.useState<User|void>();
-  const mStyles = useStyles();
-  const mSession = useSession();
-  const mMe = useMe();
-  const mPublisher = usePublisher("cameraContainer", true, false);
-  const mSubscriber = useSubscriber({ 
-    moderator: "cameraContainer", 
-    camera: "cameraContainer", 
-    screen: "cameraContainer" 
-  });
-
-  function handleNameSubmit(user:User){
-    setMe(user);
-  }
+  const { loggedIn } = useMe();
+  const { push } = useHistory();
+  const { tenant } = useParams<IParam>();
 
   React.useEffect(() => {
-    async function connect(){
-      if(me){
-        const credential = await CredentialAPI.generateCredential("moderator", me.toJSON())
-        await mSession.connect(credential);
-        mMe.setMe(me);
-      }
-    }
-    
-    if(me) connect();
-  }, [ me, mMe, mSession ]);
+    if(!loggedIn) push(`/${tenant}/moderator/login`);
+  }, [ loggedIn, push, tenant ]);
 
-  React.useEffect(() => {
-    if(mSession.session) mPublisher.publish(me);
-  }, [ mSession.session, mPublisher, me ])
-
-  React.useEffect(() => {
-    if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session, mSubscriber ]);
-
-  if(!me && !mSession.session) {
-    return (
-      <AskNameDialog 
-        pin={config.moderatorPin}
-        role="moderator"
-        onSubmit={handleNameSubmit}
-      />
-    )
-  }
-  else if(me && !mSession.session) return <FullPageLoading />
-  else if(me && mSession.session) return (
-    <div className={mStyles.container}>
-      <div className={mStyles.leftPanel}>
-        <div className={mStyles.chat} style={{ 
-            borderBottom: "1px solid #e7ebee",
-            flexBasis: "30%"
-          }}
-        >
-          <h4 className="Vlt-center">RAISING HAND</h4>
-          <RaisedHandList />
-        </div>
-        <div className={mStyles.chat} style={{ 
-            flexBasis: "70%",
-            paddingLeft: 32, 
-            paddingRight: 32, 
-            paddingTop: 32 
-          }}
-        >
-          <ModeratorMessageTab />
-        </div>
-      </div>
-      <div className={mStyles.centerPanel}>
-        <div className={mStyles.chat} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
-          <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
-          <LiveParticipantList subscribers={mSubscriber.subscribers}>
-            {!!mPublisher.publisher && (
-              <ModeratorParticipantItem 
-                user={me}
-                publisher={mPublisher.publisher}
-              />
-            )}
-          </LiveParticipantList>
-        </div>
-        <div className={mStyles.chat} style={{ flexBasis: "50%", paddingTop: 32 }}>
-          <h4 className="Vlt-center">PARTICIPANTS ({mSession.connections.length})</h4>
-          <ParticipantList />
-        </div>
-      </div>
-      <div className={clsx(
-        mStyles.rightPanel,
-        mStyles.black
-      )}>
-        <LayoutContainer id="cameraContainer" size="big" />
-        <LiveBadge className={mStyles.liveBadge} />
-      </div>
-    </div>
+  return (
+    <SessionProvider subscriberContainer={{
+      camera: "cameraContainer",
+      moderator: "cameraContainer",
+      screen: "cameraContainer",
+      custom: "cameraContainer"
+    }}>
+      <MessageProvider>
+        <PollingProvider>
+          <Main />
+        </PollingProvider>
+      </MessageProvider>
+    </SessionProvider>
   )
 }
 export default ModeratorPage;

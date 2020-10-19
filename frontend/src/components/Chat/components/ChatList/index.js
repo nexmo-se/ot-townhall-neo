@@ -2,7 +2,6 @@
 import React from "react"
 import useStyles from "./styles";
 import useMessage from "hooks/message";
-
 import ChatBubble from "../ChatBubble";
 
 type IChatList = { autoScroll?: boolean }
@@ -16,7 +15,7 @@ function ChatList({ autoScroll = true }: IChatList){
   }, [ autoScroll, mMessage.messages ]);
 
   return(
-    <div ref={list} style={mStyles.container}>
+    <div ref={list} className={mStyles.container}>
       {mMessage.messages.map((message) => {
         if(message.isApproved){
           return (

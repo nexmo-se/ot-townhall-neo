@@ -1,103 +1,146 @@
 // @flow
 import React from "react";
-import { v4 as uuid } from "uuid"
-import type { Node } from "react";
 import useSession from "hooks/session";
+import type { Node } from "react";
 
 import User from "entities/user";
 import Message from "entities/message";
 
-type Props = { children: Node }
+interface ISend { message: Message; }
+interface IUserOnly { user: User; }
+interface IMessageProvider { children: Node | Node[] }
+interface IForceVideo {
+  user: User;
+  hasVideo: boolean;
+}
 
-export const MessageContext = React.createContext<any>({});
-export default function MessageProvider({ children }:Props){
-  const [ forceVideo, setForceVideo ] = React.useState<any>();
-  const [ forceAudio, setForceAudio ] = React.useState<any>();
-  const [ forceUnpublish, setForceUnpublish ] = React.useState<any>();
-  const [ forcePublish, setForcePublish ] = React.useState<any>();
-  const [ forcePublishFailed, setForcePublishFailed ] = React.useState<any>();
+interface IForceAudio {
+  user: User;
+  hasAudio: boolean;
+}
+
+interface IMessageContext {
+  raisedHands: Array<User>;
+  messages: Array<Message>;
+  send: (args: ISend) => Promise<void>;
+  raiseHand: (args: IUserOnly) => Promise<void>;
+  removeRaisedHand: (user: User) => void;
+  forcePublish: (args: IUserOnly) => Promise<void>;
+  forceUnpublish: (args: IUserOnly) => Promise<void>;
+  forceVideo: (args: IForceVideo) => Promise<void>;
+  forceAudio: (args: IForceAudio) => Promise<void>;
+  intendedForMe: ({ data: any }) => boolean;
+}
+
+export const MessageContext = React.createContext<IMessageContext>({
+  raisedHands: [],
+  messages: [],
+  removeRaisedHand: (user: User) => {},
+  raiseHand: (args: IUserOnly) => Promise.resolve(),
+  forcePublish: (args: IUserOnly) => Promise.resolve(),
+  forceUnpublish: (args: IUserOnly) => Promise.resolve(),
+  forceVideo: (args: IForceVideo) => Promise.resolve(),
+  forceAudio: (args: IForceAudio) => Promise.resolve(),
+  send: (args: ISend) => Promise.resolve(),
+  intendedForMe: ({ data: any }) => false
+});
+
+export default function MessageProvider({ children }: IMessageProvider){
   const [ raisedHands, setRaisedHands ] = React.useState<Array<User>>([]);
   const [ messages, setMessages ] = React.useState<Array<Message>>([]);
-  const mSession = useSession();
+  const { session } = useSession();
 
-  function removeRaisedHand(user:User){
+  function removeRaisedHand(user: User){
     setRaisedHands((prevRaisedHands) => prevRaisedHands.filter((prevRaisedHand) => {
       return prevRaisedHand.id !== user.id
     }))
   }
 
+  async function signal({ type, data }){
+    return new Promise((resolve, reject) => {
+      session.signal({ type, data }, (err) => {
+        if(err) reject(err);
+        else resolve();
+      })
+    })
+  }
+
+  async function send({ message }: ISend){
+    await signal({ type: "message", data: JSON.stringify(message.toJSON()) });
+  }
+
+  async function forcePublish({ user }: IUserOnly){
+    await signal({ type: "force-publish", data: JSON.stringify(user.toJSON()) });
+  }
+  
+  async function forceUnpublish({ user }: IUserOnly){
+    await signal({ type: "force-unpublish", data: JSON.stringify(user.toJSON()) });
+  }
+
+  async function forceVideo({ user, hasVideo }: IForceVideo){
+    const payload = Object.assign({}, user.toJSON(), { hasVideo });
+    await signal({ type: "force-video", data: JSON.stringify(payload) });
+  }
+
+  async function forceAudio({ user, hasAudio }: IForceAudio){
+    const payload = Object.assign({}, user.toJSON(), { hasAudio });
+    await signal({ type: "force-audio", data: JSON.stringify(payload) });
+  }
+
+  async function raiseHand({ user }: IUserOnly){
+    await signal({ type: "raise-hand", data: JSON.stringify(user.toJSON())});
+  }
+
+  const intendedForMe = React.useCallback(({ data }): boolean => {
+    const user = User.fromJSON(JSON.parse(data));
+    const { connection: localConnection } = session;
+    if(localConnection.id === user.id) return true;
+    else return false;
+  }, [ session ])
+
+  const messageListener = React.useCallback(({ data }) => {
+    setMessages((prevMessage) => {
+      const jsonData = JSON.parse(data);
+      const message = Message.fromJSON(jsonData);
+      return [ ...prevMessage, message ];
+    })
+  }, []);
+
+  const raiseHandListener = React.useCallback(({ data }) => {
+    setRaisedHands((prev) => {
+      const jsonData = JSON.parse(data);
+      const user = User.fromJSON(jsonData);
+      const isNewUser = prev.filter((raisedHand) => raisedHand.id === user.id).length === 0;
+      if(isNewUser) return [ ...prev, user ];
+      else return prev;
+    })
+  }, [])
+
   React.useEffect(() => {
-    if(mSession.session){
-      mSession.session.on("signal:force-video", ({ data }) => {
-        const jsonData = JSON.parse(data)
-        const user = User.fromJSON(JSON.parse(data));
-        setForceVideo({
-          token: uuid(),
-          hasVideo: jsonData.hasVideo,
-          user
-        })
-      });
-
-      mSession.session.on("signal:force-audio", ({ data }) => {
-        const jsonData = JSON.parse(data)
-        const user = User.fromJSON(JSON.parse(data));
-        setForceAudio({
-          token: uuid(),
-          hasAudio: jsonData.hasAudio,
-          user
-        })
-      })
-
-      mSession.session.on("signal:force-unpublish", ({ data }) => {
-        const user = User.fromJSON(JSON.parse(data));
-        setForceUnpublish({
-          token: uuid(),
-          user
-        })
-      });
-
-      mSession.session.on("signal:force-publish", ({ data }) => {
-        const user = User.fromJSON(JSON.parse(data));
-        setForcePublish({
-          token: uuid(),
-          user
-        })
-      });
-
-      mSession.session.on("signal:force-publish-failed", ({ data, from }) => {
-        const user = User.fromJSON(JSON.parse(data));
-        setForcePublishFailed({ user, from })
-      })
-
-      mSession.session.on("signal:raise-hand", ({ data }) => {
-        setRaisedHands((prevRaisedHands) => {
-          const jsonData = JSON.parse(data);
-          const user = User.fromJSON(jsonData);
-          const isNewUser = prevRaisedHands.filter((raisedHand) => raisedHand.id === user.id).length === 0;
-          if(isNewUser) return [ ...prevRaisedHands, user ]
-          else return prevRaisedHands;
-        })
-      });
-
-      mSession.session.on("signal:message", ({ data }) => {
-        setMessages((prevMessages) => {
-          const jsonData = JSON.parse(data);
-          const message = Message.fromJSON(jsonData);
-          return [ ...prevMessages, message ]
-        })
-      })
+    if(session) session.on("signal:message", messageListener)
+    return function cleanup(){
+      if(session) session.off("signal:message", messageListener)
     }
-  }, [ mSession.session ])
+  }, [ session, messageListener ]);
+
+  React.useEffect(() => {
+    if(session) session.on("signal:raise-hand", raiseHandListener);
+    return function cleanup(){
+      if(session) session.off("signal:message", raiseHandListener);
+    }
+  }, [ session, raiseHandListener ])
 
   return (
     <MessageContext.Provider value={{ 
       forceVideo,
       forceAudio,
-      forceUnpublish,
-      forcePublish,
-      forcePublishFailed,
+      send,
+      intendedForMe,
+      raiseHand,
       raisedHands,
       removeRaisedHand,
+      forcePublish,
+      forceUnpublish,
       messages
     }}>
       {children}

@@ -1,22 +1,31 @@
 // @flow
 import { Stream, Connection, Subscriber } from "@opentok/client";
 
-class User{
-  name:string;
-  id:string|void;
-  stream:Stream|void;
-  connection:Connection|void;
-  subscriber:Subscriber|void;
-  role:string
-  system:User;
+export type Role = "presenter" | "moderator" | "participant" | "unknown" | "system" | "vod" | "sharescreen" | "ghostrider";
+interface IUser {
+  name: string;
+  id?: string | void;
+  stream?: Stream;
+  connection?: Connection;
+  subscriber?: Subscriber;
+  role: Role
+}
 
-  static system:User;
+class User implements IUser{
+  static system: User;
 
-  constructor(name:string, role:string, id?:string, stream?:Stream){
-    this.name = name;
-    this.role = role;
-    this.id = id;
-    this.stream = stream;
+  name: string;
+  id: string | void;
+  stream: Stream | void;
+  connection: Connection | void;
+  subscriber: Subscriber | void;
+  role: Role;
+
+  constructor(args: IUser){
+    this.name = args.name;
+    this.role = args.role;
+    this.id = args.id ?? undefined;
+    this.stream = args.stream;
   }
 
   toJSON(){
@@ -29,12 +38,19 @@ class User{
   }
 
   static get systemUser(){
-    if(!User.system) User.system = new User("System", "system");
+    if(!User.system) User.system = new User({ name: "System", role: "system" });
     return User.system;
   }
 
   static fromJSON(data:any):User{
-    const user = new User(data.name, data.role, data.id);
+    const user = new User({ name: data.name, role: data.role, id: data.id });
+    return user;
+  }
+
+  static fromConnection(connection: Connection): User{
+    const data = JSON.parse(connection.data);
+    const user = User.fromJSON(data);
+    user.id = connection.id;
     return user;
   }
 }

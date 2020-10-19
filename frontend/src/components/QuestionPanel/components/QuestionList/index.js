@@ -21,7 +21,7 @@ function QuestionList(){
       db.collection(`questions_${sessionID}`).orderBy("vote", "desc").onSnapshot((querySnapshot) => {
         const questions = querySnapshot.docs.map((documentSnapshop) => {
           const data = documentSnapshop.data();
-          const user = new User(data.owner.name, data.owner.role);
+          const user = new User({ name: data.owner.name, role: data.owner.role });
           user.id = data.owner.id;
           
           const question = new Question({

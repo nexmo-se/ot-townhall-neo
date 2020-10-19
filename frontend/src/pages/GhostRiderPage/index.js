@@ -1,65 +1,29 @@
 // @flow
 import React from "react";
-import CredentialAPI from "api/credential";
-import User from "entities/user";
 
-import useStyles from "./styles";
-import useSession from "hooks/session";
-import useSubscriber from "hooks/subscriber";
+import useMe from "hooks/me";
+import { useHistory, useParams } from "react-router-dom";
 
-import LiveBadge from "components/LiveBadge";
-import VonageLogo from "components/VonageLogo"
-import BlackLayer from "components/BlackLayer";
-import WhiteLayer from "components/WhiteLayer";
-import Chat from "components/Chat";
-import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
+import SessionProvider from "contexts/session";
+import MessageProvider from "contexts/message";
+import Main from "./components/Main";
 
-function EmployeePage(){
-  const [ me ] = React.useState<User|void>(new User("Ghost Rider", "participant"));
-  const mSession = useSession();
-  const mStyles = useStyles();
-  const mSubscriber = useSubscriber({
-    moderator: "moderatorContainer",
-    camera: "cameraContainer",
-    screen: "cameraContainer"
-  });
+interface IParam { tenant: string }
+function PresenterPage(){
+  const { loggedIn } = useMe();
+  const { push } = useHistory();
+  const { tenant } = useParams<IParam>();
 
   React.useEffect(() => {
-    async function connect(){
-      if(me){
-        const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
-        await mSession.connect(credential);
-      }
-    }
-    connect();
-  }, [ me, mSession ]);
+    if(!loggedIn) push(`/${tenant}/ghostrider/login`);
+  }, [ loggedIn, push, tenant ]);
 
-  React.useEffect(() => {
-    if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session, mSubscriber ]);
-
-  if(me && !mSession.session) return <FullPageLoading />
-  else if(me && mSession.session) return (
-    <div className={mStyles.container}>
-      <div className={mStyles.leftContainer}>
-        <LayoutContainer id="cameraContainer" size="big" />
-        <BlackLayer/>
-        <WhiteLayer/>
-        <div className={mStyles.logoContainer}>
-          <LiveBadge/>
-        </div>
-        <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
-      </div>
-      <div className={mStyles.rightContainer}>
-        <div className={mStyles.moderator}>
-          <LayoutContainer id="moderatorContainer" size="big" />
-        </div>
-        <div className={mStyles.chatContainer}>
-          <Chat withInput={false} />
-        </div>
-      </div>
-    </div>
+  return (
+    <SessionProvider>
+      <MessageProvider>
+        <Main />
+      </MessageProvider>
+    </SessionProvider>
   )
 }
-export default EmployeePage;
+export default PresenterPage;

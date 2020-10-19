@@ -1,130 +1,32 @@
 // @flow
 import React from "react";
-import CredentialAPI from "api/credential";
-import User from "entities/user";
 
-import useStyles from "./styles";
-import useSession from "hooks/session";
-import useSubscriber from "hooks/subscriber";
-import usePublisher from "hooks/publisher";
-import useMessage from "hooks/message";
 import useMe from "hooks/me";
+import { useHistory, useParams } from "react-router-dom";
 
-import LoginDialog from "components/LoginDialog";
-import LiveBadge from "components/LiveBadge";
-import VonageLogo from "components/VonageLogo"
-import WhiteLayer from "components/WhiteLayer";
-import RightPanel from "components/RightPanel";
-import FullPageLoading from "components/FullPageLoading";
-import VideoControl from "components/VideoControl";
-import VideoHoverContainer from "components/VideoHoverContainer";
-import RaiseHandButton from "components/RaiseHandButton";
-import LayoutContainer from "components/LayoutContainer";
+import SessionProvider from "contexts/session";
+import MessageProvider from "contexts/message";
+import PollingProvider from "contexts/polling";
+import Main from "./components/Main";
 
+interface IParam { tenant: string }
 function ParticipantPage(){
-  const [ me, setMe ] = React.useState<User|void>();
-  const mSession = useSession();
-  const mStyles = useStyles();
-  const mMe = useMe();
-  const mPublisher = usePublisher("cameraContainer", true, false);
-  const mMessage = useMessage();
-  const mSubscriber = useSubscriber({
-    moderator: "moderatorContainer",
-    camera: "cameraContainer",
-    screen: "cameraContainer"
-  });
-
-  function handleLoggedIn(user: User){
-    setMe(user);
-  }
+  const { loggedIn } = useMe();
+  const { push } = useHistory();
+  const { tenant } = useParams<IParam>();
 
   React.useEffect(() => {
-    async function connect(){
-      if(me){
-        const credential = await CredentialAPI.generateCredential("publisher", me.toJSON());
-        await mSession.connect(credential);
-        mMe.setMe(me);
-      }
-    }
+    if(!loggedIn) push(`/${tenant}/participant/login`);
+  }, [ loggedIn, push, tenant ]);
 
-    connect();
-  }, [ me, mMe, mSession ]);
-
-  React.useEffect(() => {
-    if(mSession.session) mSubscriber.subscribe(mSession.streams);
-  }, [ mSession.streams, mSession.session, mSubscriber ]);
-
-  React.useEffect(() => {
-    if(mMessage.forceVideo){
-      if(mMessage.forceVideo.user.id === mSession.session.connection.id){
-        mPublisher.publisher.publishVideo(mMessage.forceVideo.hasVideo)
-      } 
-    }
-  }, [ mMessage.forceVideo, mPublisher.publisher, mSession.session ]);
-
-  React.useEffect(() => {
-    if(mMessage.forceAudio){
-      if(mMessage.forceAudio.user.id === mSession.session.connection.id){
-        mPublisher.publisher.publishAudio(mMessage.forceAudio.hasAudio)
-      } 
-    }
-  }, [ mMessage.forceAudio, mPublisher.publisher, mSession.session ]);
-
-  React.useEffect(() => {
-    function handleAccessDenied(){
-      if(me){
-        mSession.session.signal({
-          type: "force-publish-failed",
-          data: JSON.stringify(me.toJSON())
-        })
-      }
-    }
-
-    if(mSession.session && mMessage.forcePublish){
-      const { connection:localConnection } = mSession.session;
-      const { user } = mMessage.forcePublish;
-      if(localConnection.id === user.id && !mPublisher.publisher){
-        mPublisher.publish("cameraContainer", user, handleAccessDenied);
-      }
-    }
-  }, [ mSession.session, mMessage.forcePublish, mPublisher, me ]);
-
-  React.useEffect(() => {
-    if(mMessage.forceUnpublish){
-      if(mMessage.forceUnpublish.user.id === mSession.session.connection.id){
-        if(!mPublisher.publisher) throw new Error("No publisher found");
-        mPublisher.unpublish()
-      }
-    }
-  }, [ mMessage.forceUnpublish, mPublisher.publisher, mSession.session, mPublisher ]);
-
-  if(!me && !mSession.session) {
-    return (
-      <LoginDialog 
-        role="participant" 
-        onLoggedIn={handleLoggedIn}
-      />
-    )
-  }
-  else if(me && !mSession.session) return <FullPageLoading />
-  else if(me && mSession.session) return (
-    <div className={mStyles.container}>
-      <div className={mStyles.leftContainer}>
-        <LayoutContainer id="cameraContainer" size="big" />        
-        <WhiteLayer />
-        {mPublisher.publisher? (
-          <VideoHoverContainer>
-            <VideoControl publisher={mPublisher.publisher} />
-          </VideoHoverContainer>
-        ): null}
-        <div className={mStyles.logoContainer}>
-          <LiveBadge/>
-          {!mPublisher.publisher? <RaiseHandButton />: null}
-        </div>
-        <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
-      </div>
-      <RightPanel user={me} />
-    </div>
+  return (
+    <SessionProvider>
+      <MessageProvider>
+        <PollingProvider>
+        < Main />
+        </PollingProvider>
+      </MessageProvider>
+    </SessionProvider>
   )
 }
 export default ParticipantPage;

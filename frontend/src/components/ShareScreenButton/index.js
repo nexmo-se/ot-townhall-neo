@@ -1,23 +1,13 @@
 import React from "react";
 import posed from "react-pose";
+import clsx from "clsx";
+import useStyles from "./styles";
 
 import ShareScreenIcon from '@material-ui/icons/ScreenShare';
 
 function ShareScreenButton({ onClick, size, fontSize, style, isSharing }){
   const [ isBig, setIsBig ] = React.useState(false);
-
-  const styles = { 
-    hangup: { 
-      width: size,
-      height: size, 
-      borderRadius: "50%", 
-      cursor: "pointer",
-      fontSize: fontSize, 
-      display: "flex", 
-      alignItems: "center", 
-      justifyContent: "center"
-    }
-  }
+  const mStyles = useStyles({ size, fontSize });
 
   const Container = posed.div({
     big: { scale: 1.1 },
@@ -33,8 +23,13 @@ function ShareScreenButton({ onClick, size, fontSize, style, isSharing }){
   return (
     <Container 
       pose={isBig? "big": "small"} 
-      className={`${isSharing? "Vlt-bg-green": "Vlt-bg-red"} Vlt-white`} 
-      style={{ ...styles.hangup, ...style }}
+      className={clsx({
+        "Vlt-bg-green": isSharing,
+        "Vlt-bg-red": !isSharing,
+        "Vlt-white": true,
+        [mStyles.hangup]: true
+      })}
+      style={{ ...style }}
       onMouseEnter={handleMouseEnter} 
       onMouseLeave={handleMouseLeave} 
       onClick={handleClick}

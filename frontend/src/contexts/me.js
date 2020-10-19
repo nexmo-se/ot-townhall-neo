@@ -3,23 +3,31 @@ import React from "react";
 import User from "entities/user";
 import type { Node } from "react";
 
-type ProviderProps = { children: Node }
-type ContextProps = {
-  me: User|void,
-  setMe: (user:User) => void
+interface IMeProvider { children: Node }
+interface IMeContext {
+  me: User | void;
+  loggedIn: boolean;
+  login: (user: User) => boolean;
 };
 
-const defaultValue = {
+export const MeContext = React.createContext<IMeContext>({
   me: undefined,
-  setMe: (user:User) => {}
-}
+  loggedIn: false,
+  login: (user: User) => false,
+})
 
-export const MeContext = React.createContext<ContextProps>(defaultValue)
-export default function MeProvider({ children }:ProviderProps){
-  const [ me, setMe ] = React.useState<User|void>();
+export default function MeProvider({ children }: IMeProvider){
+  const [ me, setMe ] = React.useState<User | void>();
+  const [ loggedIn, setLoggedIn ] = React.useState<boolean>(false);
+
+  const login = React.useCallback((user: User) => {
+    setMe(user);
+    setLoggedIn(true);
+    return true;
+  }, []);
   
   return (
-    <MeContext.Provider value={{ me, setMe }}>
+    <MeContext.Provider value={{ loggedIn, me, login }}>
       {children}
     </MeContext.Provider>
   )

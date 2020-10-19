@@ -4,12 +4,20 @@ import clsx from "clsx";
 
 type Props = {
   text: string,
+  label?: string,
   style?: any,
   className?: any,
   onChange?: (value:string) => void
 }
 
-function TextInput({ text, style, className, onChange, ...props }:Props){
+function TextInput({ 
+  text, 
+  label,
+  style, 
+  className, 
+  onChange, 
+  ...props 
+}:Props){
 
   function handleChange({ target }){
     if(onChange) onChange(target.value);
@@ -23,6 +31,9 @@ function TextInput({ text, style, className, onChange, ...props }:Props){
       )}
       style={style}
     >
+      { label && (
+        <label className="Vlt-label">{label}</label> 
+      )}
       <div className="Vlt-input">
         <input
           {...props}

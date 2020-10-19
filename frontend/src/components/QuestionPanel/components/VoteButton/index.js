@@ -22,7 +22,7 @@ function Vote({ question }: IVote){
   async function handleVote(){
     if(!mMe.me) throw new Error("Ops!");
     const { connection, sessionId: sessionID } = mSession.session;
-    const voter = new User(mMe.me.name, mMe.me.role);
+    const voter = new User({ name: mMe.me.name, role: mMe.me.role });
     voter.id = connection.connectionId;
     
     await QuestionAPI.vote(sessionID, voter, question);

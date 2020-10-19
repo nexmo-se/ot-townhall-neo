@@ -2,6 +2,7 @@
 import React from "react";
 import posed from "react-pose";
 import clsx from "clsx";
+import lodash from "lodash";
 import Recording from "entities/recording";
 import RecordingAPI from "api/recording";
 import { v4 as uuid } from "uuid";
@@ -12,16 +13,17 @@ import useSession from "hooks/session";
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StopIcon from '@material-ui/icons/Stop';
 
-type Props = {
+interface IRecordButton {
   size: number,
   fontSize: number
 }
 
-function RecordButton({ size, fontSize, ...props }:Props){
+function RecordButton({ size, fontSize, ...props }: IRecordButton){
   const [ isBig, setIsBig ] = React.useState<boolean>(false);
   const [ isRecording, setIsRecording ] = React.useState<boolean>(false);
-  const [ recording, setRecording ] = React.useState<Recording|void>();
+  const [ recording, setRecording ] = React.useState<Recording | void>();
   const [ refreshStatus, setRefreshStatus ] = React.useState<string>(uuid());
+  const [ disabled, setDisabled ] = React.useState<boolean>(false);
   const mStyles = useStyles({ size, fontSize });
   const mSession = useSession();
 
@@ -33,17 +35,8 @@ function RecordButton({ size, fontSize, ...props }:Props){
   function handleMouseEnter(){ setIsBig(true) }
   function handleMouseLeave(){ setIsBig(false) }
 
-  const updateLayout = React.useCallback(async () => {
-    if(recording && isRecording){
-      const layoutType = RecordingAPI.retrieveLayoutType(mSession.streams);
-      if(layoutType === "presentation"){
-        const presentationStreams = RecordingAPI.retrievePresentationStreams(mSession.streams);
-        await RecordingAPI.setPresentationLayout(recording, presentationStreams);
-      }else await RecordingAPI.setBestFitLayout(recording);
-    }
-  }, [ isRecording, mSession.streams, recording ])
-  
   async function handleClick(){
+    setDisabled(true);
     if(isRecording && recording) {
       await RecordingAPI.stopRecording(recording);
       setIsRecording(false);
@@ -58,9 +51,9 @@ function RecordButton({ size, fontSize, ...props }:Props){
   
   React.useEffect(() => {
     async function fetchSatus(){
-      const { session } = mSession;
-      if(session){
-        const { sessionId: sessionID } = session;
+      setDisabled(true);
+      if(mSession.session){
+        const { sessionId: sessionID } = mSession.session;
         const [ recording ] = await RecordingAPI.retrieveActive(sessionID);
         if(recording){
           const status = await RecordingAPI.retrieveStatus(recording);
@@ -73,32 +66,41 @@ function RecordButton({ size, fontSize, ...props }:Props){
           }
         }
       }
+      setDisabled(false);
     }
     
     fetchSatus();
-  }, [ mSession.session, refreshStatus, mSession ]);
+  }, [ mSession.session, refreshStatus ]);
   
   React.useEffect(() => {
+    async function updateLayout(){
+      if(recording && isRecording){
+        const layoutType = RecordingAPI.retrieveLayoutType(mSession.streams);
+        if(layoutType === "presentation"){
+          const presentationStreams = RecordingAPI.retrievePresentationStreams(mSession.streams);
+          await RecordingAPI.setPresentationLayout(recording, presentationStreams);
+        }else await RecordingAPI.setBestFitLayout(recording);
+      }
+    }
     updateLayout();
-  }, [ mSession.streams, updateLayout ]);
-  
-  React.useEffect(() => {
-    if(recording) updateLayout();
-  }, [ recording, updateLayout ])
+  }, [ mSession.streams, recording, isRecording ]);
 
   return (
     <Container 
       {...props}
       pose={isBig? "big": "small"} 
+      disabled={disabled}
       className={clsx({
-        "Vlt-bg-red": !isRecording,
-        "Vlt-bg-green": isRecording,
+        "Vlt-bg-red": !isRecording && !disabled,
+        "Vlt-bg-green": isRecording && !disabled,
+        "Vlt-bg-grey-darker": disabled,
         "Vlt-white": true,
-        [mStyles.root]: true
+        [mStyles.root]: true,
+        [mStyles.disabled]: disabled
       })}
       onMouseEnter={handleMouseEnter} 
       onMouseLeave={handleMouseLeave} 
-      onClick={handleClick}
+      onClick={lodash.debounce(handleClick, 3000, { leading: true, trailing: false })}
     >
       {isRecording?(
         <StopIcon fontSize="inherit" />

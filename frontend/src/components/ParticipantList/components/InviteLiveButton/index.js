@@ -8,58 +8,48 @@ import useMessage from "hooks/message";
 
 interface IInviteLiveButton { user: User }
 function InviteLiveButton({ user }: IInviteLiveButton){
-  const [ inviteDisabled, setInviteDisabled ] = React.useState<boolean>(false);
-  const [ isPublishing, setIsPublishing ] = React.useState<boolean>(false);
-  const mMe = useMe();
-  const mSession = useSession();
+  const [ disabled, setDisabled ] = React.useState<boolean>(false);
+  const [ publishing, setPublishing ] = React.useState<boolean>(false);
+  const { me } = useMe();
+  const { session, streams } = useSession();
   const mMessage = useMessage();
-  
+
   async function handleInviteClick(){
-    setInviteDisabled(true);
-    if(!user.id) throw new Error("User does not have ID. Is someone hack my application");
-    if(!mMe.me) throw new Error("Ops!");
-    if(mMe.me.role !== "moderator") throw new Error("User is not moderator. Someone hack my application");
-    if(mSession.session){
-      await new Promise((resolve, reject) => {
-        mSession.session.signal({
-          type: "force-publish",
-          data: JSON.stringify(user.toJSON())
-        }, (err) => {
-          if(err) reject(err);
-          else resolve();
-        });
-      });
-    }
+    setDisabled(true);
+    mMessage.forcePublish({ user });
+    setDisabled(true);
   }
-  
+
+  const publishFailedListener = React.useCallback(({ from }) => {
+    if(from.id === user.id) setDisabled(false);
+  }, [ user.id ]);
+
   React.useEffect(() => {
-    // If publishing, do not show invite live button
-    const stream = mSession.streams.find((stream) => {
-      const { connection: remoteConnection } = stream;
-      return remoteConnection.id === user.id;
-    })
+    const stream = streams.find((stream) => {
+      return stream.connection.id === user.id;
+    });
     if(stream) {
-      setIsPublishing(true);
-      setInviteDisabled(false);
-    }else setIsPublishing(false);
-  }, [ mSession.streams, user ]);
+      setPublishing(true);
+      setDisabled(false);
+    }else setPublishing(false);
+  }, [ streams, user.id ])
   
   React.useEffect(() => {
-    if(mMessage.forcePublishFailed){
-      const { from:remoteUser } = mMessage.forcePublishFailed;
-      if(remoteUser.id === user.id) setInviteDisabled(false);
+    if(session) session.on("signal:force-publish-failed", publishFailedListener);
+    return function cleanup(){
+      if(session) session.off("signal:force-publish-failed", publishFailedListener);
     }
-  }, [ mMessage.forcePublishFailed, user.id ]);
+  }, [ session, publishFailedListener ])
   
   // Do not show invite live button when you are not moderators
   // Only moderator can invite live
-  if((mMe.me && mMe.me.role !== "moderator") || isPublishing) return null
+  if(me?.role !== "moderator" || publishing) return null;
   else if(user.role === "moderator") return null;
   else return (
     <button
       className="Vlt-btn"
+      disabled={disabled}
       style={{ margin: 0 }}
-      disabled={inviteDisabled}
       onClick={handleInviteClick}
     >
       Invite Live

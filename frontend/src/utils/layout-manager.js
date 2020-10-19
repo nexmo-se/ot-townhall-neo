@@ -1,9 +1,15 @@
 // @flow
 import LM from "opentok-layout-js";
+import type { Stream, Session, Publisher, Subscriber } from "@opentok/client";
 
-class LayoutManager{
-  container:string;
-  manager:any;
+export interface ILayoutManager {
+  container: string;
+  manager: any;
+}
+
+class LayoutManager implements ILayoutManager{
+  container: string;
+  manager: any;
 
   constructor(container:string){
     this.container = container;
@@ -20,7 +26,23 @@ class LayoutManager{
     else throw new Error("Cannot find container");
   }
 
-  layout(){
+  getPubSub(session: Session, stream: Stream): Publisher | Subscriber{
+    if(stream.publisher) return stream.publisher;
+    else {
+      const [ subscriber ] = session.getSubscribersForStream(stream);
+      return subscriber
+    }
+  }
+
+  layout(session: Session, streams: Array<Stream>){
+    streams.forEach((stream) => {
+      const pubsub = this.getPubSub(session, stream);
+      if(pubsub){
+        const element = document.getElementById(pubsub.id);
+        if(element && (stream.videoType === "screen" || stream.videoType === "custom")) element.classList.add("OT_big");
+      }
+    });
+
     if(!this.manager) this.init();
     this.manager.layout();
     console.log(`Layouting ${this.container}`)

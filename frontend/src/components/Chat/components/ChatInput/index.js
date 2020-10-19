@@ -1,9 +1,8 @@
 // @flow
 import React from "react";
-import MessageAPI from "api/message";
 
 import useStyles from "./styles";
-import useSession from "hooks/session";
+import useMessage from "hooks/message";
 
 import User from "entities/user";
 import Message from "entities/message";
@@ -16,31 +15,31 @@ interface IChatInput{
   byPass?: boolean
 }
 
-function ChatInput({ user, byPass }: IChatInput){
+function ChatInput({ user, byPass = true }: IChatInput){
   const [ text, setText ] = React.useState<string>("");
-  const mSession = useSession();
   const mStyles = useStyles();
+  const mMessage = useMessage();
 
   function handleClick(e){
     if(e) e.preventDefault();
     const isApproved = (byPass)? true: false;
     const message = new Message(user, text, isApproved);
-    MessageAPI.sendMessage(mSession.session, message);
+    mMessage.send({ message });
     setText("");
   }
 
   return (
-    <form style={mStyles.root} onSubmit={handleClick}>
+    <form className={mStyles.root} onSubmit={handleClick}>
       <TextInput 
         text={text} 
         onChange={setText} 
-        style={mStyles.input}
+        className={mStyles.input}
       />
       <Button
         type="submit" 
         text="Send" 
         onClick={handleClick} 
-        style={mStyles.button}
+        className={mStyles.button}
       />
     </form>
   )

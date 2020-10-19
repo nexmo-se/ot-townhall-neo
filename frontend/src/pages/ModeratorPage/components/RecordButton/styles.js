@@ -10,5 +10,6 @@ export default makeStyles(() => ({
     display: "flex", 
     alignItems: "center", 
     justifyContent: "center"
-  })
+  }),
+  disabled: () => ({ cursor: "no-drop" })
 }), { index: 1 });
