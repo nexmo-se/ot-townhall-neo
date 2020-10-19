@@ -14,6 +14,7 @@ import QuestionRouter from "router/question";
 import RecordingRouter from "router/recording";
 import RoomRouter from "router/room";
 import AMARouter from "router/ama";
+import PollRouter from "router/poll";
 
 (async () => {
   await Firebase.init();
@@ -32,6 +33,7 @@ import AMARouter from "router/ama";
   app.use("/recordings", RecordingRouter);
   app.use("/rooms", RoomRouter);
   app.use("/ama", AMARouter);
+  app.use("/pollings", PollRouter);
   
   app.listen(process.env.PORT, () => {
     console.log(`Express is listening on port: ${config.port || 2000}`)

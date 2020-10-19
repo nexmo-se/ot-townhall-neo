@@ -31,6 +31,36 @@ class DatabaseAPI{
           created_at TIMESTAMP
         );
       `)
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS pollings(
+          id VARCHAR(255) PRIMARY KEY,
+          session_id VARCHAR(255),
+          title VARCHAR(255),
+          status VARCHAR(255),
+          created_at TIMESTAMP
+        )
+      `)
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS poll_items(
+          id VARCHAR(255) PRIMARY KEY,
+          polling_id VARCHAR(255),
+          option VARCHAR(255),
+          count INT,
+          order_number INT,
+          updated_at TIMESTAMP,
+          created_at TIMESTAMP
+        )
+      `);
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS polls(
+          id VARCHAR(255) PRIMARY KEY,
+          polling_id VARCHAR(255),
+          item_id VARCHAR(255),
+          user_id VARCHAR(255),
+          name VARCHAR(255),
+          created_at TIMESTAMP
+        )
+      `);
     })
   }
 
