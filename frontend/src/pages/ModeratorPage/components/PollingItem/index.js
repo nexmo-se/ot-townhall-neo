@@ -20,7 +20,8 @@ function PollingItem({ removeable = false, onChange, onRemove, item }: IPollingI
     onChange(new EPollingItem({ 
       id: item.id,
       option: text, 
-      count: item.count 
+      count: item.count ,
+      orderNumber: item.orderNumber
     }));
   }
 

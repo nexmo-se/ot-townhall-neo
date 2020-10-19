@@ -21,7 +21,7 @@ function PollingModal({ open = false, onClose, onSuccess }: IPollingModal){
   const [ loading, setLoading ] = React.useState<boolean>(false);
   const [ title, setTitle ] = React.useState<string>("");
   const [ items, setItems ] = React.useState<EPollingItem[]>([
-    new EPollingItem({ option: "" })
+    new EPollingItem({ option: "", orderNumber: 1 })
   ]);
   const { create: createPolling } = usePolling();
   const mStyles = useStyles();
@@ -43,7 +43,7 @@ function PollingModal({ open = false, onClose, onSuccess }: IPollingModal){
   }
 
   function handleAddClick(){
-    setItems((prev) => [ ...prev, new EPollingItem({ option: "" })])
+    setItems((prev) => [ ...prev, new EPollingItem({ option: "", orderNumber: prev.length + 1 })])
   }
 
   async function handleCreateClick(){

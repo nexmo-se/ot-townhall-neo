@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+
 import PollingModal from "../PollingModal";
 import Button from "components/Button";
 

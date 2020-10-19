@@ -14,6 +14,11 @@ interface IForceVideo {
   hasVideo: boolean;
 }
 
+interface ISignalData {
+  type: string;
+  data?: string;
+}
+
 interface IForceAudio {
   user: User;
   hasAudio: boolean;
@@ -29,6 +34,8 @@ interface IMessageContext {
   forceUnpublish: (args: IUserOnly) => Promise<void>;
   forceVideo: (args: IForceVideo) => Promise<void>;
   forceAudio: (args: IForceAudio) => Promise<void>;
+  startPolling: () => Promise<void>;
+  stopPolling: () => Promise<void>;
   intendedForMe: ({ data: any }) => boolean;
 }
 
@@ -41,6 +48,8 @@ export const MessageContext = React.createContext<IMessageContext>({
   forceUnpublish: (args: IUserOnly) => Promise.resolve(),
   forceVideo: (args: IForceVideo) => Promise.resolve(),
   forceAudio: (args: IForceAudio) => Promise.resolve(),
+  stopPolling: () => Promise.resolve(),
+  startPolling: () => Promise.resolve(),
   send: (args: ISend) => Promise.resolve(),
   intendedForMe: ({ data: any }) => false
 });
@@ -56,9 +65,10 @@ export default function MessageProvider({ children }: IMessageProvider){
     }))
   }
 
-  async function signal({ type, data }){
+  async function signal({ type, data }: ISignalData){
     return new Promise((resolve, reject) => {
-      session.signal({ type, data }, (err) => {
+      const payload = JSON.parse(JSON.stringify({ type, data }));
+      session.signal(payload, (err) => {
         if(err) reject(err);
         else resolve();
       })
@@ -89,6 +99,14 @@ export default function MessageProvider({ children }: IMessageProvider){
 
   async function raiseHand({ user }: IUserOnly){
     await signal({ type: "raise-hand", data: JSON.stringify(user.toJSON())});
+  }
+
+  async function startPolling(){
+    await signal({ type: "start-polling" });
+  }
+
+  async function stopPolling(){
+    await signal({ type: "stop-polling" });
   }
 
   const intendedForMe = React.useCallback(({ data }): boolean => {
@@ -134,6 +152,8 @@ export default function MessageProvider({ children }: IMessageProvider){
     <MessageContext.Provider value={{ 
       forceVideo,
       forceAudio,
+      startPolling, 
+      stopPolling,
       send,
       intendedForMe,
       raiseHand,

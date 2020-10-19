@@ -14,7 +14,7 @@ function ModeratorPolling(){
   const { polling, retrieve: retrievePolling } = usePolling();
 
   React.useEffect(() => {
-    if(session) FetchHelper.fetch(retrievePolling, setLoading, { sessionID: session.id });
+    if(session) FetchHelper.fetch(retrievePolling, setLoading);
   }, [ session, retrievePolling ])
 
   if(loading) return <>Loading...</>

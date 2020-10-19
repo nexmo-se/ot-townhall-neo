@@ -22,5 +22,14 @@ class Polling implements IPolling{
     this.items = args.items ?? [];
     this.status = args.status ?? "pending";
   }
+
+  static fromResponse(response: any): Polling{
+    return new Polling({
+      id: response.id,
+      title: response.title,
+      items: response.items.map((item) => PollingItem.fromResponse(item)),
+      status: response.status
+    })
+  }
 }
 export default Polling;
