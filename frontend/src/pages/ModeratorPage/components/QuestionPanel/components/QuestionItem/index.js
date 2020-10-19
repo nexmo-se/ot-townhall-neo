@@ -20,6 +20,14 @@ function QuestionItem({ question }: IQuestionItem){
       sessionID: session.id
     });
   }
+
+  function handleMarkAsSelected(){
+    QuestionAPI.markAs({ 
+      question, 
+      status: "selected",
+      sessionID: session.id
+    });
+  }
   
   return (
     <div className={mStyles.root}>
@@ -35,6 +43,16 @@ function QuestionItem({ question }: IQuestionItem){
             Mark as answered
           </span>
         </p>
+        {question.status !== "selected" && (
+          <p>
+            <span
+              className="Vlt-text-link"
+              onClick={handleMarkAsSelected}
+            >
+              Select
+            </span>
+          </p>
+        )}
       </div>
     </div>
   )

@@ -6,7 +6,9 @@ import { useHistory, useParams } from "react-router-dom";
 
 import SessionProvider from "contexts/session";
 import MessageProvider from "contexts/message";
+
 import Main from "./components/Main";
+import SelectedQuestion from "components/SelectedQuestion";
 
 interface IParam { tenant: string }
 function PresenterPage(){
@@ -21,7 +23,10 @@ function PresenterPage(){
   return (
     <SessionProvider>
       <MessageProvider>
-        <Main />
+        <>
+          <SelectedQuestion />
+          <Main />
+        </>
       </MessageProvider>
     </SessionProvider>
   )
