@@ -3,7 +3,9 @@ import React from "react";
 import clsx from "clsx";
 import User from "entities/user";
 import display from "config/display";
+
 import useStyles from "./styles";
+import useSession from "hooks/session";
 
 import PollingPanel from "./components/PollingPanel";
 import TabItem from "components/TabItem";
@@ -18,8 +20,10 @@ import QuestionPanel from "components/QuestionPanel";
 type Props = { user: User }
 
 function MainTab({ user }:Props){
-  const [ activeTab, setActiveTab ] = React.useState<string>("polling")
+  const [ activeTab, setActiveTab ] = React.useState<string>("chats")
+  const { session } = useSession();
   const mStyles = useStyles();
+  const lastTabRef = React.useRef();
   
   function handleParticipantsClick(){
     setActiveTab("participants");
@@ -36,6 +40,27 @@ function MainTab({ user }:Props){
   function handlePollingClick(){
     setActiveTab("polling");
   }
+
+  const startPollingListener = React.useCallback(() => {
+    setActiveTab((prev) => {
+      lastTabRef.current = prev;
+      return "polling";
+    })
+  }, [])
+
+  const stopPollingListener = React.useCallback(() => {
+    if(lastTabRef.current) setActiveTab(lastTabRef.current);
+    lastTabRef.current = undefined;
+  }, [])
+
+  React.useEffect(() => {
+    if(session) session.on("signal:start-polling", startPollingListener)
+    if(session) session.on("signal:stop-polling", stopPollingListener);
+    return function cleanup(){
+      if(session) session.off("signal:start-polling", startPollingListener)
+      if(session) session.off("signal:stop-polling", stopPollingListener);
+    }
+  }, [ session, startPollingListener, stopPollingListener ])
   
   return (
     <Tab>

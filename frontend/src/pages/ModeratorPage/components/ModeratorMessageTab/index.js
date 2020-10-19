@@ -7,16 +7,16 @@ import useStyles from "./styles";
 import useMe from "hooks/me";
 
 import ModeratorPolling from "../ModeratorPolling";
+import QuestionPanel from "../QuestionPanel";
 import Tab from "components/Tab";
 import TabHeader from "components/TabHeader";
 import TabItem from "components/TabItem";
 import TabContent from "components/TabContent";
 import TabPanel from "components/TabPanel";
 import Chat from "components/Chat";
-import QuestionPanel from "components/QuestionPanel";
 
 function ModeratorMessageTab(){
-  const [ activeTab, setActiveTab ] = React.useState<string>("polling");
+  const [ activeTab, setActiveTab ] = React.useState<string>("questions");
   const { me } = useMe();
   const mStyles = useStyles();
   
