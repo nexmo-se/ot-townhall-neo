@@ -20,20 +20,20 @@ class User implements IUser{
     this.token = args.token;
   }
   
-  toDatabase(){
+  toDatabase(): Record<string, string>{
     const jsonData = {
       id: this.id,
       name: this.name,
       role: this.role
-    }
+    };
     return JSON.parse(JSON.stringify(jsonData));
   }
   
-  static fromDatabase(data:any):User{
+  static fromDatabase(data: Record<string, string>):User{
     const user = new User({
       id: data.id,
       name: data.name,
-      role: data.role
+      role: data.role as Role
     });
     return user;
   }

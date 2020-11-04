@@ -1,14 +1,15 @@
 import RecordingAPI from "../api/recording";
 import Recording from "../entities/recording";
+import { Request, Response } from "express";
 
 class RecordingListener{
-  static async create(req: any, res: any){
+  static async create(req: Request, res: Response): Promise<void>{
     const { session_id: sessionID } = req.body;
     const recording = await RecordingAPI.create(sessionID);
     return res.json(recording.toResponse()).end();
   }
   
-  static async setLayout(req: any, res: any){
+  static async setLayout(req: Request, res: Response): Promise<void>{
     const { type, streams } = req.body;
     const { recording_id: recordingID } = req.params;
     
@@ -17,23 +18,23 @@ class RecordingListener{
     return res.status(200).end();
   }
   
-  static async destroy(req: any, res: any){
+  static async destroy(req: Request, res: Response): Promise<void>{
     const { recording_id: recordingID } = req.params;
     const recording = new Recording({ id: recordingID });
     await RecordingAPI.destroy(recording);
     return res.status(200).end();
   }
   
-  static async status(req: any, res: any){
+  static async status(req: Request, res: Response): Promise<void>{
     const { recording_id: recordingID } = req.params;
     const recording = new Recording({ id: recordingID });
     const status = await RecordingAPI.status(recording);
     return res.json({ status }).end();
   }
   
-  static async retrieveActive(req: any, res: any){
+  static async retrieveActive(req: Request, res: Response): Promise<void>{
     const { session_id: sessionID } = req.query;
-    const recordings = await RecordingAPI.retrieveActive(sessionID);
+    const recordings = await RecordingAPI.retrieveActive(`${sessionID}`);
     const payload = recordings.map((recording) => recording.toResponse());
     return res.json(payload).end();
   }

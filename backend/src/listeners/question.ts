@@ -1,9 +1,10 @@
 import QuestionAPI from "../api/question";
 import Question from "../entities/question";
 import User from "../entities/user";
+import { Request, Response } from "express";
 
 class QuestionListener{
-  static async create(req: any, res: any){
+  static async create(req: Request, res: Response): Promise<void>{
     const { session_id: sessionID, content, owner, status } = req.body;
     const question = new Question({
       owner: new User({
@@ -15,11 +16,11 @@ class QuestionListener{
       status
     });
     const ref = await QuestionAPI.create(sessionID, question);
-    const payload = { id: ref.id }
+    const payload = { id: ref.id };
     return res.json(payload).end();
   }
   
-  static async vote(req: any, res: any){
+  static async vote(req: Request, res: Response): Promise<void>{
     const { voter, session_id: sessionID } = req.body;
     const { question_id: questionID } = req.params;
     
@@ -28,7 +29,7 @@ class QuestionListener{
     return res.json({}).end();
   }
 
-  static async markAs(req: any, res: any){
+  static async markAs(req: Request, res: Response): Promise<void>{
     const { question_id: questionID } = req.params;
     const { status, session_id: sessionID } = req.body;
     

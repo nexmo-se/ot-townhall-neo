@@ -15,7 +15,7 @@ class Room{
     this.sessionID = args.sessionID;
   }
 
-  static fromDatabase(row:any):Room{
+  static fromDatabase(row: Record<string, string>): Room{
     const room = new Room({
       id: row.id,
       name: row.name,

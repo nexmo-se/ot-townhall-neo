@@ -7,6 +7,20 @@ interface IPollItem{
   orderNumber: number;
 }
 
+interface IRequestData{
+  id: string;
+  option: string;
+  count?: string;
+  order_number: string;
+}
+
+interface IDatabaseData{
+  id: string;
+  option: string;
+  count: string;
+  order_number: string;
+}
+
 class PollItem{
   id: string;
   option: string;
@@ -20,32 +34,32 @@ class PollItem{
     this.orderNumber = args.orderNumber;
   }
 
-  toResponse(){
+  toResponse(): Record<string, string>{
     const jsonData = {
       id: this.id,
       option: this.option,
       count: this.count,
       order_number: this.orderNumber
-    }
+    };
     return JSON.parse(JSON.stringify(jsonData));
   }
 
-  static fromRequest(request: any){
+  static fromRequest(request: IRequestData): PollItem{
     return new PollItem({
       id: request.id,
       option: request.option,
-      count: parseInt(request.count ?? 0),
-      orderNumber: request.order_number
-    })
+      count: parseInt(request.count ?? "0"),
+      orderNumber: parseInt(request.order_number)
+    });
   }
 
-  static fromDatabase(row: any): PollItem{
+  static fromDatabase(row: IDatabaseData): PollItem{
     return new PollItem({
       id: row.id,
       option: row.option,
       count: parseInt(row.count),
-      orderNumber: row.order_number
+      orderNumber: parseInt(row.order_number)
     });
   }
 }
-export default PollItem
+export default PollItem;

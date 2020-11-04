@@ -13,7 +13,7 @@ class NotFoundError implements Processor{
       status: 404,
       message: "Not found",
       stack: this.error.stack
-    })
+    });
     return response;
   }
 }

@@ -36,8 +36,8 @@ import PollRouter from "./router/poll";
   app.use("/pollings", PollRouter);
   
   app.listen(process.env.PORT, () => {
-    console.log(`Express is listening on port: ${config.port || 2000}`)
-  })
+    console.log(`Express is listening on port: ${config.port || 2000}`);
+  });
   
   app.use(ErrorHandler.handle);
-})()
+})();

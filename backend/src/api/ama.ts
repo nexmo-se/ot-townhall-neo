@@ -4,12 +4,12 @@ import { v4 as uuid } from "uuid";
 import { PoolClient } from "pg";
 
 class AMAAPI{
-  static async createParticipant(participant: Participant): Promise<any>{
-    return DatabaseAPI.query(async (client: PoolClient) => {
+  static async createParticipant(participant: Participant): Promise<void>{
+    await DatabaseAPI.query(async (client: PoolClient) => {
       const query = "INSERT INTO participants(id, first_name, last_name, email, company_name, created_at) VALUES ($1, $2, $3, $4, $5, NOW())";
       const params = [ uuid(), participant.firstName, participant.lastName, participant.email, participant.companyName ];
-      return client.query(query, params);
-    })
+      await client.query(query, params);
+    });
   }
 }
 export default AMAAPI;

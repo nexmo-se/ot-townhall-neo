@@ -1,9 +1,11 @@
 import PollAPI from "../api/poll";
 import PollItem from "../entities/poll-item";
 import Poll from "../entities/poll";
+import { Request, Response } from "express";
+import type { Status } from "../entities/poll";
 
 class PollListener{
-  static async create(req: any, res: any){
+  static async create(req: Request, res: Response): Promise<void>{
     const { 
       session_id: sessionID, 
       title, 
@@ -21,7 +23,7 @@ class PollListener{
     return res.json({}).end();
   }
 
-  static async poll(req: any, res: any){
+  static async poll(req: Request, res: Response): Promise<void>{
     const { poll_id: pollID } = req.params;
     const { 
       item_id: itemID, 
@@ -37,24 +39,31 @@ class PollListener{
     return res.json({}).end();
   }
 
-  static async list(req: any, res: any){
+  static async list(req: Request, res: Response): Promise<void>{
     const { session_id: sessionID } = req.query;
-    const polls = await PollAPI.list({ sessionID });
+    const polls = await PollAPI.list({ sessionID: `${sessionID}` });
     const payload = polls.map((poll) => poll.toResponse());
     return res.json(payload).end();
   }
 
-  static async retrievePoll(req: any, res: any){
+  static async retrievePoll(req: Request, res: Response): Promise<void>{
     const { polling_id: pollingID } = req.params;
     const { user_id: userID } = req.query;
-    const pollItem = await PollAPI.retrievePoll({ pollingID, userID });
+    const pollItem = await PollAPI.retrievePoll({ pollingID, userID: `${userID}` });
     return res.json(pollItem.toResponse()).end();
   }
 
-  static async update(req: any, res: any){
+  static async update(req: Request, res: Response): Promise<void>{
     const { polling_id } = req.params;
     const { status } = req.query;
-    await PollAPI.update({ pollingID: polling_id, status });
+    
+    const acceptedStatus = [ "started", "pending", "finished" ];
+    if(acceptedStatus.includes(`${status}`)){
+      await PollAPI.update({ 
+        pollingID: polling_id, 
+        status: status as Status
+      });
+    }
     return res.json({}).end();
   }
 }

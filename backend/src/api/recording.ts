@@ -1,7 +1,7 @@
 import config from "../config/opentok";
 import OT from "../utils/opentok";
 import Recording from "../entities/recording";
-import { Archive } from "opentok"
+import { Archive } from "opentok";
 
 import OpentokRecordingAPI from "./opentok-recording";
 import GhostRiderAPI from "./ghostrider";
@@ -16,23 +16,23 @@ class RecordingAPI{
     const engine = RecordingAPI.getEngine();
     const recording = await engine.create(sessionID);
     return recording;
-  };
+  }
   
-  static async destroy(recording: Recording){
+  static async destroy(recording: Recording): Promise<void>{
     const engine = RecordingAPI.getEngine();
     await engine.destroy(recording);
   }
   
-  static async status(recording: Recording){
+  static async status(recording: Recording): Promise<string>{
     const foundRecording = await RecordingAPI.retrieve(recording.id);
     return foundRecording.status;
   }
   
-  static async retrieveActive(sessionID: string){
+  static async retrieveActive(sessionID: string): Promise<Recording[]>{
     const archives = await new Promise((resolve: (value: Archive[]) => void, reject) => {
       OT.getInstance().listArchives({ sessionId: sessionID }, (err: any, archives: Archive[]) => {
         if(err) reject(err);
-        else resolve(archives)
+        else resolve(archives);
       });
     });
     const filteredArchives = archives.filter((archive) => archive.status === "started" || archive.status === "paused");
@@ -45,17 +45,17 @@ class RecordingAPI{
       OT.getInstance().getArchive(recordingID, (err: any, archive: Archive) => {
         if(err) reject(err);
         else resolve(archive);
-      })
+      });
     });
     const recording = new Recording({
       id: archive.id,
       sessionID: archive.sessionId,
       status: archive.status
-    })
+    });
     return recording;
   }
   
-  static async setLayout(recording:Recording, type:string, streams?:Array<string>){
+  static async setLayout(recording:Recording, type:string, streams?:Array<string>): Promise<void>{
     if(type === "presentation" && streams){
       const foundRecording = await RecordingAPI.retrieve(recording.id);
       await new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@ class RecordingAPI{
             if(err) reject(err);
             else resolve();
           }
-        )
+        );
       });
     }
     
@@ -89,8 +89,8 @@ class RecordingAPI{
           if(err) reject(err);
           else resolve();
         }
-      )
-    })
+      );
+    });
   }
 }
 export default RecordingAPI;

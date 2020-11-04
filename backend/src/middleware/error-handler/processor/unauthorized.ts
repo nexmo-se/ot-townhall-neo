@@ -13,7 +13,7 @@ class Unauthorized implements Processor{
       status: 401,
       message: "Unauthorized",
       stack: this.error.stack
-    })
+    });
     return response;
   }
 }

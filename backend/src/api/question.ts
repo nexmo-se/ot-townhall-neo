@@ -12,13 +12,13 @@ interface IMarkAs {
 }
 
 class QuestionAPI{
-  static async create(sessionID:string, question:Question):Promise<admin.firestore.DocumentReference>{
+  static async create(sessionID:string, question:Question): Promise<admin.firestore.DocumentReference>{
     const db = Firestore.getInstance();
-    const ref = await db.collection(`questions_${sessionID}`).add(question.toDatabase())
+    const ref = await db.collection(`questions_${sessionID}`).add(question.toDatabase());
     return ref;
   }
   
-  static async vote(sessionID:string, voter:User, questionID: string){
+  static async vote(sessionID:string, voter:User, questionID: string): Promise<void>{
     const db = Firestore.getInstance();
     const doc = await db.collection(`questions_${sessionID}`).doc(questionID).get();
     if(!doc.exists) return;
@@ -29,7 +29,7 @@ class QuestionAPI{
       await db.collection(`questions_${sessionID}`).doc(questionID).update({
         voters: admin.firestore.FieldValue.arrayRemove(voter.toDatabase()),
         vote: admin.firestore.FieldValue.increment(-1)
-      })
+      });
     }else{
       await db.collection(`questions_${sessionID}`).doc(questionID).update({
         voters: admin.firestore.FieldValue.arrayUnion(voter.toDatabase()),
@@ -38,7 +38,7 @@ class QuestionAPI{
     }
   }
 
-  static async markAs({ questionID, sessionID, status }: IMarkAs){
+  static async markAs({ questionID, sessionID, status }: IMarkAs): Promise<void>{
     const db = Firestore.getInstance();
     const docRef = await db.collection(`questions_${sessionID}`).doc(questionID);
     await docRef.update({ status });

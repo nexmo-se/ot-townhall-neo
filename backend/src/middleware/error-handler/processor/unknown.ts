@@ -13,7 +13,7 @@ class Unknown implements Processor{
       status: 500,
       message: "Unknown error",
       stack: this.error.stack || this.error
-    })
+    });
     return response;
   }
 }

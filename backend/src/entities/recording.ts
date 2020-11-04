@@ -15,7 +15,7 @@ class Recording{
     this.status = args?.status;
   }
   
-  toResponse(){
+  toResponse(): Record<string, string>{
     const jsonData = {
       id: this.id, 
       session_id: this.sessionID,

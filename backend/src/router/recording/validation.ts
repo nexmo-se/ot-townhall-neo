@@ -7,4 +7,4 @@ export default {
   setLayout: {
     body: { type: Joi.string().required() }
   }
-}
+};

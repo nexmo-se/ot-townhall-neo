@@ -13,7 +13,7 @@ class NotUniqueProcessor implements Processor{
       status: 409,
       message: "Duplicate entry",
       stack: this.error.stack
-    })
+    });
     return response;
   }
 }
