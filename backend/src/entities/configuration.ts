@@ -1,5 +1,6 @@
 import lodash from "lodash";
 
+export type TRole = "participant" | "moderator" | "presenter";
 interface IRole {
   loginType: "default" | "ama" | "sso";
   pin: string;
@@ -27,6 +28,13 @@ class Configuration implements IConfiguration{
 
   constructor(args: IConfiguration){
     Object.assign(this, args);
+  }
+
+  retrievePin(role: TRole){
+    if (role === "participant") return this.participant.pin;
+    else if(role === "presenter") return this.presenter.pin;
+    else if(role === "moderator") return this.moderator.pin;
+    else throw new Error("Invalid role");
   }
 
   toResponse(){
