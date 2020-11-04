@@ -2,6 +2,7 @@ build/
 uploads/*
 experiment.js
 serviceAccount.json
+dummy-*
 .VSCodeCounter
 
 # Created by https://www.gitignore.io/api/node,macos,windows,visualstudiocode

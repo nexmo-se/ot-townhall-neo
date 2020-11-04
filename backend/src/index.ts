@@ -15,10 +15,11 @@ import RecordingRouter from "./router/recording";
 import RoomRouter from "./router/room";
 import AMARouter from "./router/ama";
 import PollRouter from "./router/poll";
+import ConfigurationRouter from "./router/configuration";
 
 (async () => {
-  await Firebase.init();
-  await DatabaseAPI.initialize();
+  Firebase.init();
+  DatabaseAPI.initialize();
   await DatabaseAPI.migrate();
 
   console.log("Firebase initialized");
@@ -34,6 +35,7 @@ import PollRouter from "./router/poll";
   app.use("/rooms", RoomRouter);
   app.use("/ama", AMARouter);
   app.use("/pollings", PollRouter);
+  app.use("/configurations", ConfigurationRouter);
   
   app.listen(process.env.PORT, () => {
     console.log(`Express is listening on port: ${config.port || 2000}`);
