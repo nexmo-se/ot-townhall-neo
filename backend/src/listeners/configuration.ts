@@ -12,5 +12,12 @@ class ConfigurationListener{
     if (configuration) return res.json(configuration.toResponse()).end();
     else return res.status(404).end();
   }  
+
+  static async updateByTenant(req: Request, res: Response): Promise<void>{
+    const { tenant } = req.params;
+    const { data } = req.body;
+    await ConfigurationAPI.update(tenant, data);
+    return res.json({}).end();
+  }
 }
 export default ConfigurationListener;

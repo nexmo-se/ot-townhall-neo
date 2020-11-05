@@ -8,6 +8,7 @@ import useMe from "hooks/me";
 
 import ModeratorPolling from "../ModeratorPolling";
 import QuestionPanel from "../QuestionPanel";
+import SettingsPanel from "../SettingsPanel";
 import Tab from "components/Tab";
 import TabHeader from "components/TabHeader";
 import TabItem from "components/TabItem";
@@ -16,21 +17,9 @@ import TabPanel from "components/TabPanel";
 import Chat from "components/Chat";
 
 function ModeratorMessageTab(){
-  const [ activeTab, setActiveTab ] = React.useState<string>("questions");
+  const [ activeTab, setActiveTab ] = React.useState<string>("settings");
   const { me } = useMe();
   const mStyles = useStyles();
-  
-  function handleChatClick(){
-    setActiveTab("chats");
-  }
-  
-  function handleQuestionClick(){
-    setActiveTab("questions");
-  }
-
-  function handlePollingClick(){
-    setActiveTab("polling");
-  }
   
   if(!me) return null;
   return (
@@ -39,7 +28,7 @@ function ModeratorMessageTab(){
         {display.chatTab && (
           <TabItem 
             isActive={activeTab === "chats"}
-            onClick={handleChatClick}
+            onClick={() => setActiveTab("chats")}
           >
             Chats
           </TabItem>
@@ -47,7 +36,7 @@ function ModeratorMessageTab(){
         {display.questionTab && (
           <TabItem 
             isActive={activeTab === "questions"}
-            onClick={handleQuestionClick}
+            onClick={() => setActiveTab("questions")}
           >
             Questions
           </TabItem>
@@ -55,11 +44,17 @@ function ModeratorMessageTab(){
         {display.pollingTab && (
           <TabItem
             isActive={activeTab === "polling"}
-            onClick={handlePollingClick}
+            onClick={() => setActiveTab("polling")}
           >
             Polling
           </TabItem>
         )}
+        <TabItem
+          isActive={activeTab === "settings"}
+          onClick={() => setActiveTab("settings")}
+        >
+          Settings
+        </TabItem>
       </TabHeader>
       <TabContent>
         {display.chatTab && (
@@ -77,6 +72,9 @@ function ModeratorMessageTab(){
             <ModeratorPolling />
           </TabPanel>
         )}
+        <TabPanel isActive={activeTab === "settings"}>
+          <SettingsPanel />
+        </TabPanel>
       </TabContent>
     </Tab>
   )

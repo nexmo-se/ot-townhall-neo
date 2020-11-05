@@ -5,7 +5,7 @@ import type { TRole } from "../entities/configuration";
 
 
 class AuthListener {
-  static async authenticate(req: Request, res: Response){
+  static async authenticate(req: Request, res: Response): Promise<void>{
     const { 
       pin: inputPin,
       tenant, 

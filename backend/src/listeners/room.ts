@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 
 import RoomAPI from "../api/room";
 import UserAPI from "../api/user";
-import ConfigurationAPI from "../api/configuration";
 
 import User from "../entities/user";
 import Room from "../entities/room";

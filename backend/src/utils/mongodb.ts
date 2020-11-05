@@ -1,22 +1,22 @@
 import database from "../config/mongodb";
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 
 class MongoDBService{
   static _instance: MongoClient;
 
-  static async init(){
+  static async init(): Promise<void>{
     MongoDBService._instance = new MongoClient(database.url, { useUnifiedTopology: true });
     await MongoDBService._instance.connect();
     await MongoDBService._instance.db("admin").command({ ping: 1 });
     console.log("Database is connected");
   }
 
-  static async getInstance(){
+  static async getInstance(): Promise<Db>{
     if(!MongoDBService._instance) await MongoDBService.init();
     return MongoDBService._instance.db(database.name);
   }
 
-  static async close(){
+  static async close(): Promise<void>{
     if(MongoDBService._instance) await MongoDBService._instance.close();
   }
 }

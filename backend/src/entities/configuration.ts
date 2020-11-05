@@ -32,15 +32,15 @@ class Configuration implements IConfiguration{
     Object.assign(this, args);
   }
 
-  retrievePin(role: TRole){
+  retrievePin(role: TRole): string{
     if (role === "participant") return this.participant.pin;
     else if(role === "presenter") return this.presenter.pin;
     else if(role === "moderator") return this.moderator.pin;
     else throw new Error("Invalid role");
   }
 
-  toResponse(){
-    const roleModel = { loginType: true }
+  toResponse(): any{
+    const roleModel = { loginType: true };
     const participant = lodash.pick(this.participant, lodash.keys(roleModel));
     const presenter = lodash.pick(this.presenter, lodash.keys(roleModel));
     const moderator = lodash.pick(this.moderator, lodash.keys(roleModel));
@@ -50,11 +50,13 @@ class Configuration implements IConfiguration{
       presenter: lodash.mapKeys(presenter, (_value, key) => lodash.snakeCase(key)),
       moderator: lodash.mapKeys(moderator, (_value, key) => lodash.snakeCase(key)),
       tabs: this.tabs
-    }
+    };
     return JSON.parse(JSON.stringify(jsonData));
   }
 
-  static fromDatabase(args: any){
+  // Ignoring because MongoDB return any as the result
+  // eslint-disable-next-line
+  static fromDatabase(args: any): Configuration{
     return new Configuration(args.configuration as IConfiguration);
   }
 }

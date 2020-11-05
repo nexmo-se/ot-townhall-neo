@@ -2,10 +2,11 @@
 import React from "react";
 import clsx from "clsx";
 import User from "entities/user";
-import display from "config/display";
 
 import useStyles from "./styles";
+import useDisplay from "./hooks/display";
 import useSession from "hooks/session";
+import { useParams } from "react-router-dom";
 
 import PollingPanel from "./components/PollingPanel";
 import TabItem from "components/TabItem";
@@ -17,11 +18,19 @@ import Chat from "components/Chat";
 import ParticipantList from "components/ParticipantList";
 import QuestionPanel from "components/QuestionPanel";
 
-type Props = { user: User }
+interface IMainTab {
+  user: User;
+}
 
-function MainTab({ user }:Props){
+interface IParams {
+  tenant: string;
+}
+
+function MainTab({ user }: IMainTab){
   const [ activeTab, setActiveTab ] = React.useState<string>("chats")
   const { session } = useSession();
+  const { tenant } = useParams<IParams>();
+  const { display } = useDisplay({ tenant });
   const mStyles = useStyles();
   const lastTabRef = React.useRef();
   
@@ -65,7 +74,7 @@ function MainTab({ user }:Props){
   return (
     <Tab>
       <TabHeader>
-        {display.participantTab && (
+        {display.participants && (
           <TabItem 
             onClick={handleParticipantsClick}
             isActive={activeTab === "participants"}
@@ -73,7 +82,7 @@ function MainTab({ user }:Props){
             Participants
           </TabItem>
         )}
-        {display.chatTab && (
+        {display.chat && (
            <TabItem 
             onClick={handleChatsClick}
             isActive={activeTab === "chats"}
@@ -81,7 +90,7 @@ function MainTab({ user }:Props){
             Chats
           </TabItem>
         )}
-        {display.questionTab && (
+        {display.questions && (
           <TabItem 
             onClick={handleQuestionsClick}
             isActive={activeTab === "questions"}
@@ -89,7 +98,7 @@ function MainTab({ user }:Props){
             Questions
           </TabItem>
         )}
-        {display.pollingTab && (
+        {display.polling && (
           <TabItem
             onClick={handlePollingClick}
             isActive={activeTab === "polling"}
@@ -99,17 +108,17 @@ function MainTab({ user }:Props){
         )}
       </TabHeader>
       <TabContent>
-        {display.chatTab && (
+        {display.chat && (
           <TabPanel isActive={activeTab === "chats"}>
             <Chat me={user} />
           </TabPanel>
         )}
-        {display.participantTab && (
+        {display.participants && (
           <TabPanel isActive={activeTab === "participants"}>
             <ParticipantList className={mStyles.participantList} />
           </TabPanel>
         )}
-        {display.questionTab && (
+        {display.questions && (
           <TabPanel isActive={activeTab === "questions"}>
             <p className={clsx(mStyles.textHeader, "Vlt-center")}>
               You can put your question here. Anyone can vote to increase visibility as well.
@@ -117,7 +126,7 @@ function MainTab({ user }:Props){
             <QuestionPanel />
           </TabPanel>
         )}
-        {display.pollingTab && (
+        {display.polling && (
           <TabPanel isActive={activeTab === "polling"}>
             <PollingPanel />
           </TabPanel>

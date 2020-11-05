@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import ConfigurationService from "../services/configuration"
+import ConfigurationService from "services/configuration"
 import type { Role } from "entities/user";
 
 interface IArguments {
