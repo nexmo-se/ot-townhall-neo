@@ -28,7 +28,7 @@ function AskNameDialog({ disabled = false, role, onLoggedIn }: IAskNameDialog){
       alert("Please enter your name");
     }else {
       try{
-        const acceptedRole = [ "publisher", "participant", "moderator" ];
+        const acceptedRole = [ "presenter", "participant", "moderator" ];
         if (acceptedRole.includes(role)){
           await AuthService.login({
             tenant,
