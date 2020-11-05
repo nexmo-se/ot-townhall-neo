@@ -52,27 +52,25 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
           mStyles.card
         )}
       >
-        <div className={mStyles.left}>
-          <div className="Vlt-card__header">
-            <h3>Please Provide Your Details</h3>
-            <p>so we can contact you in case we do not get to answer your question later</p>
-          </div>
-          <div className="Vlt-card__content">
-            <TextInput text={firstName} onChange={setFirstName} placeholder="Please enter your First Name"/>
-            <TextInput text={lastName} onChange={setLastName} placeholder="Please enter your Last Name"/>
-            <TextInput text={email} onChange={setEmail} placeholder="Please enter your Email"/>
-            <TextInput text={companyName} onChange={setCompanyName} placeholder="Please enter Company Name"/>
-          </div>
-          <div 
-            className={clsx(
-              "Vlt-card__footer",
-              "Vlt-card__footer--noborder",
-              mStyles.footer
-            )}
-          >
-            <small>This App is best experienced with Chrome as browser</small> <br /> <br />
-            <button type="submit" className="Vlt-btn Vlt-btn--primary Vlt-btn--app" onClick={handleSubmit}>Join</button>
-          </div>
+        <div className="Vlt-card__header">
+          <h3>Please Provide Your Details</h3>
+          <p>so we can contact you in case we do not get to answer your question later</p>
+        </div>
+        <div className="Vlt-card__content">
+          <TextInput text={firstName} onChange={setFirstName} placeholder="Please enter your First Name"/>
+          <TextInput text={lastName} onChange={setLastName} placeholder="Please enter your Last Name"/>
+          <TextInput text={email} onChange={setEmail} placeholder="Please enter your Email"/>
+          <TextInput text={companyName} onChange={setCompanyName} placeholder="Please enter Company Name"/>
+        </div>
+        <div 
+          className={clsx(
+            "Vlt-card__footer",
+            "Vlt-card__footer--noborder",
+            mStyles.footer
+          )}
+        >
+          <small>This App is best experienced with Chrome as browser</small> <br /> <br />
+          <button type="submit" className="Vlt-btn Vlt-btn--primary Vlt-btn--app" onClick={handleSubmit}>Join</button>
         </div>
       </div>
     </form>

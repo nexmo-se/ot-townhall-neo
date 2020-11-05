@@ -9,25 +9,12 @@ export default makeStyles(() => ({
     justifyContent: "center",
     position: "relative"
   },
-  card: { 
-    maxWidth: "70%",
-    display: "flex",
-    position: "relative"
-  },
+  card: { maxWidth: "40%" },
   icon: {
     width: 64,
     height: 64,
     marginBottom: 24
   },
-  left: {
-    borderRightWidth: 1,
-    borderRightStyle: "solid",
-    borderRightColor: "#c2c4cc",
-    width: "50%",
-    paddingRight: 32,
-    marginRight: 32
-  },
-  right: {},
   footer: {
     marginLeft: 0,
     marginRight: 0
