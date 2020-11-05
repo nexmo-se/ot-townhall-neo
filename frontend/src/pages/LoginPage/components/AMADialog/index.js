@@ -3,7 +3,9 @@ import React from "react";
 import clsx from "clsx";
 import validator from "validator";
 import AMAAPI from "api/ama";
+
 import useStyles from "./styles";
+import { useParams } from "react-router-dom";
 
 import User from "entities/user";
 import Participant from "entities/participant";
@@ -11,9 +13,13 @@ import type { Role } from "entities/user";
 
 import TextInput from "components/TextInput";
 
-type AMADialogProps = { 
+interface AMADialogProps { 
   onLoggedIn: (user: User) => Promise<void>,
   role: Role
+}
+
+interface IParams {
+  tenant: string;
 }
 
 function AMADialog({ onLoggedIn, role }: AMADialogProps){
@@ -21,6 +27,7 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
   const [ lastName, setLastName ] = React.useState<string>("");
   const [ email, setEmail ] = React.useState<string>("");
   const [ companyName, setCompanyName ] = React.useState<string>("");
+  const { tenant } = useParams<IParams>();
   const mStyles = useStyles();
 
   async function handleSubmit(e){
@@ -37,7 +44,7 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
       const participant = new Participant({
         firstName, lastName, email, companyName
       })
-      await AMAAPI.create(participant);
+      await AMAAPI.create({ tenant, participant });
       const user = new User({ name: `${firstName} ${lastName}`, role })
       onLoggedIn(user);
     }else alert("Please fill all details");
