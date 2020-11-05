@@ -13,12 +13,12 @@ import Guide from "./Guide";
 import TextInput from "components/TextInput";
 import Icon from "components/Icon";
 
-type AMADialogProps = { 
-  onSubmit: (user: User) => Promise<void>,
+type ConvoAMADialog = { 
+  onLoggedIn: (user: User) => Promise<void>,
   role: Role
 }
 
-function AMADialog({ onSubmit, role }: AMADialogProps){
+function AMADialog({ onLoggedIn, role }: AMADialogProps){
   const [ firstName, setFirstName ] = React.useState<string>("");
   const [ lastName, setLastName ] = React.useState<string>("");
   const [ email, setEmail ] = React.useState<string>("");
@@ -42,7 +42,7 @@ function AMADialog({ onSubmit, role }: AMADialogProps){
       })
       await AMAAPI.create(participant);
       const user = new User({ name: `${firstName} ${lastName}`, role })
-      onSubmit(user);
+      onLoggedIn(user);
     }else alert("Please fill all details");
   }
 
@@ -113,4 +113,4 @@ function AMADialog({ onSubmit, role }: AMADialogProps){
     </form>
   )
 }
-export default AMADialog;
+export default ConvoAMADialog;

@@ -19,7 +19,7 @@ class AuthListener {
       if(acceptedRoles.includes(roleString)){
         const configuration = await ConfigurationAPI.retrieve({ tenant: tenantString });
         const pin = configuration.retrievePin(roleString as TRole);
-        if (inputPin === pin) return res.status(200).end();
+        if (inputPin === pin) return res.json({}).end();
       }
     }
     return res.status(403).end();

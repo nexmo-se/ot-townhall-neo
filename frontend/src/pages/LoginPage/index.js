@@ -5,7 +5,7 @@ import User from "entities/user";
 import useMe from "hooks/me";
 import { useParams, useHistory } from "react-router-dom";
 
-import LoginDialog from "components/LoginDialog";
+import LoginDialog from "./components/LoginDialog";
 
 interface IParam { role: string, tenant: string }
 function LoginPage(){

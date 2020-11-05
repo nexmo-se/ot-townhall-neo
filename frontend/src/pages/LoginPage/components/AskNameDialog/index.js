@@ -1,39 +1,52 @@
 // @flow
 import React from "react";
 import User from "entities/user";
+import AuthService from "../../services/auth";
 import type { Role } from "entities/user";
+
+import useStyles from "./styles";
+import { useParams } from "react-router-dom";
 
 import TextInput from "components/TextInput";
 
+interface IParams { tenant: string }
 interface IAskNameDialog {
   pin: string;
-  onSubmit: (user: User) => Promise<void>;
+  onLoggedIn: (user: User) => Promise<void>;
   role: Role;
   disabled?: boolean;
 }
 
-function AskNameDialog({ disabled = false, role, pin, onSubmit }: IAskNameDialog){
+function AskNameDialog({ disabled = false, role, pin, onLoggedIn }: IAskNameDialog){
   const [ text, setText ] = React.useState<string>("");
   const [ inputPin, setInputPin ] = React.useState<string>("");
+  const { tenant } = useParams<IParams>();
+  const mStyles = useStyles();
 
-  const styles = {
-    container: {
-      width: "100%", height: "100%", display: "flex",
-      alignItems: "center", justifyContent: "center"
+  async function handleSubmit(e){
+    e.preventDefault();
+    if (!text) {
+      alert("Please enter your name");
+    }else {
+      try{
+        const acceptedRole = [ "publisher", "participant", "moderator" ];
+        if (acceptedRole.includes(role)){
+          await AuthService.login({
+            tenant,
+            role,
+            pin: inputPin
+          });
+          const user = new User({ name: text, role });
+          onLoggedIn(user);
+        }else alert("Wrong role");
+      }catch(err){ 
+        alert("Wrong PIN");
+      }
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if(!text) alert("Please enter your name")
-    else if(onSubmit && inputPin === pin) {
-      const user = new User({ name: text, role });
-      onSubmit(user);
-    }else if(inputPin !== pin) alert("Wrong PIN");
-  }
-
   return (
-    <form style={styles.container}>
+    <form className={mStyles.container}>
       <div className="Vlt-card Vlt-bg-white" style={{ maxWidth: 500 }}>
         <div className="Vlt-card__header">
           <h3>Tell Me Your Name</h3>

@@ -8,8 +8,8 @@ import global from "config";
 import User from "entities/user";
 import type { Role } from "entities/user";
 
-import AskNameDialog from "./components/AskNameDialog";
-import AMADialog from "./components/AMADialog";
+import AskNameDialog from "../AskNameDialog";
+import AMADialog from "../AMADialog";
 
 interface ILoginDialog {
   role: Role,
@@ -32,11 +32,17 @@ function LoginDialog({ role, onLoggedIn, disabled = false }: ILoginDialog){
         disabled={disabled}
         pin={pin}
         role={role}
-        onSubmit={onLoggedIn}
+        onLoggedIn={onLoggedIn}
       />
     )
   }else if(role === "participant" && participant.loginStyle === "ama"){
-    return <AMADialog disabled={disabled} role={role} onSubmit={onLoggedIn} />
+    return (
+      <AMADialog 
+        disabled={disabled} 
+        role={role} 
+        onLoggedIn={onLoggedIn} 
+      />
+    )
   }else return null;
 }
 export default LoginDialog;
