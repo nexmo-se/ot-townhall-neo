@@ -6,9 +6,11 @@ import cors from "cors";
 import morgan from "morgan";
 
 import config from "./config";
-import Firebase from "./utils/firebase";
 import DatabaseAPI from "./api/database";
 import ErrorHandler from "./middleware/error-handler";
+
+import Firebase from "./utils/firebase";
+import MongoDBService from "./utils/mongodb";
 
 import QuestionRouter from "./router/question";
 import RecordingRouter from "./router/recording";
@@ -44,4 +46,4 @@ import AuthRouter from "./router/auth";
   });
   
   app.use(ErrorHandler.handle);
-})();
+})().catch(console.dir).finally(() => MongoDBService.close());

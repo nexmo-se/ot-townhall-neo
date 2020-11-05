@@ -21,6 +21,8 @@ interface IConfiguration {
 }
 
 class Configuration implements IConfiguration{
+  static _collectionName = "configurations";
+
   tabs: ITabs;
   participant: IRole;
   presenter: IRole;
@@ -53,7 +55,7 @@ class Configuration implements IConfiguration{
   }
 
   static fromDatabase(args: any){
-    return new Configuration(args as IConfiguration);
+    return new Configuration(args.configuration as IConfiguration);
   }
 }
 export default Configuration;

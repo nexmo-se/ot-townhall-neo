@@ -1,5 +1,6 @@
-import * as configuration from "../data/dummy-tenant-configuration.json";
+// import * as configuration from "../data/dummy-tenant-configuration.json";
 import Configuration from "../entities/configuration";
+import MongoDBService from "../utils/mongodb";
 
 interface IRetrieve{
   tenant?: string;
@@ -7,8 +8,9 @@ interface IRetrieve{
 
 class ConfigurationAPI{
   static async retrieve({ tenant }: IRetrieve): Promise<Configuration>{
-    if(tenant === "dev") return Configuration.fromDatabase(configuration.dev);
-    else throw new Error("Not implemented");
+    const db = await MongoDBService.getInstance();
+    const result = await db.collection(Configuration._collectionName).findOne({ tenant });
+    return Configuration.fromDatabase(result);
   }
 }
 export default ConfigurationAPI;
