@@ -39,10 +39,14 @@ class Configuration implements IConfiguration{
 
   toResponse(){
     const roleModel = { loginType: true }
+    const participant = lodash.pick(this.participant, lodash.keys(roleModel));
+    const presenter = lodash.pick(this.presenter, lodash.keys(roleModel));
+    const moderator = lodash.pick(this.moderator, lodash.keys(roleModel));
+
     const jsonData = {
-      participant: lodash.pick(this.participant, lodash.keys(roleModel)),
-      presenter: lodash.pick(this.presenter, lodash.keys(roleModel)),
-      moderator: lodash.pick(this.moderator, lodash.keys(roleModel)),
+      participant: lodash.mapKeys(participant, (_value, key) => lodash.snakeCase(key)),
+      presenter: lodash.mapKeys(presenter, (_value, key) => lodash.snakeCase(key)),
+      moderator: lodash.mapKeys(moderator, (_value, key) => lodash.snakeCase(key)),
       tabs: this.tabs
     }
     return JSON.parse(JSON.stringify(jsonData));
