@@ -1,10 +1,11 @@
 // @flow
 import React from "react";
 import User from "entities/user";
-import display from "config/display";
 
 import useStyles from "./styles";
+import useDisplay from "./hooks/display";
 import useMe from "hooks/me";
+import { useParams } from "react-router-dom";
 
 import ModeratorPolling from "../ModeratorPolling";
 import QuestionPanel from "../QuestionPanel";
@@ -16,16 +17,22 @@ import TabContent from "components/TabContent";
 import TabPanel from "components/TabPanel";
 import Chat from "components/Chat";
 
+interface IParams {
+  tenant: string;
+}
+
 function ModeratorMessageTab(){
   const [ activeTab, setActiveTab ] = React.useState<string>("settings");
   const { me } = useMe();
+  const { tenant } = useParams<IParams>();
+  const { display } = useDisplay({ tenant });
   const mStyles = useStyles();
   
   if(!me) return null;
   return (
     <Tab className={mStyles.root}>
       <TabHeader>
-        {display.chatTab && (
+        {display.chat && (
           <TabItem 
             isActive={activeTab === "chats"}
             onClick={() => setActiveTab("chats")}
@@ -33,7 +40,7 @@ function ModeratorMessageTab(){
             Chats
           </TabItem>
         )}
-        {display.questionTab && (
+        {display.questions && (
           <TabItem 
             isActive={activeTab === "questions"}
             onClick={() => setActiveTab("questions")}
@@ -41,7 +48,7 @@ function ModeratorMessageTab(){
             Questions
           </TabItem>
         )}
-        {display.pollingTab && (
+        {display.polling && (
           <TabItem
             isActive={activeTab === "polling"}
             onClick={() => setActiveTab("polling")}
@@ -57,17 +64,17 @@ function ModeratorMessageTab(){
         </TabItem>
       </TabHeader>
       <TabContent>
-        {display.chatTab && (
+        {display.chat && (
           <TabPanel isActive={activeTab === "chats"}>
             <Chat me={me ?? new User({ name: "System", role: "system" })} autoScroll={false} />
           </TabPanel>
         )}
-        {display.questionTab && (
+        {display.questions && (
           <TabPanel isActive={activeTab === "questions"}>
             <QuestionPanel />
           </TabPanel>
         )}
-        {display.pollingTab && (
+        {display.polling && (
           <TabPanel isActive={activeTab === "polling"}>
             <ModeratorPolling />
           </TabPanel>
