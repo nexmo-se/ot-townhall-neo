@@ -3,9 +3,11 @@ import { Request, Response } from "express";
 
 import RoomAPI from "../api/room";
 import UserAPI from "../api/user";
+import ConfigurationAPI from "../api/configuration";
 
 import User from "../entities/user";
 import Room from "../entities/room";
+
 
 class Roomlistener{
   static async info(req: Request, res: Response): Promise<void>{
@@ -15,7 +17,7 @@ class Roomlistener{
 
     const user = new User({ role });
     const room = new Room({ name: roomName });
-
+    
     const generatedRoom = await RoomAPI.generateSession(room);
     const generatedUser = await UserAPI.generateToken(generatedRoom, user, data);
     const payload = {
