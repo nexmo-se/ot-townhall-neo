@@ -10,7 +10,6 @@ import Participant from "entities/participant";
 import type { Role } from "entities/user";
 
 import TextInput from "components/TextInput";
-import Icon from "components/Icon";
 
 type AMADialogProps = { 
   onLoggedIn: (user: User) => Promise<void>,
@@ -22,7 +21,6 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
   const [ lastName, setLastName ] = React.useState<string>("");
   const [ email, setEmail ] = React.useState<string>("");
   const [ companyName, setCompanyName ] = React.useState<string>("");
-  const [ guideVisible, setGuideVisible ] = React.useState<boolean>(false);
   const mStyles = useStyles();
 
   async function handleSubmit(e){
@@ -43,10 +41,6 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
       const user = new User({ name: `${firstName} ${lastName}`, role })
       onLoggedIn(user);
     }else alert("Please fill all details");
-  }
-
-  function handleToggleGuide(){
-    setGuideVisible((prev) => !prev);
   }
 
   return (

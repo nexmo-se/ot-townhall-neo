@@ -11,13 +11,12 @@ import TextInput from "components/TextInput";
 
 interface IParams { tenant: string }
 interface IAskNameDialog {
-  pin: string;
   onLoggedIn: (user: User) => Promise<void>;
   role: Role;
   disabled?: boolean;
 }
 
-function AskNameDialog({ disabled = false, role, pin, onLoggedIn }: IAskNameDialog){
+function AskNameDialog({ disabled = false, role, onLoggedIn }: IAskNameDialog){
   const [ text, setText ] = React.useState<string>("");
   const [ inputPin, setInputPin ] = React.useState<string>("");
   const { tenant } = useParams<IParams>();
