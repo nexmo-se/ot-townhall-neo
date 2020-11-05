@@ -26,8 +26,6 @@ function LoginDialog({ role, onLoggedIn, disabled = false }: ILoginDialog){
   const { tenant } = useParams<IParams>();
   const { loginType } = useLoginType({ role, tenant });
 
-  React.useEffect(() => console.log(loginType));
-
   if (lodash.isEmpty(loginType)) {
     return <FullPageLoading />
   } if (loginType === "default") {
