@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import clsx from "clsx";
-import type { Node } from "react";
 
 import ModalHeader from "./components/ModalHeader";
 import Dismiss from "./components/Dismiss";

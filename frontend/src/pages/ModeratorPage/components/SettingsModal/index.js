@@ -60,7 +60,7 @@ function SettingsModal({ open, onClose }: ISettingsModal){
       setPollingTab(configuration.tabs.polling);
     }
     fetch();
-  }, [])
+  }, [ tenant ])
   
   return (
     <Modal 

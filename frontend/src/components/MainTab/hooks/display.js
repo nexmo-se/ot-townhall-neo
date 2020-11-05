@@ -27,7 +27,7 @@ function useDisplay({ tenant }: IArgs){
       setDisplay(configuration.tabs);
     }
     fetch();
-  }, []);
+  }, [ tenant ]);
 
   return { display }
 }
