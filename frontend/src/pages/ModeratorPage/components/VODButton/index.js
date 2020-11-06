@@ -29,7 +29,7 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
   const videoRef = React.useRef();
 
   function handleClick(){
-    if(!isPublishing){
+    if (!isPublishing){
       if(inputRef) inputRef.click();
     }else setVideoSource(undefined);
   }
@@ -86,11 +86,13 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
         accept="video/mp4,video/x-m4v,video/*"
         className={mStyles.invisible}
       />
-      <video 
-        ref={videoRef}
-        className={mStyles.invisible}
-        src={videoSource}
-      />
+      {(videoSource)? (
+        <video 
+          ref={videoRef}
+          className={mStyles.invisible}
+          src={videoSource}
+        />
+      ): null}
       <ControlButton
         { ...props }
         size={size}
