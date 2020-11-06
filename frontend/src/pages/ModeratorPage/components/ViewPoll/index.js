@@ -60,7 +60,13 @@ function ViewPoll(){
             text="Stop Polling" 
             onClick={handleStopClick} 
           />
-        ): null}
+        ): (
+          <Button 
+            className={clsx("Vlt-btn--primary", mStyles.button)} 
+            text="Please wait" 
+            disabled
+          />
+        )}
       </div>
       <Button text="Refresh" className="Vlt-btn--tertiary" onClick={refreshClick} />
     </>

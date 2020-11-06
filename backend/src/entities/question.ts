@@ -49,7 +49,7 @@ class Question implements IQuestion{
     const question = new Question({
       owner: User.fromDatabase(data.owner),
       content: data.content,
-      voters: data.voters.map((voter: any) => User.fromDatabase(voter)) || [],
+      voters: data.voters?.map((voter: any) => User.fromDatabase(voter)) || [],
       vote: data.vote
     });
     return question;
