@@ -1,10 +1,10 @@
 // @flow
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 
 interface IRecording {
   id: string;
   sessionID: string | void;
-  duration: number | void;
+  duration: Duration | void;
   createdAt: DateTime | void;
   url: string | void;
   status: string | void;
@@ -13,7 +13,7 @@ interface IRecording {
 interface IConstructor { 
   id: string;
   sessionID?: string;
-  duration?: number;
+  duration?: Duration;
   createdAt?: DateTime;
   url?: string;
   status?: string;
@@ -22,7 +22,7 @@ interface IConstructor {
 class Recording implements IRecording{
   id: string;
   sessionID: string | void;
-  duration: number | void;
+  duration: Duration | void;
   createdAt: DateTime | void;
   url: string | void;
   status: string | void;

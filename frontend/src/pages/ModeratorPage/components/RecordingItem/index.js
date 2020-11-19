@@ -3,7 +3,7 @@ import React from "react";
 import Recording from "entities/recording";
 import useStyles from "./styles";
 import clsx from "clsx";
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { v4 as uuid } from "uuid";
 
 import Icon from "components/Icon";
@@ -23,9 +23,7 @@ function RecordingItem({ recording }: IRecordingItem){
         </h5>
         <p>
           {
-            DateTime
-              .fromMillis(recording.createdAt)
-              .toLocaleString(DateTime.DATETIME_MED)
+            recording.createdAt?.toLocaleString(DateTime.DATETIME_MED)
           }
         </p>
       </div>
@@ -37,7 +35,9 @@ function RecordingItem({ recording }: IRecordingItem){
             [mStyles.noMarginRight]: recording.status !== "available"
           })}
         >
-          49:33
+          {
+            recording.duration?.toFormat("h:m:s")
+          }
         </p>
         { recording.status === "available" && (
           <button className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app">

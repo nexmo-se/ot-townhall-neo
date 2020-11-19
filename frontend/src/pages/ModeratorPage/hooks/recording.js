@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import Recording from "entities/recording";
+import { DateTime, Duration } from "luxon";
 import { v4 as uuid } from "uuid";
 
 function useRecording(){
@@ -10,26 +11,26 @@ function useRecording(){
     setData([
       new Recording({
         id: uuid(),
-        duration: 2144,
-        createdAt: 1605702496000,
+        duration: Duration.fromMillis(2144 * 1000),
+        createdAt: DateTime.fromMillis(1605702496000),
         status: "available"
       }),
       new Recording({
         id: uuid(),
-        duration: 2144,
-        createdAt: 1605702496000,
+        duration: Duration.fromMillis(2144 * 1000),
+        createdAt: DateTime.fromMillis(1605702496000),
         status: "available"
       }),
       new Recording({
         id: uuid(),
-        duration: 2144,
-        createdAt: 1605702496000,
+        duration: Duration.fromMillis(2144 * 1000),
+        createdAt: DateTime.fromMillis(1605702496000),
         status: "expired"
       }),
       new Recording({
         id: uuid(),
-        duration: 2144,
-        createdAt: 1605702496000,
+        duration: Duration.fromMillis(2144 * 1000),
+        createdAt: DateTime.fromMillis(1605702496000),
         status: "expired"
       })
     ])
