@@ -56,6 +56,7 @@ function ModeratorParticipantItem({ user, publisher }: IModeratorParticipantItem
     <LiveParticipantItem 
       user={user}
       publisher={publisher}
+      withAvatar={false}
       additionalControls={(
         <>
           <VODButton 

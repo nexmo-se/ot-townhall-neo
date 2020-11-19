@@ -16,14 +16,22 @@ import VideoButton from "components/VideoButton";
 import MuteButton from "components/MuteButton";
 
 interface ILiveParticipantItem {
-  user: User,
-  className?: any,
-  publisher?: Publisher,
-  subscriber?: Subscriber,
-  additionalControls?: Node
+  user: User;
+  className?: any;
+  publisher?: Publisher;
+  subscriber?: Subscriber;
+  additionalControls?: Node;
+  withAvatar?: boolean;
 }
 
-function LiveParticipantItem({ user, className, publisher, subscriber, additionalControls }: ILiveParticipantItem){
+function LiveParticipantItem({ 
+  user, 
+  className, 
+  publisher,
+  subscriber, 
+  additionalControls,
+  withAvatar = true
+}: ILiveParticipantItem){
   const [ hasVideo, setHasVideo ] = React.useState<boolean>(true);
   const [ hasAudio, setHasAudio ] = React.useState<boolean>(true);
   const mStyles = useStyles();
@@ -75,11 +83,28 @@ function LiveParticipantItem({ user, className, publisher, subscriber, additiona
       )}
       style={{ marginTop: 8, marginBottom: 4 }}
     >
-      <div className="Vlt-card__content" style={{ display: "flex", flexDirection: "row" }}>
-        <Avatar user={user} size={60} className={mStyles.avatar} />
-        <div style={{ display: "flex", flexDirection: "column", maxWidth: 200  }}>
+      <div 
+        className="Vlt-card__content" 
+        style={{ 
+          display: "flex", 
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        { withAvatar && <Avatar size={50} className={mStyles.avatar} user={user} /> }
+        <div 
+          style={{ 
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <p><b>{user.name}</b></p>   
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            style={{ 
+              display: "flex", 
+              flexDirection: "row" 
+            }}
+          >
             {additionalControls}
             <VideoButton 
               size={32} 

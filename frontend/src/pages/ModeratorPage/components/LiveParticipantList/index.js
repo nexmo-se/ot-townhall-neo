@@ -37,12 +37,12 @@ function LiveParticipantList({ children }: ILiveParticipantList){
     <div className={mStyles.container}>
       {children}
       {participants.sort(sortParticipants).map((participant) => {
-        console.log(participant);
         return (
           <LiveParticipantItem 
             key={participant.id}
             user={participant} 
-            subscriber={participant.subscriber} 
+            subscriber={participant.subscriber}
+            withAvatar
           />
         )
       })}

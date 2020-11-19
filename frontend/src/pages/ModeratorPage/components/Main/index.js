@@ -72,10 +72,12 @@ function Main(){
             <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
             <LiveParticipantList>
               {(cameraPublisher && me)? (
-                <ModeratorParticipantItem 
-                  user={me}
-                  publisher={cameraPublisher}
-                />
+                <>
+                  <ModeratorParticipantItem 
+                    user={me}
+                    publisher={cameraPublisher}
+                  />
+                </>
               ): null}
             </LiveParticipantList> 
           </div>
