@@ -12,6 +12,7 @@
     "firebase": "^7.18.0",
     "flow-bin": "0.123.0",
     "lodash": "^4.17.20",
+    "luxon": "^1.25.0",
     "opentok-layout-js": "3.7.1",
     "react": "16.11.0",
     "react-avatar": "3.7.0",

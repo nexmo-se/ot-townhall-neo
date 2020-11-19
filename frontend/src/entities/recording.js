@@ -1,11 +1,39 @@
 // @flow
-class Recording{
+import { DateTime } from "luxon";
+
+interface IRecording {
   id: string;
-  sessionID: string;
+  sessionID: string | void;
+  duration: number | void;
+  createdAt: DateTime | void;
+  url: string | void;
+  status: string | void;
+}
+
+interface IConstructor { 
+  id: string;
+  sessionID?: string;
+  duration?: number;
+  createdAt?: DateTime;
+  url?: string;
+  status?: string;
+}
+
+class Recording implements IRecording{
+  id: string;
+  sessionID: string | void;
+  duration: number | void;
+  createdAt: DateTime | void;
+  url: string | void;
+  status: string | void;
   
-  constructor(args:any){
+  constructor(args: IConstructor){
     this.id = args.id;
-    this.sessionID = args?.sessionID;
+    this.sessionID = args.sessionID;
+    this.duration = args.duration;
+    this.createdAt = args.createdAt;
+    this.url = args.url;
+    this.status = args.status;
   }
   
   static fromResponse(data:any):Recording{

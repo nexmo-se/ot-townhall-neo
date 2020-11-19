@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import ModeratorPolling from "../ModeratorPolling";
 import QuestionPanel from "../QuestionPanel";
 import SettingsPanel from "../SettingsPanel";
+import RecordingPanel from "../RecordingPanel";
 import Tab from "components/Tab";
 import TabHeader from "components/TabHeader";
 import TabItem from "components/TabItem";
@@ -22,7 +23,7 @@ interface IParams {
 }
 
 function ModeratorMessageTab(){
-  const [ activeTab, setActiveTab ] = React.useState<string>("settings");
+  const [ activeTab, setActiveTab ] = React.useState<string>("recording");
   const { me } = useMe();
   const { tenant } = useParams<IParams>();
   const { display } = useDisplay({ tenant });
@@ -62,6 +63,12 @@ function ModeratorMessageTab(){
         >
           Settings
         </TabItem>
+        <TabItem
+          isActive={activeTab === "recording"}
+          onClick={() => setActiveTab("recording")}
+        >
+          Recording
+        </TabItem>
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -81,6 +88,9 @@ function ModeratorMessageTab(){
         )}
         <TabPanel isActive={activeTab === "settings"}>
           <SettingsPanel />
+        </TabPanel>
+        <TabPanel isActive={activeTab === "recording"}>
+          <RecordingPanel />
         </TabPanel>
       </TabContent>
     </Tab>
