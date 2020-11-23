@@ -48,8 +48,8 @@ class PollAPI{
   static async list({ sessionID }: IList): Promise<Poll[]>{
     return await DatabaseAPI.query(async (client: PoolClient) => {
       const queryResponse = await client.query(
-        "SELECT * FROM pollings WHERE session_id=$1 AND status != $2",
-        [ sessionID, "finished" ]
+        "SELECT * FROM pollings WHERE session_id=$1 AND status != $2 AND status != $3",
+        [ sessionID, "finished", "deleted" ]
       );
       if(queryResponse.rowCount === 0) throw new CustomError("pollings/not-found", "Cannot find pollings");
       

@@ -43,6 +43,7 @@ function RecordingItem({ recording }: IRecordingItem){
             href={recording.url}
             target="_blank"
             className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
+            rel="noopener noreferrer"
           >
             <Icon name="Vlt-icon-download-full" />
           </a>

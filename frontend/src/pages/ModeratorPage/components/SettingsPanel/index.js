@@ -5,7 +5,7 @@ import SettingsModal from "../SettingsModal";
 import Button from "components/Button";
 
 function SettingsPanel(){
-  const [ modalOpen, setModalOpen ] = React.useState<boolean>(true);
+  const [ modalOpen, setModalOpen ] = React.useState<boolean>(false);
 
   function toggleOpen(){
     setModalOpen((prev) => !prev)

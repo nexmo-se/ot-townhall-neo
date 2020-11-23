@@ -1,5 +1,4 @@
 // @flow
-import React from "react";
 import FetchService from "services/fetch";
 import config from "config";
 
