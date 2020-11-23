@@ -6,6 +6,10 @@ import { Archive } from "opentok";
 import OpentokRecordingAPI from "./opentok-recording";
 import GhostRiderAPI from "./ghostrider";
 
+interface IList {
+  sessionID: string;
+}
+
 class RecordingAPI{
   static getEngine(): OpentokRecordingAPI | GhostRiderAPI{
     if(config.recordingMode === "opentok") return new OpentokRecordingAPI();
@@ -26,6 +30,12 @@ class RecordingAPI{
   static async status(recording: Recording): Promise<string>{
     const foundRecording = await RecordingAPI.retrieve(recording.id);
     return foundRecording.status;
+  }
+
+  static async list({ sessionID }: IList): Promise<Recording[]>{
+    const engine = RecordingAPI.getEngine();
+    const recordings = await engine.list({ sessionID });
+    return recordings;
   }
   
   static async retrieveActive(sessionID: string): Promise<Recording[]>{

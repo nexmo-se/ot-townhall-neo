@@ -6,6 +6,7 @@ import RecordingListener from "../../listeners/recording";
 import Validator from "./validation";
 
 const router = express.Router();
+router.get("/", ash(RecordingListener.list));
 router.post("/", validate(Validator.create), ash(RecordingListener.create));
 router.post("/:recording_id/layout", validate(Validator.setLayout), ash(RecordingListener.setLayout));
 router.delete("/:recording_id", ash(RecordingListener.destroy));

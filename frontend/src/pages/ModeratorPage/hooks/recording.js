@@ -11,25 +11,25 @@ function useRecording(){
     setData([
       new Recording({
         id: uuid(),
-        duration: Duration.fromMillis(2144 * 1000),
+        duration: Duration.fromMillis(2144000),
         createdAt: DateTime.fromMillis(1605702496000),
         status: "available"
       }),
       new Recording({
         id: uuid(),
-        duration: Duration.fromMillis(2144 * 1000),
+        duration: Duration.fromMillis(2144000),
         createdAt: DateTime.fromMillis(1605702496000),
         status: "available"
       }),
       new Recording({
         id: uuid(),
-        duration: Duration.fromMillis(2144 * 1000),
+        duration: Duration.fromMillis(2144000),
         createdAt: DateTime.fromMillis(1605702496000),
         status: "expired"
       }),
       new Recording({
         id: uuid(),
-        duration: Duration.fromMillis(2144 * 1000),
+        duration: Duration.fromMillis(2144000),
         createdAt: DateTime.fromMillis(1605702496000),
         status: "expired"
       })
