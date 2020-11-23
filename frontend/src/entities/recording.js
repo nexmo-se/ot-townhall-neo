@@ -39,7 +39,11 @@ class Recording implements IRecording{
   static fromResponse(data:any):Recording{
     const recording = new Recording({
       id: data.id,
-      sessionID: data.session_id
+      sessionID: data.session_id,
+      duration: data.duration? Duration.fromMillis(data.duration): undefined,
+      createdAt: data.created_at? DateTime.fromMillis(data.created_at): undefined,
+      url: data.url,
+      status: data.status
     })
     return recording;
   }

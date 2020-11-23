@@ -3,8 +3,7 @@ import React from "react";
 import Recording from "entities/recording";
 import useStyles from "./styles";
 import clsx from "clsx";
-import { DateTime, Duration } from "luxon";
-import { v4 as uuid } from "uuid";
+import { DateTime } from "luxon";
 
 import Icon from "components/Icon";
 
@@ -40,9 +39,13 @@ function RecordingItem({ recording }: IRecordingItem){
           }
         </p>
         { recording.status === "available" && (
-          <button className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app">
+          <a 
+            href={recording.url}
+            target="_blank"
+            className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
+          >
             <Icon name="Vlt-icon-download-full" />
-          </button>
+          </a>
         )}
       </div>
     </div>
