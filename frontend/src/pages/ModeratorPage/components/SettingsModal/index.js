@@ -5,6 +5,7 @@ import ConfigurationService from "services/configuration";
 import useStyles from "./styles";
 import { useParams } from "react-router-dom";
 
+import ResetSettings from "../ResetSettings";
 import TextInput from "components/TextInput";
 import Modal from "components/Modal";
 import Checkbox from "components/Checkbox";
@@ -102,7 +103,7 @@ function SettingsModal({ open, onClose }: ISettingsModal){
           placeholder="Enter new pin here"
         />
 
-        <hr class="hr--tall Vlt-gradient--blue-to-pink"></hr>
+        <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
 
         <p>
           <strong>Tabs.</strong> &nbsp;
@@ -139,6 +140,9 @@ function SettingsModal({ open, onClose }: ISettingsModal){
             />
           </div>
         </div>
+
+        <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
+        <ResetSettings />
       </Modal.Content>
       <Modal.Footer>
         <button

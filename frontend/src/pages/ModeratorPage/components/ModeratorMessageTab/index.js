@@ -23,7 +23,7 @@ interface IParams {
 }
 
 function ModeratorMessageTab(){
-  const [ activeTab, setActiveTab ] = React.useState<string>("recording");
+  const [ activeTab, setActiveTab ] = React.useState<string>("settings");
   const { me } = useMe();
   const { tenant } = useParams<IParams>();
   const { display } = useDisplay({ tenant });
