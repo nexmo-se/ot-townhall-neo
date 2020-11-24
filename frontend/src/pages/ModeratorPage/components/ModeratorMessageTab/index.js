@@ -83,7 +83,7 @@ function ModeratorMessageTab(){
         )}
         {display.polling && (
           <TabPanel isActive={activeTab === "polling"}>
-            <ModeratorPolling />
+            <ModeratorPolling refresh={activeTab === "polling"} />
           </TabPanel>
         )}
         <TabPanel isActive={activeTab === "settings"}>

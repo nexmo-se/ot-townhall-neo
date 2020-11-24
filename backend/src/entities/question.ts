@@ -3,7 +3,7 @@ import moment from "moment";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
 
-export type TStatus = "answered" | "open" | "selected";
+export type TStatus = "answered" | "open" | "selected" | "deleted";
 interface IQuestion{
   id?: string;
   owner: User;
@@ -24,10 +24,10 @@ class Question implements IQuestion{
   constructor(args: IQuestion){
     this.owner = args.owner;
     this.content = args.content;
-    this.voters = args?.voters || [];
-    this.vote = args?.vote || 0;
-    this.id = args?.id ?? uuid();
-    this.status = args?.status ?? "open";
+    this.voters = args.voters || [];
+    this.vote = args.vote || 0;
+    this.id = args.id ?? uuid();
+    this.status = args.status ?? "open";
   }
   
   toDatabase(): Record<string, string | Record<string, string>>{
@@ -46,11 +46,14 @@ class Question implements IQuestion{
   }
   
   static fromDatabase(data: admin.firestore.DocumentData): Question{
+    const values = data.data();
     const question = new Question({
-      owner: User.fromDatabase(data.owner),
-      content: data.content,
-      voters: data.voters?.map((voter: any) => User.fromDatabase(voter)) || [],
-      vote: data.vote
+      id: data.ref.id,
+      owner: User.fromDatabase(values.owner),
+      content: values.content,
+      voters: values.voters?.map((voter: any) => User.fromDatabase(voter)) || [],
+      vote: values.vote,
+      status: values.status ?? "deleted"
     });
     return question;
   }

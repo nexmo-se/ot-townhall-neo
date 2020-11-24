@@ -8,14 +8,19 @@ import useSession from "hooks/session";
 import CreatePoll from "../CreatePoll";
 import ViewPoll from "../ViewPoll";
 
-function ModeratorPolling(){
+interface IModeratorPolling {
+  refresh: boolean;
+}
+
+function ModeratorPolling({ refresh }: IModeratorPolling){
   const [ loading, setLoading ] = React.useState<boolean>(true);
   const { session } = useSession();
   const { polling, retrieve: retrievePolling } = usePolling();
 
   React.useEffect(() => {
+    console.log("refresh");
     if(session) FetchHelper.fetch(retrievePolling, setLoading);
-  }, [ session, retrievePolling ])
+  }, [ session, retrievePolling, refresh ])
 
   if(loading) return <>Loading...</>
   else if(polling) return <ViewPoll />

@@ -11,6 +11,10 @@ interface IMarkAs {
   status: TStatus;
 }
 
+interface IList {
+  sessionID: string;
+}
+
 class QuestionAPI{
   static async create(sessionID:string, question:Question): Promise<admin.firestore.DocumentReference>{
     const db = Firestore.getInstance();
@@ -22,7 +26,7 @@ class QuestionAPI{
     const db = Firestore.getInstance();
     const doc = await db.collection(`questions_${sessionID}`).doc(questionID).get();
     if(!doc.exists) return;
-    const foundQuestion = Question.fromDatabase(doc.data());
+    const foundQuestion = Question.fromDatabase(doc);
     const foundVoter = foundQuestion.voters.find((v) => v.id === voter.id);
     if(foundVoter){
       // Remove the vote
@@ -36,6 +40,15 @@ class QuestionAPI{
         vote: admin.firestore.FieldValue.increment(1)
       });
     }
+  }
+
+  static async list({ sessionID }: IList): Promise<Question[]> {
+    const db = Firestore.getInstance();
+    const querySnapshot = await db.collection(`questions_${sessionID}`).get();
+    const questions = querySnapshot.docs.map((docData) => {
+      return Question.fromDatabase(docData);
+    })
+    return questions;
   }
 
   static async markAs({ questionID, sessionID, status }: IMarkAs): Promise<void>{
