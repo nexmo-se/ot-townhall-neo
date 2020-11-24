@@ -2,8 +2,8 @@
 
 type TArguments = any | void;
 interface ICallback {
-  error?: (err: Error) => void | Promise<any>;
-  done?: (returnValue: any) => void | Promise<any>;
+  error?: (err?: Error) => void | Promise<any>;
+  done?: (returnValue?: any) => void | Promise<any>;
   finally?: () => void | Promise<any>;
 }
 

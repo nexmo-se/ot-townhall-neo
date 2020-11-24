@@ -142,12 +142,12 @@ function SettingsModal({ open, onClose }: ISettingsModal){
         </div>
 
         <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
-        <ResetSettings />
+        <ResetSettings clear={open} />
       </Modal.Content>
       <Modal.Footer>
         <button
-          className="Vlt-btn Vlt-btn--app Vlt-btn--tertiary Vlt-modal__cancel"
-
+          className="Vlt-btn Vlt-btn--app Vlt-btn--tertiary"
+          onClick={onClose}
         >
           Cancel
         </button>
