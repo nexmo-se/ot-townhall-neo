@@ -51,7 +51,7 @@ class PollAPI{
         "SELECT * FROM pollings WHERE session_id=$1 AND status != $2 AND status != $3",
         [ sessionID, "finished", "deleted" ]
       );
-      if(queryResponse.rowCount === 0) throw new CustomError("pollings/not-found", "Cannot find pollings");
+      if(queryResponse.rowCount === 0) throw new CustomError("NotFound", "Cannot find pollings");
       
       const polls = queryResponse.rows.map((response) => Poll.fromDatabase(response));
       const promises = polls.map(async (poll) => {

@@ -18,7 +18,6 @@ function ModeratorPolling({ refresh }: IModeratorPolling){
   const { polling, retrieve: retrievePolling } = usePolling();
 
   React.useEffect(() => {
-    console.log("refresh");
     if(session) FetchHelper.fetch(retrievePolling, setLoading);
   }, [ session, retrievePolling, refresh ])
 
