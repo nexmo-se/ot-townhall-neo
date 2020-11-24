@@ -8,8 +8,10 @@ interface IArguments {
 
 function useQuestion({ sessionID }: IArguments){
   async function reset() {
-    const url = `${config.apiURL}/questions?session_id=${sessionID}`;
-    await FetchService.delete(url);
+    const url = `${config.apiURL}/questions`;
+    await FetchService.delete(url, JSON.stringify({
+      session_id: sessionID
+    }));
   }
 
   return { reset }
