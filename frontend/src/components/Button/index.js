@@ -10,7 +10,7 @@ type Props = {
 
 function Button({ text, className, onClick, ...props }:Props){
 
-  function handleClick(e){
+  function handleClick (e) {
     e.preventDefault();
     if(onClick) onClick(e);
   }
