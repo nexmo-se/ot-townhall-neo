@@ -1,4 +1,5 @@
 import "@vonagevolta/volta2/dist/css/volta.min.css";
+import "assets/css/style.css";
 
 import React from 'react';
 import ReactDOM from 'react-dom';
