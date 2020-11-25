@@ -2,6 +2,7 @@
 import React from "react";
 import LayoutManager from "utils/layout-manager";
 import clsx from "clsx";
+import lodash from "lodash";
 
 import useStyles from "./styles";
 import useSession from "hooks/session";
@@ -22,7 +23,7 @@ function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
 
   React.useEffect(() => {
     setIsBig(size === "big");
-  }, [ size ]);
+  }, [size]);
 
   React.useEffect(() => {
     layoutRef.current = new LayoutManager(id);
@@ -32,11 +33,17 @@ function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
       }
     }));
     if(containerRef.current) observer.observe(containerRef.current, { childList: true });
-  }, [ id, session, streams ]);
+  }, [id, session, streams]);
 
   React.useEffect(() => {
     if(layoutRef.current) layoutRef.current.layout(session, streams)
-  }, [ session, streams ])
+  }, [session, streams]);
+
+  React.useEffect(() => {
+    window.addEventListener("resize", lodash.debounce(() => {
+      if(layoutRef.current) layoutRef.current.layout(session, streams);
+    }, 150))
+  } , [session, streams])
 
   return (
     <div 
