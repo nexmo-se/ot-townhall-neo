@@ -13,8 +13,19 @@ import Button from "components/Button";
 
 function ViewPoll(){
   const [ loading, setLoading ] = React.useState<boolean>(false);
-  const { polling, retrieve: retrievePolling, start: startPolling, stop: stopPolling } = usePolling();
-  const { startPolling: signalStartPolling, stopPolling: signalStopPolling } = useMessage();
+  const [ sendingSignal, setSendingSignal ] = React.useState<boolean>(false);
+  const { 
+    polling, 
+    retrieve: retrievePolling, 
+    start: startPolling, 
+    stop: stopPolling 
+  } = usePolling();
+
+  const { 
+    startPolling: signalStartPolling, 
+    stopPolling: signalStopPolling 
+  } = useMessage();
+
   const { session } = useSession();
   const mStyles = useStyles();
 
@@ -22,14 +33,22 @@ function ViewPoll(){
     if(session) FetchHelper.fetch(retrievePolling, setLoading);
   }
 
-  async function handleStartClick(){
+  async function start() {
     await startPolling();
     await signalStartPolling();
   }
 
-  async function handleStopClick(){
+  async function stop() {
     await stopPolling();
     await signalStopPolling();
+  }
+
+  async function handleStartClick(){
+    FetchHelper.fetch(start, setSendingSignal);
+  }
+
+  async function handleStopClick(){
+    FetchHelper.fetch(stop, setSendingSignal); 
   }
 
   React.useEffect(() => {    
@@ -47,18 +66,20 @@ function ViewPoll(){
       })?.map((item) => (
         <PollResultItem key={item.id} item={item} />
       ))}
-      <div>
+      <div className={mStyles.buttonContainer}>
         {polling?.status === "pending"? (
           <Button 
             className={mStyles.button} 
             text="Start Polling" 
             onClick={handleStartClick} 
+            disabled={sendingSignal}
           /> 
         ): polling?.status === "started"? (
           <Button 
             className={clsx("Vlt-btn--destructive", mStyles.button)} 
             text="Stop Polling" 
             onClick={handleStopClick} 
+            disabled={sendingSignal}
           />
         ): (
           <Button 
@@ -68,7 +89,15 @@ function ViewPoll(){
           />
         )}
       </div>
-      <Button text="Refresh" className="Vlt-btn--tertiary" onClick={refreshClick} />
+      <Button 
+        text="Refresh" 
+        className={clsx(
+          "Vlt-btn--tertiary",
+          mStyles.refreshButton
+        )} 
+        onClick={refreshClick}
+        disabled={sendingSignal}
+      />
     </>
   )
 }

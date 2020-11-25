@@ -13,6 +13,7 @@ import TextInput from "components/TextInput";
 import Button from "components/Button";
 
 function QuestionInput(){
+  const [ sending, setSending ] = React.useState<boolean>(false);
   const [ text, setText ] = React.useState<string>("");
   const mStyles = useStyles();
   const mSession = useSession();
@@ -20,6 +21,7 @@ function QuestionInput(){
   
   async function handleSubmit(e){
     e.preventDefault();
+    setSending(true);
     if(!mMe.me) throw new Error("Ops!");
     const { sessionId: sessionID, connection } = mSession.session;
     const question = new Question({
@@ -32,6 +34,7 @@ function QuestionInput(){
     })
     await QuestionAPI.create(sessionID, question);
     setText("");
+    setSending(false);
   }
   
   return (
@@ -46,6 +49,7 @@ function QuestionInput(){
         text="Send"
         onClick={handleSubmit}
         className={mStyles.button}
+        disabled={sending}
       />
     </form>
   );

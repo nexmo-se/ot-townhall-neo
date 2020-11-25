@@ -5,6 +5,7 @@ import FetchHelper from "helper/fetch";
 import useQuestion from "../../hooks/question";
 import usePolling from "../../hooks/polling";
 import useSession from "hooks/session";
+import useMessage from "hooks/message";
 
 interface IResetSettings {
   clear: boolean;
@@ -16,6 +17,7 @@ function ResetSettings({ clear }: IResetSettings) {
   const { session } = useSession();
   const { reset: resetQuestion } = useQuestion({ sessionID: session?.id });
   const { reset: resetPolling } = usePolling({ sessionID: session?.id });
+  const { stopPolling: signalStopPolling } = useMessage();
 
   async function handleResetQuestionClick(){
     FetchHelper.fetch(resetQuestion, setDisabled, undefined, {
@@ -26,7 +28,10 @@ function ResetSettings({ clear }: IResetSettings) {
 
   async function handleResetPollingClick(){
     FetchHelper.fetch(resetPolling, setDisabled, undefined, {
-      done: () => setStatus("success"),
+      done: () => {
+        signalStopPolling();
+        setStatus("success");
+      },
       error: () => setStatus("error")
     });
   }
