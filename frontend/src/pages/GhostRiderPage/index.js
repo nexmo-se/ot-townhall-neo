@@ -9,6 +9,7 @@ import MessageProvider from "contexts/message";
 
 import Main from "./components/Main";
 import SelectedQuestion from "components/SelectedQuestion";
+import PageWrapper from "components/PageWrapper";
 
 interface IParam { tenant: string }
 function PresenterPage(){
@@ -23,10 +24,10 @@ function PresenterPage(){
   return (
     <SessionProvider>
       <MessageProvider>
-        <>
+        <PageWrapper>
           <SelectedQuestion />
           <Main />
-        </>
+        </PageWrapper>
       </MessageProvider>
     </SessionProvider>
   )

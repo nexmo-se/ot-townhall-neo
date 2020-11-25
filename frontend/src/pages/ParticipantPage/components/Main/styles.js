@@ -6,8 +6,9 @@ export default makeStyles(() => ({
   hidden: { display: "none !important" },
   videoControl: { marginTop: 16 },
   container: { 
-    width: "100vw", 
-    height: "100vh", 
+    width: "100%",
+    flex: 1,
+    overflow: "hidden",
     display: "flex", 
     flexDirection: "row" 
   },

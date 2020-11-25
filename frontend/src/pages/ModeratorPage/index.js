@@ -10,6 +10,7 @@ import PollingProvider from "contexts/polling";
 
 import Main from "./components/Main";
 import SelectedQuestion from "components/SelectedQuestion";
+import PageWrapper from "components/PageWrapper";
 
 interface IParam { tenant: string };
 function ModeratorPage(){
@@ -30,10 +31,10 @@ function ModeratorPage(){
     }}>
       <MessageProvider>
         <PollingProvider>
-          <>
+          <PageWrapper>
             <SelectedQuestion />
             <Main />
-          </>
+          </PageWrapper>
         </PollingProvider>
       </MessageProvider>
     </SessionProvider>
