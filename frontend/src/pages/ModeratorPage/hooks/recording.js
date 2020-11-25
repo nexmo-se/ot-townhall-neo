@@ -8,6 +8,10 @@ interface IFetch {
   sessionID: string;
 }
 
+interface IRetrieve {
+  id: string;
+}
+
 function useRecording(){
   const [ data, setData ] = React.useState<Recording[]>([]);
 
@@ -18,6 +22,12 @@ function useRecording(){
     setData(recordings);
   }, []);
 
-  return { fetch, data }
+  const retrieve = React.useCallback(async ({ id }: IRetrieve) => {
+    const url = `${config.apiURL}/recordings/${id}`;
+    const response = await FetchService.get(url);
+    return Recording.fromResponse(response);
+  }, [])
+
+  return { fetch, retrieve, data }
 }
 export default useRecording;

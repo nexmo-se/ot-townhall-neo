@@ -1,9 +1,13 @@
 // @flow
 import React from "react";
+import FetchHelper from "helper/fetch";
+import DownloadService from "services/download";
 import Recording from "entities/recording";
-import useStyles from "./styles";
 import clsx from "clsx";
 import { DateTime } from "luxon";
+
+import useStyles from "./styles";
+import useRecording from "../../hooks/recording";
 
 import Icon from "components/Icon";
 
@@ -12,7 +16,19 @@ interface IRecordingItem {
 }
 
 function RecordingItem({ recording }: IRecordingItem){
+  const [ fetching, setFetching ] = React.useState<boolean>(false);
+  const { retrieve } = useRecording();
   const mStyles = useStyles();
+
+  async function handleDownload() {
+    const foundRecording = await FetchHelper.fetch(retrieve, setFetching, { id: recording.id });
+
+    if (foundRecording) {
+      DownloadService.download({
+        url: foundRecording.url
+      });
+    }
+  }
 
   return (
     <div className={mStyles.container}>
@@ -39,14 +55,13 @@ function RecordingItem({ recording }: IRecordingItem){
           }
         </p>
         { recording.status === "available" && (
-          <a 
-            href={recording.url}
-            target="_blank"
+          <button
             className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
-            rel="noopener noreferrer"
+            onClick={handleDownload}
+            disabled={fetching}
           >
             <Icon name="Vlt-icon-download-full" />
-          </a>
+          </button>
         )}
       </div>
     </div>

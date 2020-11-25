@@ -47,5 +47,11 @@ class RecordingListener{
     const payload = recordings.map((recording) => recording.toResponse());
     return res.json(payload).end();
   }
+
+  static async retrieve(req: Request, res: Response): Promise<void> {
+    const { recording_id: recordingID } = req.params;
+    const recording = await RecordingAPI.retrieve(recordingID);
+    return res.json(recording.toResponse()).end();
+  }
 }
 export default RecordingListener;

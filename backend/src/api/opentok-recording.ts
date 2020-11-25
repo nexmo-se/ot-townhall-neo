@@ -34,10 +34,13 @@ class OpentokRecording{
   async list({ sessionID }: IList): Promise<Recording[]> {
     const rawRecordings = await new Promise<Archive[]>((resolve, reject) => {
       OT.getInstance().listArchives({ sessionId: sessionID }, (err: any, archives: Archive[]) => {
-        if(err) reject(err);
-        else resolve(archives)
+        if (err) {
+          console.log(err);
+          resolve([]);
+        } else resolve(archives)
       })
     });
+    
     const recordings = rawRecordings.map((raw) => {
       return new Recording({
         id: raw.id,
