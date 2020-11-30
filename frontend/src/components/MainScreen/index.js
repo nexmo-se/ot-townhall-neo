@@ -1,20 +1,21 @@
 // @flow
 import React from "react";
+
+import SlideContainer from "components/SlideContainer";
 import LayoutContainer from "components/LayoutContainer";
-import LayoutManager from "utils/layout-manager";
 
-type Props = { 
-  camera:{ container:string, manager?:LayoutManager },
-  screen:{ container:string, manager?:LayoutManager },
-  hasScreen:boolean 
-}
-
-function MainScreen({ camera, screen, hasScreen }:Props){
-
+function MainScreen() {
   return (
-    <React.Fragment>
-      <LayoutContainer id={camera.container} size="big" />
-    </React.Fragment>
+    <>
+      <LayoutContainer
+        id="cameraContainer"
+        size="small"
+      />
+      <SlideContainer
+        src="https://docs.google.com/presentation/d/e/2PACX-1vQy9_CG_ChBtmpIemHO_zB3XXfxWWTK_0NAPJpNmBusiuruxrANFJM5-iEpKzcGuA/embed?start=false&loop=false&delayms=3000"
+        allowInteraction
+      />
+    </>
   )
 }
 export default MainScreen;

@@ -14,9 +14,10 @@ import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
 import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
 import LiveBadge from "components/LiveBadge";
 import ParticipantList from "components/ParticipantList";
+
+import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){
@@ -90,7 +91,7 @@ function Main(){
           mStyles.rightPanel,
           mStyles.black
         )}>
-          <LayoutContainer id="cameraContainer" size="big" />
+          <MainScreen />
           <LiveBadge className={mStyles.liveBadge} />
         </div>
       </div>

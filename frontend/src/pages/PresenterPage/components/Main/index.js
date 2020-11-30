@@ -19,6 +19,7 @@ import VideoControl from "components/VideoControl";
 import LiveBadge from "components/LiveBadge";
 import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
+import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){
@@ -51,7 +52,8 @@ function Main(){
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
-          <LayoutContainer id="cameraContainer" size="big" />
+          {/* <LayoutContainer id="cameraContainer" size="big" /> */}
+          <MainScreen />
           <WhiteLayer/>
           <VideoHoverContainer>
             <VideoControl 
