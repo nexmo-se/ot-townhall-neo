@@ -2,12 +2,11 @@
 import { makeStyles } from "@material-ui/styles";
 export default makeStyles(() => ({
   container: {
-    width: "20%",
-    height: "100%",
+    flexBasis: "20%",
     zIndex: 0
   },
   black: { backgroundColor: "black" },
-  big: { width: "100%" },
-  screen: { width: "80%" },
+  big: { flexBasis: "100%" },
+  screen: { flexBasis: "80%" },
   hidden: { display: "none" }
 }));

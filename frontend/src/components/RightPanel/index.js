@@ -13,9 +13,7 @@ function RightPanel({ user }:Props){
   
   return (
     <div className={mStyles.root}>
-      <div className={mStyles.moderator}>
-        <ModeratorStream />
-      </div>
+      <ModeratorStream />
       <MainTab user={user} />
     </div>
   )

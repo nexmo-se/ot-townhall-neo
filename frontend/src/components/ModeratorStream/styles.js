@@ -1,11 +1,11 @@
 // @flow
 import { makeStyles } from "@material-ui/styles";
 export default makeStyles(() => ({
-  root: {
+  moderator: {
     flexBasis: "25%",
+    display: "flex",
     overflow: "hidden",
-    borderLeft: "1px solid #e7ebee",
-    display: "flex", 
-    flexDirection: "column"
+    borderBottom: "1px solid #e7ebee", 
+    position: "relative"
   }
 }), { index: 1 })

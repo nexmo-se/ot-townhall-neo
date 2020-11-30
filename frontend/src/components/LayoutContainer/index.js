@@ -9,21 +9,16 @@ import useSession from "hooks/session";
 
 interface ILayoutContainer { 
   id: string; 
-  size: "big"|"small";
+  size: "big" | "small" | "screen";
   hidden?: boolean;
-  screen?: boolean;
+  children?: any;
 }
 
-function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
-  const [ isBig, setIsBig ] = React.useState<boolean>(true);
+function LayoutContainer({ id, size = "big", hidden, children }: ILayoutContainer){
   const { streams, session } = useSession();
   const mStyles = useStyles();
   const containerRef = React.useRef();
   const layoutRef = React.useRef<any>();
-
-  React.useEffect(() => {
-    setIsBig(size === "big");
-  }, [size]);
 
   React.useEffect(() => {
     layoutRef.current = new LayoutManager(id);
@@ -52,11 +47,13 @@ function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
       className={clsx({
         [mStyles.container]: true,
         [mStyles.black]: true,
-        [mStyles.big]: isBig,
+        [mStyles.big]: size === "big",
         [mStyles.hidden]: hidden,
-        [mStyles.screen]: screen
+        [mStyles.screen]: size === "screen"
       })}
-    />
+    >
+      {children}
+    </div>
   );
 }
 export default LayoutContainer;
