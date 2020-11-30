@@ -5,15 +5,15 @@ import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import ControlButton from "components/ControlButton";
 
-type Props = {
-  size?:number,
-  fontSize?:number,
-  hasAudio:boolean,
-  loading?:boolean,
-  onClick?:Function
+interface IMuteButton {
+  size?: number,
+  fontSize?: number,
+  hasAudio: boolean,
+  loading?: boolean,
+  onClick?: Function
 }
 
-function MuteButton({ hasAudio, ...props }:Props){
+function MuteButton({ hasAudio, ...props }: IMuteButton) {
 
   return (
     <ControlButton

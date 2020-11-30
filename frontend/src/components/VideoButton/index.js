@@ -5,15 +5,15 @@ import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import ControlButton from "components/ControlButton";
 
-type Props = {
-  size?:number,
-  fontSize?:number,
-  hasVideo:boolean,
-  loading?:boolean,
-  onClick?:Function
+interface IVideoButton {
+  size?: number,
+  fontSize?: number,
+  hasVideo: boolean,
+  loading?: boolean,
+  onClick?: Function
 }
 
-function VideoButton({ hasVideo, ...props }:Props){
+function VideoButton({ hasVideo, ...props }: IVideoButton) {
   return (
     <ControlButton 
       {...props}

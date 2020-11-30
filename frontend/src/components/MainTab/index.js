@@ -9,6 +9,7 @@ import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
 import PollingPanel from "./components/PollingPanel";
+import RemoteSlidesPanel from "./components/RemoteSlidesPanel";
 import TabItem from "components/TabItem";
 import TabHeader from "components/TabHeader";
 import TabContent from "components/TabContent";
@@ -27,7 +28,7 @@ interface IParams {
 }
 
 function MainTab({ user }: IMainTab){
-  const [ activeTab, setActiveTab ] = React.useState<string>("chats")
+  const [ activeTab, setActiveTab ] = React.useState<string>("remote-slides")
   const { session } = useSession();
   const { tenant } = useParams<IParams>();
   const { display } = useDisplay({ tenant });
@@ -106,6 +107,12 @@ function MainTab({ user }: IMainTab){
             Polling
           </TabItem>
         )}
+        <TabItem
+          onClick={() => setActiveTab("remote-slides")}
+          isActive={activeTab === "remote-slides"}
+        >
+          Remote Slides
+        </TabItem>
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -131,6 +138,9 @@ function MainTab({ user }: IMainTab){
             <PollingPanel />
           </TabPanel>
         )}
+        <TabPanel isActive={activeTab === "remote-slides"}>
+          <RemoteSlidesPanel />
+        </TabPanel>
       </TabContent>
     </Tab>
   )

@@ -10,12 +10,14 @@ type Props = {
 
 function Icon({ name, className }:Props){
   return (
-    <svg className={clsx(
-      "Vlt-icon",
-      className
-    )}>
+    <svg 
+      className={clsx(
+        "Vlt-icon",
+        className
+      )}
+    >
       <use xlinkHref={`${voltaIcon}#${name}`} />
-  </svg>
+    </svg>
   )
 }
 export default Icon;

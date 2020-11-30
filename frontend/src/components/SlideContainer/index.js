@@ -18,7 +18,7 @@ function SlideContainer({
     <div className={mStyles.root}>
       <iframe 
         title={uuid()}
-        src={src}
+        src={"https://slides.limhenry.xyz/920717"}
         width="100%"
         height="100%"
         frameBorder="0"
@@ -29,9 +29,6 @@ function SlideContainer({
           pointerEvents: allowInteraction? "auto": "none"
         }}
       />
-      <div className={mStyles.control}>
-        &nbsp;
-      </div>
     </div>
   )
 }

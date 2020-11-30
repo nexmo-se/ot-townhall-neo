@@ -7,6 +7,7 @@ import useStyles from "./styles";
 import useSession from "hooks/session";
 
 import LiveParticipantItem from "../LiveParticipantItem";
+import RemoteSlidesButton from "../RemoteSlidesButton";
 
 interface ILiveParticipantList { children?: Node }
 function LiveParticipantList({ children }: ILiveParticipantList){
@@ -43,6 +44,12 @@ function LiveParticipantList({ children }: ILiveParticipantList){
             user={participant} 
             subscriber={participant.subscriber}
             withAvatar
+            additionalControls={(
+              <RemoteSlidesButton
+                size={32}
+                style={{ marginRight: 8 }}
+              />
+            )}
           />
         )
       })}

@@ -10,7 +10,7 @@ import useStyles from "./styles";
 import useMessage from "hooks/message";
 import useSession from "hooks/session";
 
-import Hangup from "./Hangup";
+import Hangup from "./components/Hangup";
 import Avatar from "components/Avatar";
 import VideoButton from "components/VideoButton";
 import MuteButton from "components/MuteButton";

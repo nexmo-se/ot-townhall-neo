@@ -13,8 +13,8 @@ import TheatersIcon from '@material-ui/icons/Theaters';
 import ControlButton from "components/ControlButton";
 
 interface IVODButton {
-  size?: number,
-  fontSize?: number,
+  size: number,
+  fontSize: number,
   style?: any
 }
 
