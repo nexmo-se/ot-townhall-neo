@@ -2,6 +2,7 @@
 import React from "react";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
+import clsx from "clsx";
 import { v4 as uuid } from "uuid";
 
 import useStyles from "./styles";
@@ -74,7 +75,7 @@ function Main(){
     <>
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
-        <div className={mStyles.leftContainer}>
+        <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />       
           <WhiteLayer />
           {cameraPublisher? (
