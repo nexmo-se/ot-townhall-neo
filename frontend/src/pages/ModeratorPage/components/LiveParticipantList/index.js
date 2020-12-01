@@ -7,7 +7,7 @@ import useStyles from "./styles";
 import useSession from "hooks/session";
 
 import LiveParticipantItem from "../LiveParticipantItem";
-import RemoteSlidesButton from "../RemoteSlidesButton";
+import RemoteSlidesButton from "./components/RemoteSlidesButton";
 
 interface ILiveParticipantList { children?: Node }
 function LiveParticipantList({ children }: ILiveParticipantList){
@@ -45,10 +45,15 @@ function LiveParticipantList({ children }: ILiveParticipantList){
             subscriber={participant.subscriber}
             withAvatar
             additionalControls={(
-              <RemoteSlidesButton
-                size={32}
-                style={{ marginRight: 8 }}
-              />
+              <>
+                { participant.subscriber && (
+                  <RemoteSlidesButton
+                    size={32}
+                    style={{ marginRight: 8 }}
+                    user={User.fromConnection(participant.subscriber.stream.connection)}
+                  />
+                )}
+              </>
             )}
           />
         )

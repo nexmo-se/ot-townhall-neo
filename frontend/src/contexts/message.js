@@ -28,6 +28,7 @@ interface IMessageContext {
   raisedHands: Array<User>;
   messages: Array<Message>;
   send: (args: ISend) => Promise<void>;
+  slidesAccess: (args: IUserOnly) => Promise<void>;
   raiseHand: (args: IUserOnly) => Promise<void>;
   removeRaisedHand: (user: User) => void;
   forcePublish: (args: IUserOnly) => Promise<void>;
@@ -43,6 +44,7 @@ export const MessageContext = React.createContext<IMessageContext>({
   raisedHands: [],
   messages: [],
   removeRaisedHand: (user: User) => {},
+  slidesAccess: (args: IUserOnly) => Promise.resolve(),
   raiseHand: (args: IUserOnly) => Promise.resolve(),
   forcePublish: (args: IUserOnly) => Promise.resolve(),
   forceUnpublish: (args: IUserOnly) => Promise.resolve(),
@@ -79,33 +81,37 @@ export default function MessageProvider({ children }: IMessageProvider){
     await signal({ type: "message", data: JSON.stringify(message.toJSON()) });
   }
 
-  async function forcePublish({ user }: IUserOnly){
+  async function slidesAccess({ user }: IUserOnly) {
+    await signal({ type: "slide-access", data: JSON.stringify(user.toJSON()) });
+  }
+
+  async function forcePublish({ user }: IUserOnly) {
     await signal({ type: "force-publish", data: JSON.stringify(user.toJSON()) });
   }
   
-  async function forceUnpublish({ user }: IUserOnly){
+  async function forceUnpublish({ user }: IUserOnly) {
     await signal({ type: "force-unpublish", data: JSON.stringify(user.toJSON()) });
   }
 
-  async function forceVideo({ user, hasVideo }: IForceVideo){
+  async function forceVideo({ user, hasVideo }: IForceVideo) {
     const payload = Object.assign({}, user.toJSON(), { hasVideo });
     await signal({ type: "force-video", data: JSON.stringify(payload) });
   }
 
-  async function forceAudio({ user, hasAudio }: IForceAudio){
+  async function forceAudio({ user, hasAudio }: IForceAudio) {
     const payload = Object.assign({}, user.toJSON(), { hasAudio });
     await signal({ type: "force-audio", data: JSON.stringify(payload) });
   }
 
-  async function raiseHand({ user }: IUserOnly){
+  async function raiseHand({ user }: IUserOnly) {
     await signal({ type: "raise-hand", data: JSON.stringify(user.toJSON())});
   }
 
-  async function startPolling(){
+  async function startPolling() {
     await signal({ type: "start-polling" });
   }
 
-  async function stopPolling(){
+  async function stopPolling() {
     await signal({ type: "stop-polling" });
   }
 
@@ -161,7 +167,8 @@ export default function MessageProvider({ children }: IMessageProvider){
       removeRaisedHand,
       forcePublish,
       forceUnpublish,
-      messages
+      messages,
+      slidesAccess
     }}>
       {children}
     </MessageContext.Provider>
