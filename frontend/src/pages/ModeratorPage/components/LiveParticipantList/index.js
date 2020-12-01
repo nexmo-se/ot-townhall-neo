@@ -31,8 +31,9 @@ function LiveParticipantList({ children }: ILiveParticipantList){
       user.subscriber = subscriber;
       return user;
     })
+    console.log(participants);
     setParticipants(participants);
-  }, [ subscribers ])
+  }, [subscribers]);
 
   return (
     <div className={mStyles.container}>
@@ -50,7 +51,7 @@ function LiveParticipantList({ children }: ILiveParticipantList){
                   <RemoteSlidesButton
                     size={32}
                     style={{ marginRight: 8 }}
-                    user={User.fromConnection(participant.subscriber.stream.connection)}
+                    user={participant}
                   />
                 )}
               </>
