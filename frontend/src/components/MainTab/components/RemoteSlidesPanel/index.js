@@ -18,6 +18,7 @@ function RemoteSlidesPanel() {
   const grantSlidesAccess = React.useCallback(({ data }) => {
     const jsonData = JSON.parse(data);
     if(intendedForMe({ data: JSON.stringify(jsonData.target) })) {
+      setIFrameURL(`https://slides.limhenry.xyz/${jsonData.pin}`)
       setHasAccess(true);
       ack({
         type: "slides-access",
@@ -34,7 +35,7 @@ function RemoteSlidesPanel() {
         data: User.fromConnection(session.connection)
       })
     }
-  }, [intendedForMe, ack])
+  }, [intendedForMe, ack, session])
 
   React.useEffect(() => {
     if(session) session.on("signal:slides-access", grantSlidesAccess);
@@ -44,14 +45,14 @@ function RemoteSlidesPanel() {
       if(session) session.off("signal:slides-access", grantSlidesAccess);
       if(session) session.off("signal:revoke-slides-access", revokeSlidesAccess);
     }
-  }, [session, grantSlidesAccess])
+  }, [session, grantSlidesAccess, revokeSlidesAccess])
   
   return (
     <div className={mStyles.root}>
-      { hasAccess? (
+      { (hasAccess && iframeURL)? (
         <>
           <IFrame 
-            src="https://slides.limhenry.xyz/220076"
+            src={iframeURL}
           />
           <div className={mStyles.topCover}>
             &nbsp;

@@ -12,7 +12,6 @@ import { useParams } from "react-router-dom";
 
 import ShareScreen from "../ShareScreen";
 import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
 import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";

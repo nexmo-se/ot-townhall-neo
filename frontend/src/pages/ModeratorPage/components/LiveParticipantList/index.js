@@ -31,7 +31,6 @@ function LiveParticipantList({ children }: ILiveParticipantList){
       user.subscriber = subscriber;
       return user;
     })
-    console.log(participants);
     setParticipants(participants);
   }, [subscribers]);
 

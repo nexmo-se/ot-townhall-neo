@@ -6,8 +6,8 @@ import useMessage from "hooks/message";
 import useSession from "hooks/session";
 
 import GiveAccessModal from "../GiveAccessModal";
-import Icon from "components/Icon";
 import ControlButton from "components/ControlButton";
+import ShareIcon from '@material-ui/icons/Share';
 
 interface IRemoteSlidesButton {
   user: User;
@@ -27,12 +27,12 @@ function RemoteSlidesButton({ user, ...props }: IRemoteSlidesButton) {
   const accessGranted = React.useCallback(({ data }) => {
     const remoteUser = User.fromJSON(JSON.parse(data));
     if(remoteUser.id === user.id) setActive(true); 
-  }, [])
+  }, [user.id])
 
   const accessRevoked = React.useCallback(({ data }) => {
     const remoteUser = User.fromJSON(JSON.parse(data));
     if(remoteUser.id === user.id) setActive(false);
-  }, [])
+  }, [user.id])
 
   React.useEffect(() => {
     if(session) session.on("signal:ack_slides-access", accessGranted);
@@ -55,11 +55,9 @@ function RemoteSlidesButton({ user, ...props }: IRemoteSlidesButton) {
         {...props}
         onClick={toggleOpen}
         active={active}
+        fontSize={16}
       >
-        <Icon
-          name="Vlt-icon-share-2-full"
-          className="Vlt-icon--smaller"
-        />
+        <ShareIcon fontSize="inherit" />
       </ControlButton>
     </>
   )
