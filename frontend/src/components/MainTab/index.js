@@ -28,7 +28,14 @@ interface IParams {
 }
 
 function MainTab({ user }: IMainTab){
-  const [ activeTab, setActiveTab ] = React.useState<string>("remote-slides")
+  const [ activeTab, setActiveTab ] = React.useState<string>("chats");
+  
+  // TODO: this is for future development. We will only show `remote-slides` when it has `remote-slides`
+  // as for now, just display it right away
+  const [ localShows, setLocalShows ] = React.useState<string[]>([
+    "remote-slides"
+  ]);
+
   const { session } = useSession();
   const { tenant } = useParams<IParams>();
   const { display } = useDisplay({ tenant });
@@ -63,14 +70,26 @@ function MainTab({ user }: IMainTab){
     lastTabRef.current = undefined;
   }, [])
 
+  const slidesAccessListener = React.useCallback(() => {
+    setActiveTab("remote-slides");
+  }, []);
+
   React.useEffect(() => {
     if(session) session.on("signal:start-polling", startPollingListener)
     if(session) session.on("signal:stop-polling", stopPollingListener);
+    if(session) session.on("signal:slides-access", slidesAccessListener);
+
     return function cleanup(){
       if(session) session.off("signal:start-polling", startPollingListener)
       if(session) session.off("signal:stop-polling", stopPollingListener);
+      if(session) session.off("signal:slides-access", slidesAccessListener)
     }
-  }, [ session, startPollingListener, stopPollingListener ])
+  }, [
+    session,
+    startPollingListener,
+    stopPollingListener,
+    slidesAccessListener
+  ])
   
   return (
     <Tab>
@@ -107,12 +126,14 @@ function MainTab({ user }: IMainTab){
             Polling
           </TabItem>
         )}
-        <TabItem
-          onClick={() => setActiveTab("remote-slides")}
-          isActive={activeTab === "remote-slides"}
-        >
-          Remote Slides
-        </TabItem>
+        { localShows.includes("remote-slides") && (
+          <TabItem
+            onClick={() => setActiveTab("remote-slides")}
+            isActive={activeTab === "remote-slides"}
+          >
+            Remote Slides
+          </TabItem>
+        )}
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -138,9 +159,11 @@ function MainTab({ user }: IMainTab){
             <PollingPanel />
           </TabPanel>
         )}
-        <TabPanel isActive={activeTab === "remote-slides"}>
-          <RemoteSlidesPanel />
-        </TabPanel>
+        { localShows.includes("remote-slides") && (
+          <TabPanel isActive={activeTab === "remote-slides"}>
+            <RemoteSlidesPanel />
+          </TabPanel>
+        )}
       </TabContent>
     </Tab>
   )
