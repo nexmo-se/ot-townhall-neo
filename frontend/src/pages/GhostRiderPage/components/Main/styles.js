@@ -11,7 +11,10 @@ export default makeStyles(() => ({
     flexDirection: "row" 
   },
   leftContainer: { 
-    flex: 3, 
+    flexBasis: "75%",
+    overflow: "hidden",
+    flexDirection: "column",
+    display: "flex",
     position: "relative" 
   },
   logoContainer: { 
