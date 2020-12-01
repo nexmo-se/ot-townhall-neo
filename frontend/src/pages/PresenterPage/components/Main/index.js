@@ -51,7 +51,6 @@ function Main(){
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
-          {/* <LayoutContainer id="cameraContainer" size="big" /> */}
           <MainScreen />
           <WhiteLayer/>
           <VideoHoverContainer>

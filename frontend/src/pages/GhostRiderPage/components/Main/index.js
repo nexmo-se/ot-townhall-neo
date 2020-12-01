@@ -13,7 +13,7 @@ import BlackLayer from "components/BlackLayer";
 import WhiteLayer from "components/WhiteLayer";
 import Chat from "components/Chat";
 import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
+import MainScreen from "components/MainScreen";
 import ModeratorStream from "components/ModeratorStream";
 
 interface IParam { tenant: string }
@@ -42,7 +42,7 @@ function GhostRiderPage(){
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={mStyles.leftContainer}>
-          <LayoutContainer id="cameraContainer" size="big" />
+          <MainScreen />
           <BlackLayer/>
           <WhiteLayer/>
           <div className={mStyles.logoContainer}>

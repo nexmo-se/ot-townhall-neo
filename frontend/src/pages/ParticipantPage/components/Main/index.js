@@ -12,7 +12,6 @@ import useMessage from "hooks/message";
 import { useParams } from "react-router-dom";
 
 import RaiseHandButton from "../RaiseHandButton";
-import LayoutContainer from "components/LayoutContainer";
 import WhiteLayer from "components/WhiteLayer";
 import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
@@ -20,6 +19,7 @@ import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
 import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo";
+import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){
@@ -75,7 +75,7 @@ function Main(){
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={mStyles.leftContainer}>
-          <LayoutContainer id="cameraContainer" size="big" />        
+          <MainScreen />       
           <WhiteLayer />
           {cameraPublisher? (
             <VideoHoverContainer>
