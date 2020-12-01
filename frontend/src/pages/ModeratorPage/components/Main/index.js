@@ -13,11 +13,10 @@ import LiveParticipantList from "../LiveParticipantList";
 import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
+import MainScreen from "../MainScreen";
 import FullPageLoading from "components/FullPageLoading";
 import LiveBadge from "components/LiveBadge";
 import ParticipantList from "components/ParticipantList";
-
-import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){

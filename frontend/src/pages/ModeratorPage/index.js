@@ -4,6 +4,7 @@ import React from "react";
 import useMe from "hooks/me";
 import { useHistory, useParams } from "react-router-dom";
 
+import VODProvider from "./contexts/vod";
 import SessionProvider from "contexts/session";
 import MessageProvider from "contexts/message";
 import PollingProvider from "contexts/polling";
@@ -31,10 +32,12 @@ function ModeratorPage(){
     }}>
       <MessageProvider>
         <PollingProvider>
-          <PageWrapper>
-            <SelectedQuestion />
-            <Main />
-          </PageWrapper>
+          <VODProvider>
+            <PageWrapper>
+              <SelectedQuestion />
+              <Main />
+            </PageWrapper>
+          </VODProvider>
         </PollingProvider>
       </MessageProvider>
     </SessionProvider>

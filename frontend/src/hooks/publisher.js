@@ -53,7 +53,12 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
           }
         };
         const finalOptions = Object.assign({}, options, extraData);
-        publisherRef.current = OT.initPublisher(containerID, finalOptions);
+        if (finalOptions.insertDefaultUI === false) {
+          publisherRef.current = OT.initPublisher(undefined, finalOptions);
+        } else {
+          publisherRef.current = OT.initPublisher(containerID, finalOptions);
+        }
+
         if(publisherRef.current) publisherRef.current.on("streamCreated", streamCreatedListener);
         if(publisherRef.current) publisherRef.current.on("streamDestroyed", streamDestroyedListener);
 

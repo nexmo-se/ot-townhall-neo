@@ -32,7 +32,7 @@ function LayoutContainer({ id, size = "big", hidden, children }: ILayoutContaine
 
   React.useEffect(() => {
     if(layoutRef.current) layoutRef.current.layout(session, streams)
-  }, [session, streams]);
+  }, [session, streams, size]);
 
   React.useEffect(() => {
     window.addEventListener("resize", lodash.debounce(() => {

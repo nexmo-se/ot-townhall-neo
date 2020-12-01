@@ -102,7 +102,6 @@ export default function SesisonProvider({
   const unsubscribe = React.useCallback((stream) => {
     setSubscribers((prev) => {
       return prev.filter((prevSubscriber) => {
-        console.log(prevSubscriber, stream.id);
         if(prevSubscriber.id === null) return false;
         else if(prevSubscriber.stream.id === stream.id) return false;
         else return true;
