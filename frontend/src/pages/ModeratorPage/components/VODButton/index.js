@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import FetchHelper from "helper/fetch";
 import StreamHelper from "utils/stream-helper";
 import User from "entities/user";
 import lodash from "lodash";
@@ -21,7 +20,6 @@ interface IVODButton {
 }
 
 function VODButton({ size, fontSize, ...props }: IVODButton){
-  const [ isPublishing, setIsPublishing ] = React.useState<boolean>(false);
   const [ inputRef, setInputRef ] = React.useState<any>();
   const {
     setVideoSource,

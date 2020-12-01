@@ -32,7 +32,7 @@ function MainTab({ user }: IMainTab){
   
   // TODO: this is for future development. We will only show `remote-slides` when it has `remote-slides`
   // as for now, just display it right away
-  const [ localShows, setLocalShows ] = React.useState<string[]>([
+  const [ localShows ] = React.useState<string[]>([
     "remote-slides"
   ]);
 
