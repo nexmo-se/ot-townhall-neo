@@ -4,8 +4,8 @@ import StreamHelper from "utils/stream-helper";
 import User from "entities/user";
 import lodash from "lodash";
 
-import useStyles from "./styles";
 import useVOD from "../../hooks/vod";
+import useStyles from "./styles";
 import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 import useMe from "hooks/me";
@@ -20,26 +20,28 @@ interface IVODButton {
 }
 
 function VODButton({ size, fontSize, ...props }: IVODButton){
-  const [ inputRef, setInputRef ] = React.useState<any>();
+  const [isPublishing, setIsPublishing] = React.useState<boolean>(false);
+  const [inputRef, setInputRef]  = React.useState<any>();
+  const { me } = useMe();
+  const { session } = useSession();
+  
   const {
-    setVideoSource,
-    clearVideoSource,
+    publish: doPublish,
+    unpublish: doUnpublish
+  } = usePublisher({ containerID: "cameraContainer", name: `${me?.name ?? ""}'s Video` });
+
+  const {
     videoSource,
+    setVideoSource,
     videoRef
   } = useVOD();
 
   const mStyles = useStyles();
-  const mMe = useMe();
-  const { publish, unpublish } = usePublisher({ containerID: "cameraContainer", name: `${mMe.me?.name ?? ""}'s Video` });
-  const { session } = useSession();
 
-  function handleClick() {
-    if (lodash.isEmpty(videoSource)) {
-      if (inputRef) inputRef.click();
-    } else {
-      clearVideoSource()
-      unpublish({ session });
-    }
+  function handleClick(){
+    if (lodash.isEmpty(videoSource)){
+      if(inputRef) inputRef.click();
+    }else setVideoSource("");
   }
 
   function handleFileChange(e){
@@ -48,54 +50,43 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
     setVideoSource(videoURL);
   }
 
-  const preparePublish = React.useCallback(
-    async () => {
+  React.useEffect(() => {
+    async function publish(){
       await videoRef.play();
+
       const videoStream = StreamHelper.getStream(videoRef);
-      
-      if (videoStream) {
+      if(videoStream){
+        setIsPublishing(true);
         const [ videoTrack ] = videoStream.getVideoTracks();
         const [ audioTrack ] = videoStream.getAudioTracks();
-        return {
-          videoSource: videoTrack,
-          audioSource: audioTrack? audioTrack: false
-        }
-      } else {
-        return {
-          videoSource: undefined,
-          audioSource: undefined
-        }
-      }
-    },
-    [videoRef]
-  )
 
-  React.useEffect(
-    () => {
-      async function doPublish() {
-        const { videoSource, audioSource } = await preparePublish();
         const user = new User({ name: "vod", role: "vod" });
-
-        publish({
+        doPublish({
           user,
           session,
           extraData: {
             fitMode: "contain",
-            videoSource,
-            audioSource,
+            videoSource: videoTrack,
+            audioSource: audioTrack? audioTrack: false,
+            bitrate: 64000,
             insertDefaultUI: false
           }
         })
       }
+    }
 
-      if (!lodash.isEmpty(videoSource) && videoRef) doPublish();
-    },
-    [videoSource, videoRef, preparePublish, publish, session]
-  )
+    async function unpublish(){
+      setIsPublishing(false);
+      doUnpublish({ session })
+    }
+
+    if(videoSource && !isPublishing && session) publish();
+    else if(!videoSource && isPublishing && session) unpublish();
+  }, [ videoSource, videoRef, isPublishing, doPublish, doUnpublish, session ]);
 
   React.useEffect(() => {
     if(inputRef) inputRef.value = "";
-  });
+  }, [inputRef, videoSource]);
 
   return (
     <>

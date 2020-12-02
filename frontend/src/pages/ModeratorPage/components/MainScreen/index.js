@@ -15,10 +15,7 @@ function MainScreen() {
         id="cameraContainer"
         size={lodash.isEmpty(videoSource)? "big": "small"}
       />
-      
-      { !lodash.isEmpty(videoSource) && (
-        <VideoContainer />
-      )}
+      <VideoContainer />
     </>
   )
 }

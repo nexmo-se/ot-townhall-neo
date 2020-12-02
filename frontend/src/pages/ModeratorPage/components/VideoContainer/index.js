@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import lodash from "lodash";
+import clsx from "clsx";
 
 import useStyles from "./styles";
 import useVOD from "../../hooks/vod";
@@ -10,15 +11,18 @@ function VideoContainer() {
   const mStyles = useStyles();
 
   return (
-    <div className={mStyles.root}>
-      { !lodash.isEmpty(videoSource) && (
-        <video
-          ref={setVideoRef}
-          src={videoSource}
-          className={mStyles.video}
-          controls
-        />
-      )}
+    <div
+      className={clsx({
+        [mStyles.root]: true,
+        [mStyles.invisible]: lodash.isEmpty(videoSource)
+      })}
+    >
+      <video
+        ref={setVideoRef}
+        src={videoSource}
+        className={mStyles.video}
+        controls
+      />
     </div>
   )
 }
