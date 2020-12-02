@@ -5,6 +5,7 @@ import User from "entities/user";
 
 import useStyles from "./styles";
 import useDisplay from "./hooks/display";
+import useMessage from "hooks/message";
 import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
@@ -28,7 +29,7 @@ interface IParams {
 }
 
 function MainTab({ user }: IMainTab){
-  const [ activeTab, setActiveTab ] = React.useState<string>("chats");
+  const [activeTab, setActiveTab] = React.useState<string>("chats");
   
   // TODO: this is for future development. We will only show `remote-slides` when it has `remote-slides`
   // as for now, just display it right away
@@ -39,6 +40,7 @@ function MainTab({ user }: IMainTab){
   const { session } = useSession();
   const { tenant } = useParams<IParams>();
   const { display } = useDisplay({ tenant });
+  const { intendedForMe } = useMessage();
   const mStyles = useStyles();
   const lastTabRef = React.useRef();
   
@@ -70,9 +72,12 @@ function MainTab({ user }: IMainTab){
     lastTabRef.current = undefined;
   }, [])
 
-  const slidesAccessListener = React.useCallback(() => {
-    setActiveTab("remote-slides");
-  }, []);
+  const slidesAccessListener = React.useCallback(({ data }) => {
+    const jsonData = JSON.parse(data);
+    if(intendedForMe({ data: JSON.stringify(jsonData.target) })) {
+      setActiveTab("remote-slides");
+    }
+  }, [intendedForMe]);
 
   React.useEffect(() => {
     if(session) session.on("signal:start-polling", startPollingListener)
