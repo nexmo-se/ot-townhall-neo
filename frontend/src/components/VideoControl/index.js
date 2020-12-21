@@ -55,17 +55,17 @@ function VideoControl({ sizeMultiplier=1, publisher, unpublish, children }: IVid
 
   const forceAudioListener = React.useCallback(({ data }) => {
     if(intendedForMe({ data })) toggleAudio();
-  }, [ intendedForMe, toggleAudio ]);
+  }, [intendedForMe, toggleAudio]);
 
   const forceVideoListener = React.useCallback(({ data }) => {
     if(intendedForMe({ data })) toggleVideo();
-  }, [ intendedForMe, toggleVideo ]);
+  }, [intendedForMe, toggleVideo]);
   
   React.useEffect(() => {
     if(session) session.on("streamPropertyChanged", handleStreamPropertyChanged);
     if(session) session.on("signal:force-audio", forceAudioListener);
     if(session) session.on("signal:force-video", forceVideoListener);
-    return function cleanup(){
+    return function cleanup() {
       if(session) session.off("streamPropertyChanged", handleStreamPropertyChanged);
       if(session) session.off("signal:force-audio", forceAudioListener);
       if(session) session.off("signal:force-video", forceVideoListener);

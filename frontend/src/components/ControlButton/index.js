@@ -5,7 +5,7 @@ import posed from "react-pose";
 import useStyles from "./styles";
 import { default as Loader } from "react-spinners/BounceLoader";
 
-type Props = {
+interface IControlButton {
   size?: number,
   fontSize?: number,
   loading?: boolean,
@@ -24,7 +24,7 @@ function ControlButton({
   className, 
   children, 
   ...props 
-}:Props){
+}: IControlButton) {
   const [ isBig, setIsBig ] = React.useState(false);
   const mStyles = useStyles({ size, fontSize });
 

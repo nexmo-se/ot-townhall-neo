@@ -37,30 +37,42 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
     removeStream({ stream });
   }, [ removeStream ])
 
-  const publish = React.useCallback(async ({ session, user, extraData }: IPublish): Promise<Publisher> => {
-    if(!publisherRef.current){
-      const options = { 
-        insertMode: "append",
-        name: name? name: user.name,
-        style: { 
-          buttonDisplayMode: "off",
-          nameDisplayMode: "on"
+  const publish = React.useCallback(
+    async ({
+      session,
+      user,
+      extraData
+    }: IPublish): Promise<Publisher> => {
+      if(!publisherRef.current){
+        const options = { 
+          insertMode: "append",
+          name: name? name: user.name,
+          style: { 
+            buttonDisplayMode: "off",
+            nameDisplayMode: "on"
+          }
+        };
+        const finalOptions = Object.assign({}, options, extraData);
+        if (finalOptions.insertDefaultUI === false) {
+          publisherRef.current = OT.initPublisher(undefined, finalOptions);
+        } else {
+          publisherRef.current = OT.initPublisher(containerID, finalOptions);
         }
-      };
-      const finalOptions = Object.assign({}, options, extraData);
-      publisherRef.current = OT.initPublisher(containerID, finalOptions);
-      if(publisherRef.current) publisherRef.current.on("streamCreated", streamCreatedListener);
-      if(publisherRef.current) publisherRef.current.on("streamDestroyed", streamDestroyedListener);
 
-      await new Promise((resolve, reject) => {
-        session.publish(publisherRef.current, (err) => {
-          if(err) reject(err);
-          else resolve();
+        if(publisherRef.current) publisherRef.current.on("streamCreated", streamCreatedListener);
+        if(publisherRef.current) publisherRef.current.on("streamDestroyed", streamDestroyedListener);
+
+        await new Promise((resolve, reject) => {
+          session.publish(publisherRef.current, (err) => {
+            if(err) reject(err);
+            else resolve();
+          })
         })
-      })
-      return publisherRef.current;
-    }else return publisherRef.current;
-  }, [ containerID, name, streamCreatedListener, streamDestroyedListener ]);
+        return publisherRef.current;
+      }else return publisherRef.current;
+    },
+    [ containerID, name, streamCreatedListener, streamDestroyedListener ]
+  );
 
   const unpublish =  React.useCallback(async ({ session }: IUnpublish) => {
     if(publisherRef.current) await session.unpublish(publisherRef.current);

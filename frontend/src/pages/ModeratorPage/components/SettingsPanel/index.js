@@ -13,6 +13,14 @@ function SettingsPanel(){
 
   return (
     <>
+      <p>Go to here if you want:</p>
+      <ul className="Vlt-list Vlt-list--simple">
+        <li>Clear Questions</li>
+        <li>Clear Pollings</li>
+        <li>Clear Session</li>
+        <li>Change PIN</li>
+        <li>Tab Configurations</li>
+      </ul>
       <Button 
         text="Show all settings" 
         onClick={toggleOpen}

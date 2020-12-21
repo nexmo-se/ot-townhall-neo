@@ -1,6 +1,11 @@
 import OT from "../utils/opentok";
 import Recording from "../entities/recording";
+import { Duration, DateTime } from "luxon";
 import { Archive } from "opentok";
+
+interface IList { 
+  sessionID: string;
+}
 
 class OpentokRecording{
   async create(sessionID: string): Promise<Recording>{
@@ -24,6 +29,29 @@ class OpentokRecording{
         else resolve();
       });
     });
+  }
+
+  async list({ sessionID }: IList): Promise<Recording[]> {
+    const rawRecordings = await new Promise<Archive[]>((resolve, reject) => {
+      OT.getInstance().listArchives({ sessionId: sessionID }, (err: any, archives: Archive[]) => {
+        if (err) {
+          console.log(err);
+          resolve([]);
+        } else resolve(archives)
+      })
+    });
+    
+    const recordings = rawRecordings.map((raw) => {
+      return new Recording({
+        id: raw.id,
+        sessionID: raw.sessionId,
+        status: raw.status,
+        duration: Duration.fromMillis(parseInt(raw.duration) * 1000),
+        createdAt: DateTime.fromMillis(raw.createdAt),
+        url: raw.url
+      })
+    })
+    return recordings;
   }
 }
 export default OpentokRecording;

@@ -17,11 +17,12 @@ export default class Message{
   }
 
   set isApproved(value){
-    if(value.toLowerCase().includes("fuck")) this._isApproved = false;
-    else if(value.toLowerCase().includes("fck")) this._isApproved = false;
-    else if(value.toLowerCase().includes("shit")) this._isApproved = false;
-    else if(value.toLowerCase().includes("shhiitt")) this._isApproved = false;
-    else this._isApproved = true;
+    // if(value.toLowerCase().includes("fuck")) this._isApproved = false;
+    // else if(value.toLowerCase().includes("fck")) this._isApproved = false;
+    // else if(value.toLowerCase().includes("shit")) this._isApproved = false;
+    // else if(value.toLowerCase().includes("shhiitt")) this._isApproved = false;
+    // else this._isApproved = true;
+    this._isApproved = true;
   }
 
   get isApproved(){ return this._isApproved; }

@@ -7,6 +7,7 @@ import useStyles from "./styles";
 import useSession from "hooks/session";
 
 import LiveParticipantItem from "../LiveParticipantItem";
+import RemoteSlidesButton from "./components/RemoteSlidesButton";
 
 interface ILiveParticipantList { children?: Node }
 function LiveParticipantList({ children }: ILiveParticipantList){
@@ -31,18 +32,29 @@ function LiveParticipantList({ children }: ILiveParticipantList){
       return user;
     })
     setParticipants(participants);
-  }, [ subscribers ])
+  }, [subscribers]);
 
   return (
     <div className={mStyles.container}>
       {children}
       {participants.sort(sortParticipants).map((participant) => {
-        console.log(participant);
         return (
           <LiveParticipantItem 
             key={participant.id}
             user={participant} 
-            subscriber={participant.subscriber} 
+            subscriber={participant.subscriber}
+            withAvatar
+            additionalControls={(
+              <>
+                { participant.subscriber && (
+                  <RemoteSlidesButton
+                    size={32}
+                    style={{ marginRight: 8 }}
+                    user={participant}
+                  />
+                )}
+              </>
+            )}
           />
         )
       })}

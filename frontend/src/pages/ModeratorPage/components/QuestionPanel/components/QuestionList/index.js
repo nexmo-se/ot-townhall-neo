@@ -41,7 +41,7 @@ function QuestionList(){
   
   return (
     <div className={mStyles.root}>
-      {questions.filter((question) => question.status !== "answered").map((question) => {
+      {questions.filter((question) => (question.status !== "answered" && question.status !== "deleted")).map((question) => {
         return <QuestionItem key={question.id} question={question} />
       })}
     </div>
