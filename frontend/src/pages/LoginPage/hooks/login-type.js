@@ -17,6 +17,7 @@ function useLoginType({ role, tenant }: IArguments){
       if (role === "participant") setLoginType(configuration.participant.loginType);
       else if (role === "moderator") setLoginType(configuration.moderator.loginType);
       else if (role === "presenter") setLoginType(configuration.presenter.loginType);
+      else if (role === "ghostrider") setLoginType("bypass");
       else throw new Error(`Invalid role. Found ${role}`);
     }
     fetch();

@@ -10,6 +10,7 @@ import type { Role } from "entities/user";
 
 import AskNameDialog from "../AskNameDialog";
 import AMADialog from "../AMADialog";
+import SSODialog from "../SSODialog";
 import FullPageLoading from "components/FullPageLoading";
 
 interface ILoginDialog {
@@ -40,6 +41,13 @@ function LoginDialog({ role, onLoggedIn, disabled = false }: ILoginDialog){
     return (
       <AMADialog 
         disabled={disabled}
+        role={role}
+        onLoggedIn={onLoggedIn}
+      />
+    )
+  } else if (loginType === "sso"){
+    return (
+      <SSODialog 
         role={role}
         onLoggedIn={onLoggedIn}
       />

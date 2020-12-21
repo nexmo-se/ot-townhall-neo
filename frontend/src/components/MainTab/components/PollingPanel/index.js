@@ -61,7 +61,7 @@ function PollingPanel(){
   else return (
     <>
       <p>Moderator is starting a polling. Please put your answer by clicking the buttons below.</p>
-      <p>Please note that you only able to provide answer once.</p>
+      <p>Please note that you are only able to provide answer once.</p>
       <strong>{polling.title}</strong>
       <div className={mStyles.pollContainer}>
         {polling.items.sort((a, b) => {

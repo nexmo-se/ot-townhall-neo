@@ -3,12 +3,14 @@ import { makeStyles } from "@material-ui/styles";
 export default makeStyles(() => ({
   container: { 
     width: "100%", 
-    height: "100%", 
+    overflow: "hidden",
+    flex: 1,
     display: "flex", 
     flexDirection: "row" 
   },
   leftPanel: { 
-    flex: 1,
+    flexBasis: "25%",
+    overflow: "hidden",
     display: "flex",
     flexDirection: "column",
     padding: 32,
@@ -22,7 +24,8 @@ export default makeStyles(() => ({
     overflow: "scroll"
   },
   centerPanel: { 
-    flex: 1, 
+    flexBasis: "25%",
+    overflow: "hidden",
     borderLeft: "1px solid #e7ebee", 
     borderRight: "1px solid #e7ebee",
     display: "flex", 
@@ -32,7 +35,8 @@ export default makeStyles(() => ({
     paddingRight: 0
   },
   rightPanel: { 
-    flex: 2, 
+    flexBasis: "50%",
+    overflow: "hidden",
     position: "relative",
     display: "flex", 
     flexDirection: "column"

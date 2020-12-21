@@ -16,7 +16,7 @@ export const MeContext = React.createContext<IMeContext>({
   login: (user: User) => false,
 })
 
-export default function MeProvider({ children }: IMeProvider){
+export default function MeProvider({ children }: IMeProvider) {
   const [ me, setMe ] = React.useState<User | void>();
   const [ loggedIn, setLoggedIn ] = React.useState<boolean>(false);
 

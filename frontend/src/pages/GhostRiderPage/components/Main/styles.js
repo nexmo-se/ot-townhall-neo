@@ -4,13 +4,17 @@ export default makeStyles(() => ({
   visible: { display: "inherit" },
   hidden: { display: "none !important" },
   container: { 
-    width: "100vw", 
-    height: "100vh", 
+    width: "100%",
+    flex: 1,
+    overflow: "hidden",
     display: "flex", 
     flexDirection: "row" 
   },
   leftContainer: { 
-    flex: 3, 
+    flexBasis: "75%",
+    overflow: "hidden",
+    flexDirection: "column",
+    display: "flex",
     position: "relative" 
   },
   logoContainer: { 

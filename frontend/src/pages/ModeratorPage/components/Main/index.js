@@ -13,8 +13,8 @@ import LiveParticipantList from "../LiveParticipantList";
 import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
+import MainScreen from "../MainScreen";
 import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
 import LiveBadge from "components/LiveBadge";
 import ParticipantList from "components/ParticipantList";
 
@@ -72,10 +72,12 @@ function Main(){
             <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
             <LiveParticipantList>
               {(cameraPublisher && me)? (
-                <ModeratorParticipantItem 
-                  user={me}
-                  publisher={cameraPublisher}
-                />
+                <>
+                  <ModeratorParticipantItem 
+                    user={me}
+                    publisher={cameraPublisher}
+                  />
+                </>
               ): null}
             </LiveParticipantList> 
           </div>
@@ -88,7 +90,7 @@ function Main(){
           mStyles.rightPanel,
           mStyles.black
         )}>
-          <LayoutContainer id="cameraContainer" size="big" />
+          <MainScreen />
           <LiveBadge className={mStyles.liveBadge} />
         </div>
       </div>

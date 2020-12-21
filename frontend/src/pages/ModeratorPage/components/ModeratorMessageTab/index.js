@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import ModeratorPolling from "../ModeratorPolling";
 import QuestionPanel from "../QuestionPanel";
 import SettingsPanel from "../SettingsPanel";
+import RecordingPanel from "../RecordingPanel";
 import Tab from "components/Tab";
 import TabHeader from "components/TabHeader";
 import TabItem from "components/TabItem";
@@ -62,6 +63,12 @@ function ModeratorMessageTab(){
         >
           Settings
         </TabItem>
+        <TabItem
+          isActive={activeTab === "recording"}
+          onClick={() => setActiveTab("recording")}
+        >
+          Recording
+        </TabItem>
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -76,11 +83,14 @@ function ModeratorMessageTab(){
         )}
         {display.polling && (
           <TabPanel isActive={activeTab === "polling"}>
-            <ModeratorPolling />
+            <ModeratorPolling refresh={activeTab === "polling"} />
           </TabPanel>
         )}
         <TabPanel isActive={activeTab === "settings"}>
           <SettingsPanel />
+        </TabPanel>
+        <TabPanel isActive={activeTab === "recording"}>
+          <RecordingPanel />
         </TabPanel>
       </TabContent>
     </Tab>

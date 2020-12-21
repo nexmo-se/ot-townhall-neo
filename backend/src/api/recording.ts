@@ -2,9 +2,14 @@ import config from "../config/opentok";
 import OT from "../utils/opentok";
 import Recording from "../entities/recording";
 import { Archive } from "opentok";
+import { DateTime, Duration } from "luxon";
 
 import OpentokRecordingAPI from "./opentok-recording";
 import GhostRiderAPI from "./ghostrider";
+
+interface IList {
+  sessionID: string;
+}
 
 class RecordingAPI{
   static getEngine(): OpentokRecordingAPI | GhostRiderAPI{
@@ -27,16 +32,29 @@ class RecordingAPI{
     const foundRecording = await RecordingAPI.retrieve(recording.id);
     return foundRecording.status;
   }
+
+  static async list({ sessionID }: IList): Promise<Recording[]>{
+    const engine = RecordingAPI.getEngine();
+    const recordings = await engine.list({ sessionID });
+    return recordings;
+  }
   
   static async retrieveActive(sessionID: string): Promise<Recording[]>{
     const archives = await new Promise((resolve: (value: Archive[]) => void, reject) => {
       OT.getInstance().listArchives({ sessionId: sessionID }, (err: any, archives: Archive[]) => {
-        if(err) reject(err);
-        else resolve(archives);
+        if (err) {
+          console.log(err);
+          resolve([]);
+        } else resolve(archives);
       });
     });
+    
     const filteredArchives = archives.filter((archive) => archive.status === "started" || archive.status === "paused");
-    const recordings = filteredArchives.map((archive) => new Recording({ id: archive.id, sessionID: archive.sessionId, status: archive.status }));
+    const recordings = filteredArchives.map((archive) => new Recording({ 
+      id: archive.id, 
+      sessionID: archive.sessionId, 
+      status: archive.status 
+    }));
     return recordings;
   }
   
@@ -50,7 +68,10 @@ class RecordingAPI{
     const recording = new Recording({
       id: archive.id,
       sessionID: archive.sessionId,
-      status: archive.status
+      status: archive.status,
+      duration: Duration.fromMillis(parseInt(archive.duration) * 1000),
+      createdAt: DateTime.fromMillis(archive.createdAt),
+      url: archive.url
     });
     return recording;
   }

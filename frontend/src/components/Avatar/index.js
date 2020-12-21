@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { default as ReactAvatar } from "react-avatar";
+import ReactAvatar from "react-avatar";
 import User from "entities/user";
 
 type AvatarProps = {

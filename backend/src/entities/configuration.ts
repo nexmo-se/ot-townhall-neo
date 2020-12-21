@@ -57,7 +57,26 @@ class Configuration implements IConfiguration{
   // Ignoring because MongoDB return any as the result
   // eslint-disable-next-line
   static fromDatabase(args: any): Configuration{
-    return new Configuration(args.configuration as IConfiguration);
+    return new Configuration({
+      tabs: {
+        questions: args.configuration.tabs.questions,
+        chat: args.configuration.tabs.chat,
+        participants: args.configuration.tabs.participants,
+        polling: args.configuration.tabs.polling
+      },
+      presenter: {
+        loginType: args.configuration.presenter.login_type,
+        pin: args.configuration.presenter.pin
+      },
+      participant: {
+        loginType: args.configuration.participant.login_type,
+        pin: args.configuration.participant.pin
+      },
+      moderator: {
+        loginType: args.configuration.moderator.login_type,
+        pin: args.configuration.moderator.pin
+      }
+    })
   }
 }
 export default Configuration;

@@ -23,7 +23,7 @@ function Checkbox({
 
   return (
     <div className="Vlt-checkbox">
-      <label for={value}>
+      <label htmlFor={value}>
         <span className="Vlt-checkbox__button">
           <input 
             type="checkbox" 

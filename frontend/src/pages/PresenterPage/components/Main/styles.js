@@ -2,13 +2,16 @@
 import { makeStyles } from "@material-ui/styles";
 export default makeStyles(() => ({
   container: { 
-    width: "100vw", 
-    height: "100vh", 
+    width: "100%", 
+    flex: 1,
+    overflow: "hidden",
     display: "flex", 
     flexDirection: "row" 
   },
   leftContainer: { 
-    flex: 3, 
+    flexBasis: "75%",
+    overflow: "hidden",
+    flexDirection: "column",
     display: "flex",
     position: "relative" 
   },

@@ -2,27 +2,23 @@
 import React from "react";
 import LayoutManager from "utils/layout-manager";
 import clsx from "clsx";
+import lodash from "lodash";
 
 import useStyles from "./styles";
 import useSession from "hooks/session";
 
 interface ILayoutContainer { 
   id: string; 
-  size: "big"|"small";
+  size: "big" | "small" | "screen";
   hidden?: boolean;
-  screen?: boolean;
+  children?: any;
 }
 
-function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
-  const [ isBig, setIsBig ] = React.useState<boolean>(true);
+function LayoutContainer({ id, size = "big", hidden, children }: ILayoutContainer){
   const { streams, session } = useSession();
   const mStyles = useStyles();
   const containerRef = React.useRef();
   const layoutRef = React.useRef<any>();
-
-  React.useEffect(() => {
-    setIsBig(size === "big");
-  }, [ size ]);
 
   React.useEffect(() => {
     layoutRef.current = new LayoutManager(id);
@@ -32,11 +28,17 @@ function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
       }
     }));
     if(containerRef.current) observer.observe(containerRef.current, { childList: true });
-  }, [ id, session, streams ]);
+  }, [id, session, streams]);
 
   React.useEffect(() => {
     if(layoutRef.current) layoutRef.current.layout(session, streams)
-  }, [ session, streams ])
+  }, [session, streams, size]);
+
+  React.useEffect(() => {
+    window.addEventListener("resize", lodash.debounce(() => {
+      if(layoutRef.current) layoutRef.current.layout(session, streams);
+    }, 150))
+  } , [session, streams])
 
   return (
     <div 
@@ -45,11 +47,13 @@ function LayoutContainer({ id, size, hidden, screen }: ILayoutContainer){
       className={clsx({
         [mStyles.container]: true,
         [mStyles.black]: true,
-        [mStyles.big]: isBig,
+        [mStyles.big]: size === "big",
         [mStyles.hidden]: hidden,
-        [mStyles.screen]: screen
+        [mStyles.screen]: size === "screen"
       })}
-    />
+    >
+      {children}
+    </div>
   );
 }
 export default LayoutContainer;

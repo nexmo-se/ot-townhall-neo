@@ -12,6 +12,11 @@ export default {
       session_id: Joi.string().required()
     }
   },
+  deleteAll : {
+    body: {
+      session_id: Joi.string().required()
+    }
+  },
   vote: {
     body: {
       session_id: Joi.string().required(),

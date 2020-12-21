@@ -10,4 +10,5 @@ router.post("/", validate(Validator.create), ash(QuestionListener.create));
 router.post("/:question_id/vote", validate(Validator.vote), ash(QuestionListener.vote));
 router.post("/:question_id/mark_as", ash(QuestionListener.markAs));
 
+router.delete("/", validate(Validator.deleteAll), ash(QuestionListener.deleteAll));
 export default router;

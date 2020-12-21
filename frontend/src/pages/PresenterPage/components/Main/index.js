@@ -12,13 +12,13 @@ import { useParams } from "react-router-dom";
 
 import ShareScreen from "../ShareScreen";
 import FullPageLoading from "components/FullPageLoading";
-import LayoutContainer from "components/LayoutContainer";
 import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
 import LiveBadge from "components/LiveBadge";
 import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
+import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){
@@ -51,7 +51,7 @@ function Main(){
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
-          <LayoutContainer id="cameraContainer" size="big" />
+          <MainScreen />
           <WhiteLayer/>
           <VideoHoverContainer>
             <VideoControl 

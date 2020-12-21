@@ -2,7 +2,7 @@
 import React from "react";
 import clsx from "clsx";
 
-type Props = {
+interface ITextInput {
   text: string,
   label?: string,
   style?: any,
@@ -17,7 +17,7 @@ function TextInput({
   className, 
   onChange, 
   ...props 
-}:Props){
+}: ITextInput) {
 
   function handleChange({ target }){
     if(onChange) onChange(target.value);

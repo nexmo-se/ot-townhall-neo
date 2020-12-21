@@ -36,8 +36,12 @@ export default function PollingProvider({ children }: IPollingProvider){
   const { session } = useSession();
 
   const retrieve = React.useCallback(async () => {
-    const polling = await PollingAPI.retrieve({ sessionID: session.id });
-    setPolling(polling);
+    try{
+      const polling = await PollingAPI.retrieve({ sessionID: session.id });
+      setPolling(polling);
+    } catch (err) {
+      setPolling(undefined);
+    }
   }, [ session ]);
 
   async function create({ title, items }: ICreate){

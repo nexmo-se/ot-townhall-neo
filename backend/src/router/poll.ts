@@ -10,4 +10,8 @@ router.get("/", ash(PollListener.list));
 router.get("/:polling_id/poll", ash(PollListener.retrievePoll));
 
 router.put("/:polling_id", ash(PollListener.update));
+
+router.delete("/", ash(PollListener.deleteAll));
+router.delete("/:poll_id", ash(PollListener.delete));
+
 export default router;

@@ -1,7 +1,7 @@
 import PollItem from "./poll-item";
 import { v4 as uuid } from "uuid";
 
-export type Status = "started" | "pending" | "finished"
+export type Status = "started" | "pending" | "finished" | "deleted"
 interface IPoll{
   id?: string;
   sessionID: string;
