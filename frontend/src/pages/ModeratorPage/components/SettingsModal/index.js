@@ -1,8 +1,6 @@
 // @flow
 import React from "react";
-
 import { useSettings } from "../SettingsProvider";
-import { useParams } from "react-router-dom";
 
 import ResetSettings from "../ResetSettings";
 import PinSettings from "../PinSettings";
@@ -16,7 +14,7 @@ interface ISettingsModal {
 
 function SettingsModal({ open, onClose }: ISettingsModal){
   const [saving, setSaving] = React.useState<boolean>(false);
-  const { saveSettings } = useSettings();
+  const { saveSettings, fetchConfiguration } = useSettings();
 
   async function handleSave() {
     try {
@@ -27,6 +25,10 @@ function SettingsModal({ open, onClose }: ISettingsModal){
       setSaving(false);
     }
   }
+
+  React.useEffect(() => {
+    if (open) fetchConfiguration()
+  }, [open, fetchConfiguration])
   
   return (    
     <Modal 

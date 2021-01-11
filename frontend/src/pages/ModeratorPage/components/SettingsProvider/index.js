@@ -14,6 +14,9 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
   const [presenterPin, setPresenterPin] = React.useState<string>("");
   const [participantPin, setParticipantPin] = React.useState<string>("");
   const [moderatorPin, setModeratorPin] = React.useState<string>("");
+  const [presenterLoginType, setPresenterLoginType] = React.useState<string>("default");
+  const [participantLoginType, setParticipantLoginType] = React.useState<string>("default");
+  const [moderatorLoginType, setModeratorLoginType] = React.useState<string>("default");
   const [participantsTab, setParticipantsTab] = React.useState<boolean>(false);
   const [chatTab, setChatTab] = React.useState<boolean>(false);
   const [questionsTab, setQuestionsTab] = React.useState<boolean>(false);
@@ -21,9 +24,19 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
 
   async function saveSettings() {
     const payload = {
-      participant: participantPin? { pin: participantPin }: undefined,
-      presenter: presenterPin? { pin: presenterPin }: undefined,
-      moderator: moderatorPin? { pin: moderatorPin }: undefined,
+      participant: {
+        pin: participantPin? participantPin: undefined,
+        login_type: participantLoginType
+      },
+      presenter:
+      {
+        pin: presenterPin? presenterPin: undefined,
+        login_type: presenterLoginType
+      },
+      moderator:{
+        pin: moderatorPin? moderatorPin: undefined,
+        login_type: moderatorLoginType
+      },
       tabs: {
         questions: questionsTab,
         participants: participantsTab,
@@ -37,18 +50,24 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
     setParticipantPin("");
     setPresenterPin("");
     setModeratorPin("");
+    fetchConfiguration();
   }
 
-  React.useEffect(() => {
-    async function fetch(){
+  const fetchConfiguration = React.useCallback(
+    async () => {
       const configuration = await ConfigurationService.retrieve({ tenant });
+      
       setParticipantsTab(configuration.tabs.participants);
       setChatTab(configuration.tabs.chat);
       setQuestionsTab(configuration.tabs.questions);
       setPollingTab(configuration.tabs.polling);
-    }
-    fetch();
-  }, [tenant]);
+
+      setParticipantLoginType(configuration.participant.loginType);
+      setPresenterLoginType(configuration.presenter.loginType);
+      setModeratorLoginType(configuration.moderator.loginType);
+    },
+    [tenant]
+  )
 
   return (
     <SettingsContext.Provider
@@ -60,6 +79,12 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
         chatTab,
         questionsTab,
         pollingTab,
+        participantLoginType,
+        presenterLoginType,
+        moderatorLoginType,
+        setParticipantLoginType,
+        setPresenterLoginType,
+        setModeratorLoginType,
         setParticipantsTab,
         setChatTab,
         setQuestionsTab,
@@ -67,7 +92,8 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
         setParticipantPin,
         setModeratorPin,
         setPresenterPin,
-        saveSettings
+        saveSettings,
+        fetchConfiguration
       }}
     >
       {children}
