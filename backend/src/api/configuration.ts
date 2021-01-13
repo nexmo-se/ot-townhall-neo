@@ -28,15 +28,15 @@ class ConfigurationAPI{
     else {
       const defaultConfiguration = {
         presenter: {
-          login_type: "default",
+          login_type: "sso",
           pin: pinConfig.presenter
         },
         participant: {
-          login_type: "default",
+          login_type: "sso",
           pin: pinConfig.participant
         },
         moderator : {
-          login_type: "default",
+          login_type: "sso",
           pin: pinConfig.moderator
         },
         tabs: {

@@ -18,7 +18,7 @@ class Roomlistener{
     const room = new Room({ name: roomName });
     
     const generatedRoom = await RoomAPI.generateSession(room);
-    const generatedUser = await UserAPI.generateToken(generatedRoom, user, data);
+    const generatedUser = UserAPI.generateToken(generatedRoom, user, data);
     const payload = {
       apiKey: opentok.apiKey,
       token: generatedUser.token,
