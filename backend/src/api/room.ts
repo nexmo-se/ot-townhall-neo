@@ -44,7 +44,7 @@ class RoomAPI{
         });
       });
     }else{
-      const [ selectedRoom ] = await RoomAPI.getDetailById(room);
+      const [selectedRoom] = await RoomAPI.getDetailById(room);
       return Promise.resolve(selectedRoom);
     }
   }
