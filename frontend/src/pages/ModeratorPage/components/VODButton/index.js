@@ -55,10 +55,12 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
       await videoRef.play();
 
       const videoStream = StreamHelper.getStream(videoRef);
-      if(videoStream){
+      if (videoStream) {
+        alert("Your video might not shown in some browser");
+
         setIsPublishing(true);
-        const [ videoTrack ] = videoStream.getVideoTracks();
-        const [ audioTrack ] = videoStream.getAudioTracks();
+        const [videoTrack] = videoStream.getVideoTracks();
+        const [audioTrack] = videoStream.getAudioTracks();
 
         const user = new User({ name: "vod", role: "vod" });
         doPublish({
