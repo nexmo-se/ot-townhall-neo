@@ -6,6 +6,7 @@ import useMe from "hooks/me";
 import { useParams, useHistory } from "react-router-dom";
 
 import LoginDialog from "./components/LoginDialog";
+import Announcement from "./components/Announcement";
 
 interface IParam { role: string, tenant: string }
 function LoginPage(){
@@ -24,18 +25,21 @@ function LoginPage(){
    * By pass login here
    */
    React.useEffect(() => {
-    //  if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
-    //  if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
-    //  if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
-     if(role === "ghostrider") handleLoggedIn(new User({ name: "Ghost Rider", role: "participant" }));
+      // if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
+      // if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
+      // if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
+      if(role === "ghostrider") handleLoggedIn(new User({ name: "Ghost Rider", role: "participant" }));
    }, [ role, handleLoggedIn ])
   
   return (
-    <LoginDialog 
-      role={role}
-      onLoggedIn={handleLoggedIn}
-      disabled={loading}
-    />
+    <>
+      <Announcement />
+      <LoginDialog 
+        role={role}
+        onLoggedIn={handleLoggedIn}
+        disabled={loading}
+      />
+    </>
   )
 }
 export default LoginPage;
