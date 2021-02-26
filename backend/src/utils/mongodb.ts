@@ -8,7 +8,7 @@ class MongoDBService{
     if (database.useTls) {
       return {
         tls: true,
-        tlsCAFile: `${__dirname}/../${database.tlsCertificate}`
+        tlsCAFile: `${__dirname}/../certs/${database.tlsCertificate}`
       }
     } else return {}
   }

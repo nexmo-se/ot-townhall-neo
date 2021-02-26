@@ -9,7 +9,7 @@ Why do we have 2 databases? At first I thought PGSQL is enought. However, since 
 You need to create your own migration script inside `src/api/database.js`. There are samples inside. The migration is only valid for `Postgre SQL`.
 
 ## MongoDB Configuration
-You can configure your MongoDB to use SSL. However, you need to place your key under `src/` folder. Set the SSL in `.env` file properly.
+You can configure your MongoDB to use SSL. However, you need to place your key under `src/certs/*` folder. Set the SSL in `.env` file properly.
 
 ## Commands
 
