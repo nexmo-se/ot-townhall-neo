@@ -25,7 +25,9 @@ import AuthRouter from "./router/auth";
   DatabaseAPI.initialize();
   await DatabaseAPI.migrate();
 
-  console.log("Firebase initialized");
+  console.log("Firebase initialised");
+  console.log("Database initialised");
+  console.log("Database migrated");
   
   const app = express();
   
