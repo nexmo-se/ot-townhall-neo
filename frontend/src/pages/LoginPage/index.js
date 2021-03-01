@@ -6,7 +6,6 @@ import useMe from "hooks/me";
 import { useParams, useHistory } from "react-router-dom";
 
 import LoginDialog from "./components/LoginDialog";
-import Announcement from "./components/Announcement";
 
 interface IParam { role: string, tenant: string }
 function LoginPage(){
@@ -33,7 +32,6 @@ function LoginPage(){
   
   return (
     <>
-      <Announcement />
       <LoginDialog 
         role={role}
         onLoggedIn={handleLoggedIn}
