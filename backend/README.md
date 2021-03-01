@@ -6,7 +6,10 @@ This backend server uses `Postgre SQL` and `MongoDB` for the database. However, 
 Why do we have 2 databases? At first I thought PGSQL is enought. However, since the application support multi tenant, and we want to store configuration for each tenant in JSON format. I believe, `MongoDB` will help a lot.
 
 ## Database Migration
-You need to create your own migration script inside `src/api/database.js`. There are samples inside.
+You need to create your own migration script inside `src/api/database.js`. There are samples inside. The migration is only valid for `Postgre SQL`.
+
+## MongoDB Configuration
+You can configure your MongoDB to use SSL. However, you need to place your key under `src/certs/*` folder. Set the SSL in `.env` file properly.
 
 ## Commands
 
