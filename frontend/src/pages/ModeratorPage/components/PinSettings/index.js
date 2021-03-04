@@ -14,13 +14,19 @@ function PinSettings() {
     participantLoginType,
     setParticipantLoginType,
     presenterLoginType,
-    setPresenterLoginType,
     moderatorLoginType,
+    allowRaiseHand,
+    setAllowRaiseHand,
+    setPresenterLoginType,
     setModeratorLoginType,
     setPresenterPin,
     setParticipantPin,
     setModeratorPin
   } = useSettings();
+
+  function handleAllowRaiseHandChange (e: any) {
+    setAllowRaiseHand(e.target.checked);
+  }
 
   return (
     <>
@@ -83,6 +89,20 @@ function PinSettings() {
             placeholder="Enter new pin here"
             autoComplete="off"
           />
+          <div className="Vlt-checkbox">
+            <label for="allow-raise-hand">
+              <span class="Vlt-checkbox__button">
+                <input
+                  type="checkbox"
+                  id="allow-raise-hand"
+                  onChange={handleAllowRaiseHandChange}
+                  checkbox={allowRaiseHand}
+                />
+                <span class="Vlt-checkbox__icon"></span>
+              </span>
+              Allow participants to raise hand
+            </label>
+          </div>
         </Grid>
       </Grid>
     </>

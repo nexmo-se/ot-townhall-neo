@@ -24,12 +24,14 @@ function ModeratorPage(){
   }, [ loggedIn, push, tenant ]);
 
   return (
-    <SessionProvider subscriberContainer={{
-      camera: "cameraContainer",
-      moderator: "cameraContainer",
-      screen: "cameraContainer",
-      custom: "cameraContainer"
-    }}>
+    <SessionProvider
+      subscriberContainer={{
+        camera: "cameraContainer",
+        moderator: "cameraContainer",
+        screen: "cameraContainer",
+        custom: "cameraContainer"
+      }}
+    >
       <MessageProvider>
         <PollingProvider>
           <VODProvider>
