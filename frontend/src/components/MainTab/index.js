@@ -30,13 +30,6 @@ interface URLParameters {
 
 function MainTab ({ user }: MainTabProps) {
   const [activeTab, setActiveTab] = React.useState<string>("chats");
-  
-  // TODO: this is for future development. We will only show `remote-slides` when it has `remote-slides`
-  // as for now, just display it right away
-  const [ localShows ] = React.useState<string[]>([
-    "remote-slides"
-  ]);
-
   const { session } = useSession();
   const { tenant } = useParams<URLParameters>();
   const { display } = useDisplay({ tenant });
@@ -88,21 +81,37 @@ function MainTab ({ user }: MainTabProps) {
     [intendedForMe]
   );
 
+  const revokeSlidesAccessListener = React.useCallback(
+    ({ data }) => {
+      if (intendedForMe({ data })) {
+        if (display.participants) setActiveTab("participants");
+        else if (display.chat) setActiveTab("chats");
+        else if (display.questions) setActiveTab("questions");
+        else if (display.polling) setActiveTab("polling");
+        else setActiveTab("random");
+      }
+    },
+    [intendedForMe, display]
+  )
+
   React.useEffect(() => {
     if(session) session.on("signal:start-polling", startPollingListener)
     if(session) session.on("signal:stop-polling", stopPollingListener);
     if(session) session.on("signal:slides-access", slidesAccessListener);
+    if(session) session.on("signal:revoke-slides-access", revokeSlidesAccessListener);
 
     return function cleanup(){
       if(session) session.off("signal:start-polling", startPollingListener)
       if(session) session.off("signal:stop-polling", stopPollingListener);
       if(session) session.off("signal:slides-access", slidesAccessListener)
+      if(session) session.on("signal:revoke-slides-access", revokeSlidesAccessListener);
     }
   }, [
     session,
     startPollingListener,
     stopPollingListener,
-    slidesAccessListener
+    slidesAccessListener,
+    revokeSlidesAccessListener
   ])
   
   return (
@@ -140,7 +149,7 @@ function MainTab ({ user }: MainTabProps) {
             Polling
           </TabItem>
         )}
-        { localShows.includes("remote-slides") && (
+        { activeTab === "remote-slides" && (
           <TabItem
             onClick={() => setActiveTab("remote-slides")}
             isActive={activeTab === "remote-slides"}
@@ -173,11 +182,11 @@ function MainTab ({ user }: MainTabProps) {
             <PollingPanel />
           </TabPanel>
         )}
-        { localShows.includes("remote-slides") && (
+        {/* { activeTab === "remote-slides" && ( */}
           <TabPanel isActive={activeTab === "remote-slides"}>
             <RemoteSlidesPanel />
           </TabPanel>
-        )}
+        {/* )} */}
       </TabContent>
     </Tab>
   )
