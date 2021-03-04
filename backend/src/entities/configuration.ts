@@ -1,46 +1,56 @@
 import lodash from "lodash";
+import { FilterQuery, UpdateOneOptions, UpdateQuery } from "mongodb";
+import MongoDBService from "../utils/mongodb";
 
-export type TRole = "participant" | "moderator" | "presenter";
-interface IRole {
+export type AcceptedRole = "participant" | "moderator" | "presenter";
+interface Role {
   loginType: "default" | "ama" | "sso";
   pin: string;
+  raiseHand?: boolean;
 }
 
-interface ITabs {
+interface Tabs {
   questions: boolean;
   participants: boolean;
   polling: boolean;
   chat: boolean;
 }
 
-interface IConfiguration {
-  tabs: ITabs;
-  participant: IRole;
-  presenter: IRole;
-  moderator: IRole;
+interface Constructor {
+  tabs: Tabs;
+  participant: Role;
+  presenter: Role;
+  moderator: Role;
 }
 
-class Configuration implements IConfiguration{
+class Configuration {
   static _collectionName = "configurations";
 
-  tabs: ITabs;
-  participant: IRole;
-  presenter: IRole;
-  moderator: IRole;
+  tabs: Tabs;
+  participant: Role;
+  presenter: Role;
+  moderator: Role;
 
-  constructor(args: IConfiguration){
-    Object.assign(this, args);
+  constructor (args: Constructor) {
+    this.tabs = args.tabs;
+    this.participant = args.participant;
+    this.presenter = args.presenter;
+    this.moderator = args.moderator;
   }
 
-  retrievePin(role: TRole): string{
+  retrievePin (role: AcceptedRole): string {
     if (role === "participant") return this.participant.pin;
     else if(role === "presenter") return this.presenter.pin;
     else if(role === "moderator") return this.moderator.pin;
     else throw new Error("Invalid role");
   }
 
-  toResponse(): any{
-    const roleModel = { loginType: true };
+  toResponse (): Record<string, any> {
+    const roleModel = {
+      loginType: true,
+      raiseHand: true
+    };
+
     const participant = lodash.pick(this.participant, lodash.keys(roleModel));
     const presenter = lodash.pick(this.presenter, lodash.keys(roleModel));
     const moderator = lodash.pick(this.moderator, lodash.keys(roleModel));
@@ -54,9 +64,7 @@ class Configuration implements IConfiguration{
     return JSON.parse(JSON.stringify(jsonData));
   }
 
-  // Ignoring because MongoDB return any as the result
-  // eslint-disable-next-line
-  static fromDatabase(args: any): Configuration{
+  static fromDatabase (args: Record<string, any>): Configuration {
     return new Configuration({
       tabs: {
         questions: args.configuration.tabs.questions,
@@ -70,13 +78,19 @@ class Configuration implements IConfiguration{
       },
       participant: {
         loginType: args.configuration.participant.login_type,
-        pin: args.configuration.participant.pin
+        pin: args.configuration.participant.pin,
+        raiseHand: args.configuration.participant.raise_hand ?? true
       },
       moderator: {
         loginType: args.configuration.moderator.login_type,
         pin: args.configuration.moderator.pin
       }
     })
+  }
+
+  static async updateOne (filter: FilterQuery<any>, update: UpdateQuery<any>, options?: UpdateOneOptions) {
+    const db = await MongoDBService.getInstance();
+    await db.collection(Configuration._collectionName).updateOne(filter, update, options);
   }
 }
 export default Configuration;
