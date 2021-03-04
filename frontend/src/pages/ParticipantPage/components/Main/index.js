@@ -34,42 +34,71 @@ function Main(){
   const { tenant } = useParams<IParam>();
   const mStyles = useStyles();
 
-  const forcePublishListener = React.useCallback(({ data }) => {
-    if(intendedForMe({ data })){
-      const user = User.fromJSON(JSON.parse(data));
-      publishCamera({ session, user });
-    }
-  }, [ publishCamera, intendedForMe, session ]);
-
-  const forceUnpublishListener = React.useCallback(async ({ data }) => {
-    if(intendedForMe({ data })){
-      await unpublish({ session });
-      setRefreshToken(uuid())
-    }
-  }, [ session, unpublish, intendedForMe ])
-
-  React.useEffect(() => {
-    async function connect(){
-      if(loggedIn && me){
-        const credential = await CredentialAPI.generateCredential({
-          role: "publisher",
-          data: me.toJSON(),
-          tenant
-        });
-        await connectWithCredential(credential);
+  const forcePublishListener = React.useCallback(
+    ({ data }) => {
+      if (intendedForMe({ data })) {
+        const user = User.fromJSON(JSON.parse(data));
+        publishCamera({ session, user });
       }
-    }
-    connect();
-  }, [ loggedIn, me, connectWithCredential, tenant ]);
+    },
+    [
+      publishCamera,
+      intendedForMe,
+      session
+    ]
+  );
 
-  React.useEffect(() => {
-    if(session) session.on("signal:force-publish", forcePublishListener);
-    if(session) session.on("signal:force-unpublish", forceUnpublishListener);
-    return function cleanup(){
-      if(session) session.off("signal:force-publish", forcePublishListener);
-      if(session) session.off("signal:force-unpublish", forceUnpublishListener);
-    }
-  }, [ session, forcePublishListener, forceUnpublishListener ])
+  const forceUnpublishListener = React.useCallback(
+    async ({ data }) => {
+      if (intendedForMe({ data })) {
+        await unpublish({ session });
+        setRefreshToken(uuid())
+      }
+    },
+    [
+      session,
+      unpublish,
+      intendedForMe
+    ]
+  )
+
+  React.useEffect(
+    () => {
+      async function connect () {
+        if (loggedIn && me) {
+          const credential = await CredentialAPI.generateCredential({
+            role: "publisher",
+            data: me.toJSON(),
+            tenant
+          });
+          await connectWithCredential(credential);
+        }
+      }
+      connect();
+    },
+    [
+      loggedIn,
+      me,
+      connectWithCredential,
+      tenant
+    ]
+  );
+
+  React.useEffect(
+    () => {
+      if (session) session.on("signal:force-publish", forcePublishListener);
+      if (session) session.on("signal:force-unpublish", forceUnpublishListener);
+      return function cleanup(){
+        if (session) session.off("signal:force-publish", forcePublishListener);
+        if (session) session.off("signal:force-unpublish", forceUnpublishListener);
+      }
+    },
+    [
+      session,
+      forcePublishListener,
+      forceUnpublishListener
+    ]
+  )
 
   return (
     <>
@@ -88,7 +117,8 @@ function Main(){
           ): null}
           <div className={mStyles.logoContainer}>
             <LiveBadge/>
-            {!cameraPublisher? <RaiseHandButton />: null}
+            <RaiseHandButton cameraPublisher={cameraPublisher} />
+            {/* {!cameraPublisher? <RaiseHandButton />: null} */}
           </div>
           <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
         </div>
