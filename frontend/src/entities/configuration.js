@@ -12,24 +12,27 @@ interface ITabs {
   chat: boolean;
 }
 
-interface IConfiguration {
+interface Constructor {
   tabs: ITabs;
   participant: IRole;
   presenter: IRole;
   moderator: IRole;
 }
 
-class Configuration implements IConfiguration{
+class Configuration {
   tabs: ITabs;
   participant: IRole;
   presenter: IRole;
   moderator: IRole;
 
-  constructor(args: IConfiguration){
-    Object.assign(this, args);
+  constructor (args: Constructor) {
+    this.tabs = args.tabs;
+    this.participant = args.participant;
+    this.presenter = args.presenter;
+    this.moderator = args.moderator;
   }
 
-  static fromResponse(response: any){
+  static fromResponse (response: any) {
     return new Configuration({
       tabs: {
         questions: response.tabs.questions,

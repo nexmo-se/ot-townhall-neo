@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import ConfigurationAPI from "../api/configuration";
 import { Request, Response } from "express";
-import type { TRole } from "../entities/configuration";
+import type { AcceptedRole } from "../entities/configuration";
 
 
 class AuthListener {
@@ -19,7 +19,7 @@ class AuthListener {
       if(acceptedRoles.includes(roleString)){
         const configuration = await ConfigurationAPI.retrieve({ tenant: tenantString });
         if (configuration){
-          const pin = configuration.retrievePin(roleString as TRole);
+          const pin = configuration.retrievePin(roleString as AcceptedRole);
           if (inputPin === pin) return res.json({}).end();
         }
       }
