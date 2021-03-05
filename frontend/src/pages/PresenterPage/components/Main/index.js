@@ -15,36 +15,58 @@ import FullPageLoading from "components/FullPageLoading";
 import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
-import LiveBadge from "components/LiveBadge";
+// import LiveBadge from "components/LiveBadge";
 import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
 function Main(){
+  const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<IParam>();
   const mStyles = useStyles();
 
-  React.useEffect(() => {
-    async function connect(){
-      if(loggedIn && me){
-        const credential = await CredentialAPI.generateCredential({
-          role: "publisher",
-          data: me.toJSON(),
-          tenant
-        })
-        await connectWithCredential(credential);
-      }
-    }
-    connect();
-  }, [ loggedIn, me, connectWithCredential, tenant ]);
+  const publishErrorListener = React.useCallback(
+    (error: any) => {
+      setPublishFailed(true);
+      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry");
+    },
+    []
+  )
 
-  React.useEffect(() => {
-    if(connected && session && me) publishCamera({ session, user: me });
-  }, [ connected, session, me, publishCamera ]);
+  React.useEffect(
+    () => {
+      async function connect(){
+        if(loggedIn && me){
+          const credential = await CredentialAPI.generateCredential({
+            role: "publisher",
+            data: me.toJSON(),
+            tenant
+          })
+          await connectWithCredential(credential);
+        }
+      }
+      connect();
+    },
+    [loggedIn, me, connectWithCredential, tenant]
+  );
+
+  React.useEffect(
+    () => {
+      if(connected && session && me && !publishFailed) {
+        publishCamera({
+          session,
+          user: me,
+          onError: publishErrorListener
+        });
+        setPublishFailed(false);
+      }
+    },
+    [publishFailed, connected, session, me, publishCamera, publishErrorListener]
+  );
 
   return (
     <>
@@ -53,14 +75,18 @@ function Main(){
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />
           <WhiteLayer/>
-          <VideoHoverContainer>
-            <VideoControl 
-              publisher={cameraPublisher}
-              unpublish={unpublish}
-            >
-              <ShareScreen />
-            </VideoControl>
-          </VideoHoverContainer>
+          {
+            (cameraPublisher)? (
+              <VideoHoverContainer>
+                <VideoControl 
+                  publisher={cameraPublisher}
+                  unpublish={unpublish}
+                >
+                  <ShareScreen />
+                </VideoControl>
+              </VideoHoverContainer>
+            ): null
+          }
           <div className={mStyles.logoContainer}>
             {/* <LiveBadge/> */}
           </div>

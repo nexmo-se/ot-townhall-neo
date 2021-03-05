@@ -15,34 +15,57 @@ import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
 import MainScreen from "../MainScreen";
 import FullPageLoading from "components/FullPageLoading";
-import LiveBadge from "components/LiveBadge";
+// import LiveBadge from "components/LiveBadge";
 import ParticipantList from "components/ParticipantList";
 
-interface IParam { tenant: string }
-function Main(){
+interface URLParamters { tenant: string }
+
+function Main () {
+  const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
   const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams<URLParamters>();
   const mStyles = useStyles();
 
-  React.useEffect(() => {
-    async function connect(){
-      if(loggedIn && me){
-        const credential = await CredentialAPI.generateCredential({
-          role: "moderator",
-          data: me.toJSON(),
-          tenant
-        });
-        await connectWithCredential(credential);
-      }
-    }
-    connect();
-  }, [ loggedIn, me, connectWithCredential, tenant ]);
+  const publishErrorListener = React.useCallback(
+    (error: any) => {
+      setPublishFailed(true);
+      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry.\n\nHowever, as Moderator, you are still able to use other functionality");
+    },
+    []
+  )
 
-  React.useEffect(() => {
-    if(connected && session && me) publishCamera({ session, user: me });
-  }, [ connected, session, me, publishCamera ])
+  React.useEffect(
+    () => {
+      async function connect () {
+        if (loggedIn && me) {
+          const credential = await CredentialAPI.generateCredential({
+            role: "moderator",
+            data: me.toJSON(),
+            tenant
+          });
+          await connectWithCredential(credential);
+        }
+      }
+      connect();
+    }, 
+    [loggedIn, me, connectWithCredential, tenant]
+  );
+
+  React.useEffect(
+      () => {
+      if (connected && session && me && !publishFailed) {
+        publishCamera({
+          session,
+          user: me,
+          onError: publishErrorListener
+        });
+        setPublishFailed(false);
+      }
+    },
+    [publishFailed, connected, session, me, publishCamera, publishErrorListener]
+  )
 
   return (
     <>
@@ -71,7 +94,7 @@ function Main(){
           <div className={mStyles.chat} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
             <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
             <LiveParticipantList>
-              {(cameraPublisher && me)? (
+              {(me)? (
                 <>
                   <ModeratorParticipantItem 
                     user={me}
