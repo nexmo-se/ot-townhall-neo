@@ -21,12 +21,14 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
   const [chatTab, setChatTab] = React.useState<boolean>(false);
   const [questionsTab, setQuestionsTab] = React.useState<boolean>(false);
   const [pollingTab, setPollingTab] = React.useState<boolean>(false);
+  const [allowRaiseHand, setAllowRaiseHand] = React.useState<boolean>(false);
 
   async function saveSettings() {
     const payload = {
       participant: {
         pin: participantPin? participantPin: undefined,
-        login_type: participantLoginType
+        login_type: participantLoginType,
+        raise_hand: allowRaiseHand
       },
       presenter:
       {
@@ -65,6 +67,8 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
       setParticipantLoginType(configuration.participant.loginType);
       setPresenterLoginType(configuration.presenter.loginType);
       setModeratorLoginType(configuration.moderator.loginType);
+
+      setAllowRaiseHand(configuration.participant.raiseHand ?? true);
     },
     [tenant]
   )
@@ -82,6 +86,8 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
         participantLoginType,
         presenterLoginType,
         moderatorLoginType,
+        allowRaiseHand,
+        setAllowRaiseHand,
         setParticipantLoginType,
         setPresenterLoginType,
         setModeratorLoginType,

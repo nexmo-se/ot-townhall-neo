@@ -1,35 +1,39 @@
 // @flow
 
-export type TRole = "participant" | "moderator" | "presenter";
-interface IRole {
+export type AcceptedRole = "participant" | "moderator" | "presenter";
+type Role = {
   loginType: "default" | "ama" | "sso";
+  raiseHand?: boolean;
 }
 
-interface ITabs {
+type Tabs = {
   questions: boolean;
   participants: boolean;
   polling: boolean;
   chat: boolean;
 }
 
-interface IConfiguration {
-  tabs: ITabs;
-  participant: IRole;
-  presenter: IRole;
-  moderator: IRole;
+interface Constructor {
+  tabs: Tabs;
+  participant: Role;
+  presenter: Role;
+  moderator: Role;
 }
 
-class Configuration implements IConfiguration{
-  tabs: ITabs;
-  participant: IRole;
-  presenter: IRole;
-  moderator: IRole;
+class Configuration {
+  tabs: Tabs;
+  participant: Role;
+  presenter: Role;
+  moderator: Role;
 
-  constructor(args: IConfiguration){
-    Object.assign(this, args);
+  constructor (args: Constructor) {
+    this.tabs = args.tabs;
+    this.participant = args.participant;
+    this.presenter = args.presenter;
+    this.moderator = args.moderator;
   }
 
-  static fromResponse(response: any){
+  static fromResponse (response: any): Configuration {
     return new Configuration({
       tabs: {
         questions: response.tabs.questions,
@@ -38,7 +42,8 @@ class Configuration implements IConfiguration{
         chat: response.tabs.chat
       },
       participant: {
-        loginType: response.participant.login_type
+        loginType: response.participant.login_type,
+        raiseHand: response.participant.raise_hand ?? true
       },
       moderator: {
         loginType: response.moderator.login_type

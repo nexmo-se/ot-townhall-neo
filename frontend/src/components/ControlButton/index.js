@@ -46,13 +46,13 @@ function ControlButton({
       className={clsx(
         "Vlt-white",
         active && !loading? "Vlt-bg-green": !active && !loading? "Vlt-bg-red": "",
-        loading? "Vlt-bg-grey": "",
+        (loading || props.disabled)? "Vlt-bg-grey": "",
         mStyles.icon
       )}
       onMouseEnter={handleMouseEnter} 
       onMouseLeave={handleMouseLeave} 
       onClick={handleClick}
-      disabled={loading}
+      disabled={loading || props.disabled}
     >
       {loading? <Loader size={fontSize} color="white" />: children}
     </Container>

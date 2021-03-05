@@ -3,58 +3,39 @@
 import $ from "mongo-dot-notation";
 
 import MongoDBService from "../utils/mongodb";
-import pinConfig from "../config/pin";
+import ConfigurationConfig from "../config/configuration";
 import Configuration from "../entities/configuration";
 
-interface IRetrieve{
-  tenant?: string;
-}
-
-interface ICreateDefault {
+interface DefaultOptions {
   tenant: string;
 }
 
+interface RetrieveOptions extends DefaultOptions {};
+interface CreateDefaultOptions extends DefaultOptions {};
+
 class ConfigurationAPI{
-  static async retrieve({ tenant }: IRetrieve): Promise<Configuration | void>{
+  static async retrieve({ tenant }: RetrieveOptions): Promise<Configuration | void>{
     const db = await MongoDBService.getInstance();
     const result = await db.collection(Configuration._collectionName).findOne({ tenant });
     if (result) return Configuration.fromDatabase(result);
     else return undefined;
   }
 
-  static async createDefault({ tenant }: ICreateDefault): Promise<Configuration | void>{
+  /**
+   * This will create a configuration if no configuration exists for givent tenant name in the parameters.
+   * The default configuration is set inside `src/config/configuration.ts` file.
+   * @param 
+   */
+  static async createDefault ({ tenant }: CreateDefaultOptions): Promise<Configuration | void> {
     const oldConfiguration = await ConfigurationAPI.retrieve({ tenant });
     if (oldConfiguration) return oldConfiguration;
     else {
-      const defaultConfiguration = {
-        presenter: {
-          login_type: "sso",
-          pin: pinConfig.presenter
-        },
-        participant: {
-          login_type: "sso",
-          pin: pinConfig.participant
-        },
-        moderator : {
-          login_type: "sso",
-          pin: pinConfig.moderator
-        },
-        tabs: {
-          questions: true,
-          chat: true,
-          participants: true,
-          polling: true
-        }
-      };
-
-      const db = await MongoDBService.getInstance();
-      
-      await db.collection(Configuration._collectionName).updateOne(
+      await Configuration.updateOne(
         { tenant },
         {
           $set: {
             tenant,
-            configuration: defaultConfiguration
+            configuration: ConfigurationConfig.default
           }
         },
         { upsert: true }

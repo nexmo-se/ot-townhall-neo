@@ -49,6 +49,7 @@ interface IMessageContext {
   startPolling: () => Promise<void>;
   stopPolling: () => Promise<void>;
   ack: (args: IAck) => Promise<void>;
+  forcePublishFailed: () => Promise<void>;
   intendedForMe: ({ data: any }) => boolean;
 }
 
@@ -67,6 +68,7 @@ export const MessageContext = React.createContext<IMessageContext>({
   startPolling: () => Promise.resolve(),
   send: (args: ISend) => Promise.resolve(),
   ack: (args: IAck) => Promise.resolve(),
+  forcePublishFailed: () => Promise.resolve(),
   intendedForMe: ({ data: any }) => false
 });
 
@@ -111,6 +113,10 @@ export default function MessageProvider({ children }: IMessageProvider) {
 
   async function revokeSlidesAccess({ user }: IUserOnly) {
     await signal({ type: "revoke-slides-access", data: JSON.stringify(user.toJSON()) });
+  }
+
+  async function forcePublishFailed () {
+    await signal({ type: "force-publish-failed" });
   }
 
   async function forcePublish({ user }: IUserOnly) {
@@ -198,7 +204,8 @@ export default function MessageProvider({ children }: IMessageProvider) {
       messages,
       slidesAccess,
       revokeSlidesAccess,
-      ack
+      ack,
+      forcePublishFailed
     }}>
       {children}
     </MessageContext.Provider>
