@@ -96,7 +96,7 @@ function PinSettings() {
                   type="checkbox"
                   id="allow-raise-hand"
                   onChange={handleAllowRaiseHandChange}
-                  checkbox={allowRaiseHand}
+                  checked={allowRaiseHand}
                 />
                 <span class="Vlt-checkbox__icon"></span>
               </span>

@@ -91,7 +91,7 @@ function Main(){
           mStyles.black
         )}>
           <MainScreen />
-          <LiveBadge className={mStyles.liveBadge} />
+          {/* <LiveBadge className={mStyles.liveBadge} /> */}
         </div>
       </div>
     </>
