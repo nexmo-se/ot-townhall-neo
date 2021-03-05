@@ -62,7 +62,7 @@ function Main(){
             </VideoControl>
           </VideoHoverContainer>
           <div className={mStyles.logoContainer}>
-            <LiveBadge/>
+            {/* <LiveBadge/> */}
           </div>
           <VonageLogo 
             style={{ 

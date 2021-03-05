@@ -116,9 +116,8 @@ function Main(){
             </VideoHoverContainer>
           ): null}
           <div className={mStyles.logoContainer}>
-            <LiveBadge/>
+            {/* <LiveBadge/> */}
             <RaiseHandButton cameraPublisher={cameraPublisher} />
-            {/* {!cameraPublisher? <RaiseHandButton />: null} */}
           </div>
           <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
         </div>
