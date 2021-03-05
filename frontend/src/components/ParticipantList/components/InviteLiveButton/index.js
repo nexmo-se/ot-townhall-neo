@@ -44,7 +44,7 @@ function InviteLiveButton({ user }: IInviteLiveButton){
   // Do not show invite live button when you are not moderators
   // Only moderator can invite live
   if(me?.role !== "moderator" || publishing) return null;
-  else if(user.role === "moderator") return null;
+  else if(user.role === "moderator" || user.role === "presenter") return null;
   else return (
     <button
       className="Vlt-btn"

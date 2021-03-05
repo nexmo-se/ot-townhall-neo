@@ -6,12 +6,24 @@ import User from "entities/user";
 
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
+import useDisplay from "hooks/display";
+import { useParams } from "react-router-dom";
 
-function RaiseHandButton(){
+interface URLParameters {
+  tenant: string;
+}
+
+interface RaiseHandButtonProps {
+  cameraPublisher: any;
+}
+
+function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
   const { session } = useSession();
   const { raiseHand, send } = useMessage();
+  const { tenant } = useParams<URLParameters>();
+  const { display } = useDisplay({ tenant });
 
-  function handleClick(){
+  function handleClick () {
     const user = User.fromConnection(session.connection);
     raiseHand({ user });
     
@@ -19,15 +31,18 @@ function RaiseHandButton(){
     send({ message });
   }
 
-  return (
-    <button 
-      className="Vlt-btn Vlt-bg-aqua Vlt-white" 
-      onClick={handleClick}
-    >
-      Raise Hand
-    </button>
-  )
+  if (cameraPublisher || !display.raiseHand) {
+    return null;
+  } else {
+    return (
+      <button 
+        className="Vlt-btn Vlt-bg-aqua Vlt-white" 
+        onClick={handleClick}
+      >
+        Raise Hand
+      </button>
+    )
+  }
 }
 
-RaiseHandButton.defaultProps = { size: 50, fontSize: 24 }
 export default RaiseHandButton;
