@@ -13,7 +13,9 @@ interface UnpublishOptions extends BasePublishOptions {};
 interface PublishOptions extends BasePublishOptions {
   user: User;
   extraData?: any;
-  onAccessDenied?: (user: User) => void
+  onAccessDenied?: (user: User) => void;
+  onError?: ?(((error: any) => void) | ((error: any) => Promise<void>));
+  attempt?: number;
 }
 
 interface IReturnValue {
@@ -30,7 +32,7 @@ interface IPublisher{
 
 function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IReturnValue{
   const { addStream, removeStream } = useSession();
-  const publisherRef = React.useRef();
+  const publisherRef = React.useRef<Publisher | void>();
 
   const streamCreatedListener = React.useCallback(
     ({ stream }) => {
@@ -47,8 +49,10 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
   )
 
   const publish = React.useCallback(
-    async ({ session, user, extraData }: PublishOptions): Promise<Publisher> => {
-      if(!publisherRef.current){
+    async ({ session, user, extraData, attempt = 1, onError }: PublishOptions): Promise<Publisher> => {
+      console.log(`Attempting to publish in ${attempt} try`)
+
+      if (!publisherRef.current) {
         const options = { 
           insertMode: "append",
           name: name? name: user.name,
@@ -57,6 +61,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
             nameDisplayMode: "on"
           }
         };
+
         const finalOptions = Object.assign({}, options, extraData);
         if (finalOptions.insertDefaultUI === false) {
           publisherRef.current = OT.initPublisher(undefined, finalOptions);
@@ -67,21 +72,53 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
         if (publisherRef.current) publisherRef.current.on("streamCreated", streamCreatedListener);
         if (publisherRef.current) publisherRef.current.on("streamDestroyed", streamDestroyedListener);
 
-        await new Promise(
+        const { retry, error } = await new Promise(
           (resolve, reject) => {
             session.publish(
               publisherRef.current,
               (err) => {
-                if (err) reject(err);
-                else resolve();
+                if (err && attempt < 3) {
+                  publisherRef.current = undefined;
+                  resolve({ retry: true, error: err });
+                } if (err && attempt >= 3) {
+                  resolve({ retry: false, error: err });
+                } else resolve({ retry: false, error: undefined });
               }
             )
           }
         )
-        return publisherRef.current;
-      }else return publisherRef.current;
+
+        if (retry) {
+          // Wait for 2 seconds before attempting to publish again
+          await new Promise(
+            (resolve) => {
+              setTimeout(resolve, 2000 * attempt);
+            }
+          );
+
+          await publish({
+            session,
+            user,
+            extraData,
+            onError,
+            attempt: attempt + 1,
+          });
+        } else if (error) {
+          publisherRef.current = undefined;
+          
+          if (onError) await onError(error);
+          return undefined;
+        } else {
+          return publisherRef.current;
+        }
+      } else return publisherRef.current;
     },
-    [ containerID, name, streamCreatedListener, streamDestroyedListener ]
+    [
+      containerID,
+      name,
+      streamCreatedListener,
+      streamDestroyedListener
+    ]
   );
 
   const unpublish =  React.useCallback(

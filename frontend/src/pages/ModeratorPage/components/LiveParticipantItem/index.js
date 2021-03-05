@@ -112,6 +112,7 @@ function LiveParticipantItem({
               style={{ marginRight: 8 }} 
               onClick={toggleVideo}
               hasVideo={hasVideo}
+              disabled={(subscriber || publisher)? false: true}
             />
             <MuteButton 
               size={32} 
@@ -119,6 +120,7 @@ function LiveParticipantItem({
               style={{ marginRight: 8 }} 
               onClick={toggleAudio}
               hasAudio={hasAudio}
+              disabled={(subscriber || publisher)? false: true}
             />
             <Hangup subscriber={subscriber} />
           </div> 

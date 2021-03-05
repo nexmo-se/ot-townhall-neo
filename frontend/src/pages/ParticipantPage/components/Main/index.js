@@ -18,7 +18,7 @@ import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
-import LiveBadge from "components/LiveBadge";
+// import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo";
 import MainScreen from "components/MainScreen";
 
@@ -30,21 +30,34 @@ function Main(){
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { intendedForMe } = useMessage();
+  const { intendedForMe, forcePublishFailed } = useMessage();
   const { tenant } = useParams<IParam>();
   const mStyles = useStyles();
+
+  const publishErrorListener = React.useCallback(
+    (error: any) => {
+      forcePublishFailed();
+      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
+    },
+    [forcePublishFailed]
+  )
 
   const forcePublishListener = React.useCallback(
     ({ data }) => {
       if (intendedForMe({ data })) {
         const user = User.fromJSON(JSON.parse(data));
-        publishCamera({ session, user });
+        publishCamera({
+          session,
+          user,
+          onError: publishErrorListener
+        });
       }
     },
     [
       publishCamera,
       intendedForMe,
-      session
+      session,
+      publishErrorListener
     ]
   );
 
@@ -52,7 +65,7 @@ function Main(){
     async ({ data }) => {
       if (intendedForMe({ data })) {
         await unpublish({ session });
-        setRefreshToken(uuid())
+        setRefreshToken(uuid());
       }
     },
     [
