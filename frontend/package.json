@@ -1,6 +1,6 @@
 {
-  "name": "seg-386",
-  "version": "0.1.0",
+  "name": "townhall",
+  "version": "1.2.5",
   "private": true,
   "dependencies": {
     "@material-ui/core": "4.11.2",
