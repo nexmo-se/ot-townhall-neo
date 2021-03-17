@@ -15,18 +15,21 @@ import FullPageLoading from "components/FullPageLoading";
 import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
-// import LiveBadge from "components/LiveBadge";
 import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
 
-interface IParam { tenant: string }
-function Main(){
+
+interface URLParameters {
+  tenant: string;
+}
+
+function Main () {
   const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams<URLParameters>();
   const mStyles = useStyles();
 
   const publishErrorListener = React.useCallback(
@@ -35,7 +38,7 @@ function Main(){
       alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry");
     },
     []
-  )
+  );
 
   React.useEffect(
     () => {
