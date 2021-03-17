@@ -3,29 +3,30 @@ import React from "react";
 import clsx from "clsx";
 import posed from "react-pose";
 import useStyles from "./styles";
-import { default as Loader } from "react-spinners/BounceLoader";
+import { BaseProps } from "./types";
 
-interface IControlButton {
-  size?: number,
-  fontSize?: number,
-  loading?: boolean,
-  active?: boolean,
-  onClick?: Function,
-  className?: any,
-  children: any
-}
 
-function ControlButton({ 
-  size = 50, 
-  fontSize = 24, 
-  loading, 
-  active, 
-  onClick, 
-  className, 
-  children, 
-  ...props 
-}: IControlButton) {
-  const [ isBig, setIsBig ] = React.useState(false);
+import Loader from "react-spinners/BounceLoader";
+import CycleCamera from "./components/CycleCamera";
+import Hangup from "./components/Hangup";
+import Mute from "./components/Mute";
+import Video from "./components/Video";
+
+interface ControlButtonProps extends BaseProps {}
+
+function ControlButton(props: ControlButtonProps) {
+  const { 
+    size = 50, 
+    fontSize = 24, 
+    loading, 
+    active, 
+    onClick, 
+    className, 
+    children, 
+    ...otherProps 
+  } = props
+
+  const [isBig, setIsBig] = React.useState(false);
   const mStyles = useStyles({ size, fontSize });
 
   const Container = posed.div({
@@ -36,27 +37,36 @@ function ControlButton({
   const handleMouseEnter = () => setIsBig(true);
   const handleMouseLeave = () => setIsBig(false);
   const handleClick = () => {
-    if(onClick) onClick();
+    if (onClick) onClick();
   }
 
   return (
     <Container 
-      {...props}
+      {...otherProps}
       pose={isBig? "big": "small"} 
-      className={clsx(
-        "Vlt-white",
-        active && !loading? "Vlt-bg-green": !active && !loading? "Vlt-bg-red": "",
-        (loading || props.disabled)? "Vlt-bg-grey": "",
-        mStyles.icon
-      )}
+      className={
+        clsx({
+          [className]: true,
+          [otherProps.forceColor]: !!otherProps.forceColor,
+          "Vlt-white": true,
+          "Vlt-bg-green": (active && !loading) && !otherProps.forceColor,
+          "Vlt-bg-red": (!active && !loading) && !otherProps.forceColor,
+          "Vlt-bg-grey": (loading || otherProps.disabled) && !otherProps.forceCOlor,
+          [mStyles.icon]: true,
+        })
+      }
       onMouseEnter={handleMouseEnter} 
       onMouseLeave={handleMouseLeave} 
       onClick={handleClick}
-      disabled={loading || props.disabled}
+      disabled={loading || otherProps.disabled}
     >
       {loading? <Loader size={fontSize} color="white" />: children}
     </Container>
   )
 }
 
+ControlButton.CycleCamera = CycleCamera;
+ControlButton.Hangup = Hangup;
+ControlButton.Mute = Mute;
+ControlButton.Video = Video;
 export default ControlButton;
