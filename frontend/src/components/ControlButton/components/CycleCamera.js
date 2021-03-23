@@ -23,7 +23,7 @@ function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
     <ControlButton
       {...props}
       onClick={handleClick}
-      forceColor="Vlt-bg-purple-dark"
+      forceColor="Vlt-bg-aqua-dark"
     >
       <FlipCameraIosIcon fontSize="inherit" />
     </ControlButton>
