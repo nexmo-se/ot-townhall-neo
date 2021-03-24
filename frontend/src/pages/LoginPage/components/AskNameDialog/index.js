@@ -5,44 +5,76 @@ import AuthService from "../../services/auth";
 import type { Role } from "entities/user";
 
 import useStyles from "./styles";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import TextInput from "components/TextInput";
 
-interface IParams { tenant: string }
-interface IAskNameDialog {
+interface URLParameters {
+  tenant: string
+}
+
+interface AskNameDialogProps {
   onLoggedIn: (user: User) => Promise<void>;
   role: Role;
   disabled?: boolean;
 }
 
-function AskNameDialog({ disabled = false, role, onLoggedIn }: IAskNameDialog){
-  const [ text, setText ] = React.useState<string>("");
-  const [ inputPin, setInputPin ] = React.useState<string>("");
-  const { tenant } = useParams<IParams>();
+function AskNameDialog ({ disabled = false, role, onLoggedIn }: AskNameDialogProps) {
+  const [text, setText] = React.useState<string>("");
+  const [inputPin, setInputPin] = React.useState<string>("");
+  const { tenant } = useParams<URLParameters>();
+  const location = useLocation();
   const mStyles = useStyles();
 
-  async function handleSubmit(e){
-    e.preventDefault();
-    if (!text) {
-      alert("Please enter your name");
-    }else {
-      try{
-        const acceptedRole = [ "presenter", "participant", "moderator" ];
-        if (acceptedRole.includes(role)){
-          await AuthService.login({
-            tenant,
-            role,
-            pin: inputPin
-          });
-          const user = new User({ name: text, role });
-          onLoggedIn(user);
-        }else alert("Wrong role");
-      }catch(err){ 
-        alert("Wrong PIN");
+  const login = React.useCallback(
+    async (text, inputPin) => {
+      if (!text) {
+        alert("Please enter your name");
+      } else {
+        try{
+          const acceptedRole = [ "presenter", "participant", "moderator" ];
+          if (acceptedRole.includes(role)){
+            await AuthService.login({
+              tenant,
+              role,
+              pin: inputPin
+            });
+            const user = new User({ name: text, role });
+            onLoggedIn(user);
+          }else alert("Wrong role");
+        }catch(err){ 
+          alert("Wrong PIN");
+        }
       }
-    }
+    },
+    []
+  )
+
+  async function handleSubmit (e: any) {
+    e.preventDefault();
+    await login(text, inputPin);
   }
+
+  // By pass log in screen by using QueryString
+  // If no name is provided, use `Anonymous User` as default
+  React.useEffect(
+    () => {
+      const query = new URLSearchParams(location.search);
+      const name = query.get("name");
+      const pin = query.get("pin");
+      
+      if (!name && !pin) return;
+      if (!name && pin) {
+        login("Anonymous User", pin)
+      } else if (name && pin) {
+        login(name, pin);
+      } else {
+        setText(name ?? "");
+        setInputPin(pin ?? "")
+      }
+    },
+    [location.search]
+  )
 
   return (
     <form className={mStyles.container}>

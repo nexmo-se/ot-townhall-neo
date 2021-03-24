@@ -7,28 +7,38 @@ import { useParams, useHistory } from "react-router-dom";
 
 import LoginDialog from "./components/LoginDialog";
 
-interface IParam { role: string, tenant: string }
+interface URLParameters {
+  role: string,
+  tenant: string
+}
+
 function LoginPage(){
   const [ loading, setLoading ] = React.useState<boolean>(false);
-  const { tenant, role } = useParams<IParam>();
+  const { tenant, role } = useParams<URLParameters>();
   const { login } = useMe();
   const { push } = useHistory();
 
-  const handleLoggedIn = React.useCallback(async (user: User): Promise<void> => {
-    setLoading(true);
-    login(user);
-    push(`/${tenant}/${role}`);
-  }, [ login, push, role, tenant ]);
+  const handleLoggedIn = React.useCallback(
+    async (user: User): Promise<void> => {
+      setLoading(true);
+      login(user);
+      push(`/${tenant}/${role}`);
+    },
+    [login, push, role, tenant]
+  );
 
   /**
    * By pass login here
    */
-   React.useEffect(() => {
-      // if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
-      // if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
-      // if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
-      if(role === "ghostrider") handleLoggedIn(new User({ name: "Ghost Rider", role: "participant" }));
-   }, [ role, handleLoggedIn ])
+   React.useEffect(
+     () => {
+        // if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
+        // if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
+        // if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
+        if(role === "ghostrider") handleLoggedIn(new User({ name: "Ghost Rider", role: "participant" }));
+    },
+    [role, handleLoggedIn]
+  )
   
   return (
     <>
