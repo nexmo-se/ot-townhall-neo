@@ -28,14 +28,15 @@ class ConfigurationAPI{
    */
   static async createDefault ({ tenant }: CreateDefaultOptions): Promise<Configuration | void> {
     const oldConfiguration = await ConfigurationAPI.retrieve({ tenant });
-    if (oldConfiguration) return oldConfiguration;
-    else {
+    if (oldConfiguration) {
+      return oldConfiguration;
+    } else {
       await Configuration.updateOne(
         { tenant },
         {
           $set: {
             tenant,
-            configuration: ConfigurationConfig.default
+            configuration: (tenant.startsWith("vids-"))? ConfigurationConfig.vidsDefault: ConfigurationConfig.default
           }
         },
         { upsert: true }

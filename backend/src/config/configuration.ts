@@ -21,6 +21,27 @@ const config = {
       participants: true,
       polling: true
     }
+  },
+  vidsDefault: {
+    presenter: {
+      login_type: "default",
+      pin: PinConfiguration.presenter
+    },
+    participant: {
+      login_type: "default",
+      pin: PinConfiguration.participant,
+      raise_hand: true
+    },
+    moderator: {
+      login_type: "default",
+      pin: PinConfiguration.moderator
+    },
+    tabs: {
+      questions: true,
+      chat: true,
+      participants: true,
+      polling: true
+    }
   }
 }
 
