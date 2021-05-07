@@ -1,18 +1,18 @@
 // @flow
 import React from "react";
+import { Publisher } from "@opentok/client";
 import type { Node } from "react";
 
 import useStyles from "./styles";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
-import { Publisher } from "@opentok/client";
 
 import ControlButton from "components/ControlButton";
 
 interface VideoControlProps {
   sizeMultiplier?: number;
   publisher?: Publisher;
-  unpublish?: Function;
+  unpublish?: any;
   children?: Node
 }
 
@@ -36,10 +36,6 @@ function VideoControl ({ sizeMultiplier=1, publisher, unpublish, children }: Vid
     },
     []
   );
-
-  function handleHangupClick () {
-    if (unpublish && publisher) unpublish(publisher);
-  }
   
   const handleStreamPropertyChanged = React.useCallback(
     ({ stream: changedStream, newValue, changedProperty }) => {
@@ -128,7 +124,14 @@ function VideoControl ({ sizeMultiplier=1, publisher, unpublish, children }: Vid
           onClick={toggleAudio}
           style={{ marginRight: 8 }}
         />
-        <ControlButton.Hangup onClick={handleHangupClick} />
+        {
+          publisher && (
+            <ControlButton.Hangup
+              unpublish={unpublish}
+              publisher={publisher}
+            />
+          )        
+        }
       </div>
     )
   }
