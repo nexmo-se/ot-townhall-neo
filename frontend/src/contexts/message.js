@@ -37,6 +37,7 @@ interface IForceAudio {
 interface IMessageContext {
   raisedHands: Array<User>;
   messages: Array<Message>;
+  modalContainer: any;
   send: (args: ISend) => Promise<void>;
   slidesAccess: (args: ISlidesAccess) => Promise<void>;
   revokeSlidesAccess: (args: IUserOnly) => Promise<void>;
@@ -56,6 +57,7 @@ interface IMessageContext {
 export const MessageContext = React.createContext<IMessageContext>({
   raisedHands: [],
   messages: [],
+  modalContainer: null,
   removeRaisedHand: (user: User) => {},
   slidesAccess: (args: ISlidesAccess) => Promise.resolve(),
   revokeSlidesAccess: (args: IUserOnly) => Promise.resolve(),
@@ -76,6 +78,7 @@ export default function MessageProvider({ children }: IMessageProvider) {
   const [ raisedHands, setRaisedHands ] = React.useState<Array<User>>([]);
   const [ messages, setMessages ] = React.useState<Array<Message>>([]);
   const { session } = useSession();
+  const modalContainer = React.useRef(null);
 
   function removeRaisedHand(user: User) {
     setRaisedHands((prevRaisedHands) => prevRaisedHands.filter((prevRaisedHand) => {
@@ -190,6 +193,7 @@ export default function MessageProvider({ children }: IMessageProvider) {
 
   return (
     <MessageContext.Provider value={{ 
+      modalContainer,
       forceVideo,
       forceAudio,
       startPolling, 
@@ -207,6 +211,7 @@ export default function MessageProvider({ children }: IMessageProvider) {
       ack,
       forcePublishFailed
     }}>
+      <div ref={modalContainer} />
       {children}
     </MessageContext.Provider>
   )
