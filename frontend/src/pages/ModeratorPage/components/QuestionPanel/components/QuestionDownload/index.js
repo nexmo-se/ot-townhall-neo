@@ -7,15 +7,27 @@ import Firestore from "utils/firestore";
 import DownloadService from "services/download";
 import lodash from "lodash";
 import clsx from "clsx";
-import useSession from "hooks/session";
 import { DateTime } from "luxon";
 
+import useSession from "hooks/session";
+import useMessage from "hooks/message";
+
 import Icon from "components/Icon";
+import Modal from "components/Modal";
+import Button from "components/Button";
+import { Portal } from "@material-ui/core";
 
 function QuestionDownload () {
   const [hasQuestions, setHasQuestions] = React.useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const { session } = useSession();
+  const { modalContainer } = useMessage();
 
+  /**
+   * Retrieve the questions directly from Firebase firestore `once`.
+   * It will retrieve for every status. Even if you don't see your data in the UI
+   * The data can be in the database itself.
+   */
   const retrieveQuestions = React.useCallback(
     async () => {
       const convertFirebase = (doc) => {
@@ -38,6 +50,10 @@ function QuestionDownload () {
     [session]
   )
 
+  async function handleRefresh () {
+    window.location.reload();
+  }
+
   /**
    * Retrieve questions data and then parse it to CSV 
    * using Papaparse library. After that download it directly
@@ -54,6 +70,15 @@ function QuestionDownload () {
       url: downloadUrl,
       name: fileName
     });
+    toggleModal();
+  }
+
+  function toggleModal () {
+    setIsModalOpen(
+      (old: boolean) => {
+        return !old
+      }
+    )
   }
 
   React.useEffect(
@@ -71,29 +96,71 @@ function QuestionDownload () {
     [retrieveQuestions]
   )
 
-  if (!hasQuestions) return null
-  else {
+  if (!hasQuestions) {
     return (
-      <div
-        onClick={handleDownload}
-        className={
-          clsx(
-            "Vlt-text-link",
-            styles.container
-          )
-        }
-      >
-        <Icon
+      <span>
+        Missing download button? Please &nbsp;
+        <span
+          className="Vlt-text-link"
+          onClick={handleRefresh}
+        >
+          refresh
+        </span>
+        &nbsp; the page
+      </span>
+    )
+  } else {
+    return (
+      <>
+        <div
+          onClick={toggleModal}
           className={
             clsx(
-              "Vlt-purple",
-              styles.margin_right
+              "Vlt-text-link",
+              styles.container
             )
           }
-          name="Vlt-icon-download"
-        />
-        <span>Download as CSV</span>
-      </div>
+        >
+          <Icon
+            className={
+              clsx(
+                "Vlt-purple",
+                styles.margin_right
+              )
+            }
+            name="Vlt-icon-download"
+          />
+          <span>Download as CSV</span>
+        </div>
+        <Portal container={modalContainer.current}>
+          <Modal
+            id="download-questions"
+            open={isModalOpen}
+          >
+            <Modal.Header>
+              <h3>Do you want to download questions?</h3>
+            </Modal.Header>
+            <Modal.Content>
+              <p>
+                You will download every single questions as csv including the one that is
+                not shown in the UI (eg. answered/deleted). 
+              </p>
+            </Modal.Content>
+            <Modal.Footer>
+              <Button
+                text="Cancel"
+                className="Vlt-btn--tertiary"
+                onClick={toggleModal}
+              />
+              <Button
+                text="Download"
+                className="Vlt-btn--secondary"
+                onClick={handleDownload}
+              />
+            </Modal.Footer>
+          </Modal>
+        </Portal>
+      </>
     )
   }
 }
