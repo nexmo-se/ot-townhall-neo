@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.margin_right {
+  margin-right: 8px;
+}
