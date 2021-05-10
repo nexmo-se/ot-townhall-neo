@@ -10,6 +10,7 @@ import ParticipantPage from "pages/ParticipantPage";
 import ModeratorPage from "pages/ModeratorPage";
 import GhostRiderPage from "pages/GhostRiderPage";
 import LoginPage from "pages/LoginPage";
+import ThankYouPage from "pages/ThankYouPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route exact path="/:tenant/moderator" component={ModeratorPage} />
             <Route exact path="/:tenant/ghostrider" component={GhostRiderPage} />
             <Route exact path="/:tenant/:role/login" component={LoginPage} />
+            <Route exact path="/thank-you" component={ThankYouPage} />
           </Switch>
         </MeProvider>
       </BrowserRouter>
