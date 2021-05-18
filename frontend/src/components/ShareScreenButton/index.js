@@ -4,6 +4,7 @@ import clsx from "clsx";
 import useStyles from "./styles";
 
 import ShareScreenIcon from '@material-ui/icons/ScreenShare';
+import Tooltip from '@material-ui/core/Tooltip';
 
 function ShareScreenButton({ onClick, size, fontSize, style, isSharing }){
   const [ isBig, setIsBig ] = React.useState(false);
@@ -34,7 +35,7 @@ function ShareScreenButton({ onClick, size, fontSize, style, isSharing }){
       onMouseLeave={handleMouseLeave} 
       onClick={handleClick}
     >
-      <ShareScreenIcon fontSize="inherit" />  
+      <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Share Screen</h6>}><ShareScreenIcon fontSize="inherit" /></Tooltip>
     </Container>
   )
 }

@@ -12,6 +12,7 @@ import useMe from "hooks/me";
 
 import TheatersIcon from '@material-ui/icons/Theaters';
 import ControlButton from "components/ControlButton";
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface IVODButton {
   size: number,
@@ -107,7 +108,7 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
         active={!lodash.isEmpty(videoSource)}
         onClick={handleClick}
       >
-        <TheatersIcon fontSize="inherit" />
+        <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Theater</h6>}><TheatersIcon fontSize="inherit" /></Tooltip>
       </ControlButton>
     </>
   )
