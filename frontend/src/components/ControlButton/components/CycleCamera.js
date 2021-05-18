@@ -5,6 +5,7 @@ import { Publisher } from "@opentok/client";
 
 import FlipCameraIosIcon from '@material-ui/icons/FlipCameraIos';
 import ControlButton from "../index";
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface CycleCameraProps extends BaseProps {
   publisher: Publisher;
@@ -25,7 +26,7 @@ function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
       onClick={handleClick}
       forceColor="Vlt-bg-aqua-dark"
     >
-      <FlipCameraIosIcon fontSize="inherit" />
+      <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Cycle Camera</h6>}><FlipCameraIosIcon fontSize="inherit" /></Tooltip>
     </ControlButton>
   )
 }
