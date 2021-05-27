@@ -11,6 +11,7 @@ import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
 import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
 import WhiteLayer from "components/WhiteLayer";
@@ -24,7 +25,7 @@ import MainScreen from "components/MainScreen";
 interface IParam { tenant: string }
 function Main () {
   // eslint-disable-next-line
-  const [ refreshToken, setRefreshToken ] = React.useState<string>(uuid());
+  const [ refreshToken, setRefreshToken ] = useState<string>(uuid());
   
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -33,34 +34,23 @@ function Main () {
   const { tenant } = useParams<IParam>();
   const mStyles = useStyles();
 
-  const publishErrorListener = React.useCallback(
+  const publishErrorListener = useCallback(
     (error: any) => {
       forcePublishFailed();
       alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
     },
     [forcePublishFailed]
-  )
-
-  const forcePublishListener = React.useCallback(
-    ({ data }) => {
-      if (intendedForMe({ data })) {
-        const user = User.fromJSON(JSON.parse(data));
-        publishCamera({
-          session,
-          user,
-          onError: publishErrorListener
-        });
-      }
-    },
-    [
-      publishCamera,
-      intendedForMe,
-      session,
-      publishErrorListener
-    ]
   );
 
-  const forceUnpublishListener = React.useCallback(
+  function handleApproved (user: User) {
+    publishCamera({
+      session,
+      user,
+      onError: publishErrorListener
+    })
+  }
+
+  const forceUnpublishListener = useCallback(
     async ({ data }) => {
       if (intendedForMe({ data })) {
         await unpublish({ session });
@@ -74,7 +64,7 @@ function Main () {
     ]
   )
 
-  React.useEffect(
+  useEffect(
     () => {
       async function connect () {
         if (loggedIn && me) {
@@ -96,20 +86,15 @@ function Main () {
     ]
   );
 
-  React.useEffect(
+  useEffect(
     () => {
-      if (session) session.on("signal:force-publish", forcePublishListener);
       if (session) session.on("signal:force-unpublish", forceUnpublishListener);
+
       return function cleanup () {
-        if (session) session.off("signal:force-publish", forcePublishListener);
         if (session) session.off("signal:force-unpublish", forceUnpublishListener);
       }
     },
-    [
-      session,
-      forcePublishListener,
-      forceUnpublishListener
-    ]
+    [session, forceUnpublishListener]
   )
 
   return (
@@ -128,7 +113,10 @@ function Main () {
             </VideoHoverContainer>
           ): null}
           <div className={mStyles.logoContainer}>
-            <RaiseHandButton cameraPublisher={cameraPublisher} />
+            <RaiseHandButton
+              cameraPublisher={cameraPublisher}
+              onApproved={handleApproved}
+            />
           </div>
           <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
         </div>

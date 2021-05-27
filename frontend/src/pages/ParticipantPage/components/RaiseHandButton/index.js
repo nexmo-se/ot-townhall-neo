@@ -18,9 +18,11 @@ interface URLParameters {
 
 interface RaiseHandButtonProps {
   cameraPublisher: any;
+  onApproved: (user: User) => void;
+  onDeclined?: () => void;
 }
 
-function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
+function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHandButtonProps) {
   const [canRaiseHand, setCanRaiseHand] = useState<boolean>(false);
   const [requesting, setRequesting] = useState<boolean>(false);
   const { session, subscribers } = useSession();
@@ -37,16 +39,31 @@ function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
     send({ message });
   }
 
-  const approvedListener = useCallback(
-    () => {},
+  const publishErrorListener = useCallback(
+    (error: any) => {
+      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
+    },
     []
+  );
+
+  const approvedListener = useCallback(
+    ({ data }) => {
+      if (!intendedForMe({ data }));
+      setRequesting(false);
+
+      if (!onApproved) return;
+      const user = User.fromJSON(JSON.parse(data));
+      onApproved(user);
+    },
+    [intendedForMe]
   )
 
   const declinedListener = useCallback(
     ({ data }) => {
-      if (intendedForMe({ data })) {
-        setRequesting(false);
-      }
+      if (!intendedForMe({ data})) return;
+      
+      setRequesting(false);
+      if (onDeclined) onDeclined();
     },
     [intendedForMe]
   )
