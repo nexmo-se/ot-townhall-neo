@@ -18,7 +18,31 @@ function MuteButton ({ hasAudio, ...props }: MuteButtonProps) {
       {...props}
       active={hasAudio}
     >
-      {hasAudio? <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Mic Off</h6>}><MicIcon fontSize="inherit"/></Tooltip>: <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Mic On</h6>}><MicIcon fontSize="inherit"/></Tooltip>}
+      {
+        hasAudio? (
+          <Tooltip
+            arrow
+            title={
+              <h6 style={{fontSize: "14px", color: "white"}}>
+                Mute Microphone
+              </h6>
+            }
+          >
+            <MicIcon fontSize="inherit"/>
+          </Tooltip>
+        ): (
+          <Tooltip
+            arrow
+            title={
+              <h6 style={{fontSize: "14px", color: "white"}}>
+                Unmute Microphone
+              </h6>
+            }
+          >
+            <MicOffIcon fontSize="inherit"/>
+          </Tooltip>
+        )
+      }
     </ControlButton>
   )
 }
