@@ -40,7 +40,6 @@ function PollingPanel(){
       if(polling && session){
         const user = User.fromConnection(session.connection);
         const selected = await FetchHelper.fetch(retrieveSelected, setSelectedLoading, { id: polling.id, user });
-        console.log(selected);
         setSelected(selected);
       }
     }

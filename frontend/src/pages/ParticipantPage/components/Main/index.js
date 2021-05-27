@@ -18,12 +18,11 @@ import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
-// import LiveBadge from "components/LiveBadge";
 import VonageLogo from "components/VonageLogo";
 import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
-function Main(){
+function Main () {
   // eslint-disable-next-line
   const [ refreshToken, setRefreshToken ] = React.useState<string>(uuid());
   
@@ -129,7 +128,6 @@ function Main(){
             </VideoHoverContainer>
           ): null}
           <div className={mStyles.logoContainer}>
-            {/* <LiveBadge/> */}
             <RaiseHandButton cameraPublisher={cameraPublisher} />
           </div>
           <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
