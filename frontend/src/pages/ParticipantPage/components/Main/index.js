@@ -100,7 +100,7 @@ function Main () {
     () => {
       if (session) session.on("signal:force-publish", forcePublishListener);
       if (session) session.on("signal:force-unpublish", forceUnpublishListener);
-      return function cleanup(){
+      return function cleanup () {
         if (session) session.off("signal:force-publish", forcePublishListener);
         if (session) session.off("signal:force-unpublish", forceUnpublishListener);
       }
