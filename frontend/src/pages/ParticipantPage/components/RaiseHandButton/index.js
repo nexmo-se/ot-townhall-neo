@@ -109,7 +109,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
         onClick={handleClick}
         disabled={requesting}
       >
-        {requesting? "Request Pending": "Raise Hand"}
+        {requesting? "Request Pending": "Request to Go Live"}
       </button>
     )
   }
