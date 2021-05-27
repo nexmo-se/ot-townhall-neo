@@ -9,7 +9,7 @@ import User from "entities/user";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
 import useDisplay from "hooks/display";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 interface URLParameters {
@@ -24,7 +24,7 @@ function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
   const [canRaiseHand, setCanRaiseHand] = useState<boolean>(false);
   const [requesting, setRequesting] = useState<boolean>(false);
   const { session, subscribers } = useSession();
-  const { raiseHand, send } = useMessage();
+  const { raiseHand, send, intendedForMe } = useMessage();
   const { tenant } = useParams<URLParameters>();
   const { display } = useDisplay({ tenant }); 
 
@@ -36,6 +36,20 @@ function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
     const message = new Message(user, `${user.name} is raising hand`);
     send({ message });
   }
+
+  const approvedListener = useCallback(
+    () => {},
+    []
+  )
+
+  const declinedListener = useCallback(
+    ({ data }) => {
+      if (intendedForMe({ data })) {
+        setRequesting(false);
+      }
+    },
+    [intendedForMe]
+  )
 
   useEffect(
     () => {
@@ -54,7 +68,19 @@ function RaiseHandButton ({ cameraPublisher }: RaiseHandButtonProps) {
       if (foundSubscriber) setCanRaiseHand(true);
       else setCanRaiseHand(false);
     },
-    [subscribers]
+    [subscribers, approvedListener, declinedListener]
+  )
+
+  useEffect(
+    () => {
+      if (session) session.on("signal:raisehand.approved", approvedListener);
+      if (session) session.on("signal:raisehand.declined", declinedListener);
+
+      return function cleanup () {
+
+      }
+    },
+    [session]
   )
 
   if (cameraPublisher || !display.raiseHand || !canRaiseHand) {
