@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
+import PrecallDialog from "../PrecallDialog";
 import WhiteLayer from "components/WhiteLayer";
 import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
@@ -25,7 +26,8 @@ import MainScreen from "components/MainScreen";
 interface IParam { tenant: string }
 function Main () {
   // eslint-disable-next-line
-  const [ refreshToken, setRefreshToken ] = useState<string>(uuid());
+  const [refreshToken, setRefreshToken] = useState<string>(uuid());
+  const [precallOpen, setPrecallOpen] = useState<boolean>(false);
   
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -43,11 +45,12 @@ function Main () {
   );
 
   function handleApproved (user: User) {
-    publishCamera({
-      session,
-      user,
-      onError: publishErrorListener
-    })
+    setPrecallOpen(true);
+    // publishCamera({
+    //   session,
+    //   user,
+    //   onError: publishErrorListener
+    // })
   }
 
   const forceUnpublishListener = useCallback(
@@ -122,6 +125,10 @@ function Main () {
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
+      <PrecallDialog
+        visible={precallOpen}
+        setVisible={setPrecallOpen}
+      />
     </>
   )
 }

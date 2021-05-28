@@ -55,6 +55,7 @@ interface MessageContextProps {
   forcePublishFailed: () => Promise<void>;
   approveGoLive: (args: IUserOnly) => Promise<void>;
   declineGoLive: (args: IUserOnly) => Promise<void>;
+  rejectGoLive: (args: IUserOnly) => Promise<void>;
   intendedForMe: ({ data: any }) => boolean;
 }
 
@@ -77,7 +78,8 @@ export const MessageContext = createContext<MessageContextProps>({
   forcePublishFailed: () => Promise.resolve(),
   intendedForMe: ({ data: any }) => false,
   approveGoLive: (args: IUserOnly) => Promise.resolve(),
-  declineGoLive: (args: IUserOnly) => Promise.resolve()
+  declineGoLive: (args: IUserOnly) => Promise.resolve(),
+  rejectGoLive: (args: IUserOnly) => Promise.resolve()
 });
 
 export default function MessageProvider ({ children }: MessageProviderProps) {
@@ -157,6 +159,14 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
       type: "raisehand.declined",
       data: JSON.stringify(payload)
     })
+  }
+
+  async function rejectGoLive ({ user }: IUserOnly) {
+    const payload = user.toJSON();
+    await signal({
+      type: "raishand.rejected",
+      data: JSON.stringify(payload)
+    });
   }
 
   async function forceUnpublish ({ user }: IUserOnly) {
@@ -264,7 +274,8 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
         ack,
         forcePublishFailed,
         approveGoLive,
-        declineGoLive
+        declineGoLive,
+        rejectGoLive
       }}
     >
       <div ref={modalContainer} />

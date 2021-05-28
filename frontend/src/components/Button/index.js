@@ -2,17 +2,17 @@
 import React from "react";
 import clsx from "clsx";
 
-type Props = {
-  text: string, 
-  onClick?: (e:any) => Promise<any> | void,
-  className?: any
+interface ButtonProps {
+  text: string;
+  onClick?: Function;
+  className?: any;
 }
 
-function Button({ text, className, onClick, ...props }:Props){
+function Button ({ text, className, onClick, ...props }: ButtonProps) {
 
   function handleClick (e) {
     e.preventDefault();
-    if(onClick) onClick(e);
+    if(onClick) onClick();
   }
 
   return (
