@@ -11,7 +11,7 @@ import useRecording from "../../hooks/recording";
 
 import Icon from "components/Icon";
 
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from 'components/Tooltip';
 
 interface IRecordingItem {
   recording: Recording;
@@ -57,7 +57,7 @@ function RecordingItem({ recording }: IRecordingItem){
           }
         </p>
         { recording.status === "available" && (
-          <Tooltip arrow title={<h6 style={{fontSize: "14px", color: "white"}}>Play Recording</h6>}>
+          <Tooltip title="Play Recording">
             <button
               className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
               onClick={handleDownload}
