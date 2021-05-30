@@ -5,7 +5,7 @@ import { BaseProps } from "../types";
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import ControlButton from "components/ControlButton";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from 'components/Tooltip';
 
 interface MuteButtonProps extends BaseProps {
   hasAudio: boolean,
@@ -20,25 +20,11 @@ function MuteButton ({ hasAudio, ...props }: MuteButtonProps) {
     >
       {
         hasAudio? (
-          <Tooltip
-            arrow
-            title={
-              <h6 style={{fontSize: "14px", color: "white"}}>
-                Mute Microphone
-              </h6>
-            }
-          >
+          <Tooltip title="Mute Microphone">
             <MicIcon fontSize="inherit"/>
           </Tooltip>
         ): (
-          <Tooltip
-            arrow
-            title={
-              <h6 style={{fontSize: "14px", color: "white"}}>
-                Unmute Microphone
-              </h6>
-            }
-          >
+          <Tooltip  title="Unmute Microphone">
             <MicOffIcon fontSize="inherit"/>
           </Tooltip>
         )
