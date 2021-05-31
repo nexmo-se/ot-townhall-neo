@@ -63,8 +63,6 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
         };
 
         const finalOptions = Object.assign({}, options, extraData);
-        console.log(finalOptions);
-        
         if (finalOptions.insertDefaultUI === false) {
           publisherRef.current = OT.initPublisher(undefined, finalOptions);
         } else {
@@ -80,6 +78,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
               publisherRef.current,
               (err) => {
                 if (err && attempt < 3) {
+                  if (publisherRef.current) publisherRef.current.destroy();
                   publisherRef.current = undefined;
                   resolve({ retry: true, error: err });
                 } if (err && attempt >= 3) {
@@ -106,6 +105,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
             attempt: attempt + 1,
           });
         } else if (error) {
+          if (publisherRef.current) publisherRef.current.destroy();
           publisherRef.current = undefined;
           
           if (onError) await onError(error);
@@ -126,6 +126,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
   const unpublish =  React.useCallback(
     async ({ session }: UnpublishOptions) => {
       if (publisherRef.current) await session.unpublish(publisherRef.current);
+      if (publisherRef.current) publisherRef.current.destroy()
       publisherRef.current = undefined;
     },
     []
