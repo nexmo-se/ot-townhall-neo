@@ -31,7 +31,7 @@
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
-    "start:prod": "yarn build && serve -s build -l 3001",
+    "start:prod": "serve -s build -l 3001",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
