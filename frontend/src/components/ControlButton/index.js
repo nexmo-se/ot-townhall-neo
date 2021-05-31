@@ -51,7 +51,7 @@ function ControlButton(props: ControlButtonProps) {
           "Vlt-white": true,
           "Vlt-bg-green": (active && !loading) && !otherProps.forceColor,
           "Vlt-bg-red": (!active && !loading) && !otherProps.forceColor,
-          "Vlt-bg-grey": (loading || otherProps.disabled) && !otherProps.forceCOlor,
+          "Vlt-bg-grey": (loading || otherProps.disabled) && !otherProps.forceColor,
           [mStyles.icon]: true,
         })
       }

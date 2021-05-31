@@ -11,6 +11,8 @@ import useRecording from "../../hooks/recording";
 
 import Icon from "components/Icon";
 
+import Tooltip from 'components/Tooltip';
+
 interface IRecordingItem {
   recording: Recording;
 }
@@ -55,13 +57,15 @@ function RecordingItem({ recording }: IRecordingItem){
           }
         </p>
         { recording.status === "available" && (
-          <button
-            className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
-            onClick={handleDownload}
-            disabled={fetching}
-          >
-            <Icon name="Vlt-icon-download-full" />
-          </button>
+          <Tooltip title="Play Recording">
+            <button
+              className="Vlt-btn Vlt-btn--primary Vlt-btn--icon Vlt-btn--app"
+              onClick={handleDownload}
+              disabled={fetching}
+            >
+              <Icon name="Vlt-icon-download-full" />
+            </button>
+          </Tooltip>
         )}
       </div>
     </div>

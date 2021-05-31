@@ -12,6 +12,7 @@ import useSession from "hooks/session";
 
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StopIcon from '@material-ui/icons/Stop';
+import Tooltip from 'components/Tooltip';
 
 interface IRecordButton {
   size: number,
@@ -103,9 +104,13 @@ function RecordButton({ size, fontSize, ...props }: IRecordButton){
       onClick={lodash.debounce(handleClick, 3000, { leading: true, trailing: false })}
     >
       {isRecording?(
-        <StopIcon fontSize="inherit" />
+        <Tooltip title="Stop Record">
+          <StopIcon fontSize="inherit"/>
+        </Tooltip>
       ):(
-        <FiberManualRecordIcon fontSize="inherit" />
+        <Tooltip title="Start Record">
+          <FiberManualRecordIcon fontSize="inherit"/>
+        </Tooltip>
       )}
     </Container>
   )
