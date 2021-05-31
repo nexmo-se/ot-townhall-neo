@@ -42,12 +42,12 @@ function SelectedQuestion(){
   if(!selected) return null
   return (
     <div className={clsx({
-      "Vlt-gradient--blue-to-pink": true,
+      "Vlt-gradient--purple-to-peach": true,
       [mStyles.root]: true
     })}>
       <Marquee 
         direction="left"
-        speed={0.1}
+        speed={0.06}
         delay={3000}
         childMargin={160}
       >

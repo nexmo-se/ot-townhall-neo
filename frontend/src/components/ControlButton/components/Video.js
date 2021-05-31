@@ -5,7 +5,7 @@ import { BaseProps } from "../types";
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import ControlButton from "../index";
-
+import Tooltip from 'components/Tooltip';
 interface VideoButtonProps extends BaseProps {
   hasVideo: boolean,
 }
@@ -16,7 +16,13 @@ function VideoButton ({ hasVideo, ...props }: VideoButtonProps) {
       {...props}
       active={hasVideo}
     >
-      {hasVideo? <VideocamIcon fontSize="inherit"/>: <VideocamOffIcon fontSize="inherit"/>}
+      {hasVideo? <Tooltip title="Video Off">
+                    <VideocamIcon fontSize="inherit"/>
+                 </Tooltip>
+                 : 
+                 <Tooltip title="Video On">
+                    <VideocamOffIcon fontSize="inherit"/>
+                 </Tooltip>}
     </ControlButton>
   )
 }
