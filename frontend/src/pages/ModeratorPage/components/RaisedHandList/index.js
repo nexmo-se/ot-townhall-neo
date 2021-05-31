@@ -4,23 +4,35 @@ import User from "entities/user";
 
 import useStyles from "./styles";
 import useMessage from "hooks/message";
+import { useState, useEffect } from "react";
 
 import RaisedHandItem from "../RaisedHandItem";
 
-function ParticipantList(){
-  const [ participants, setParticipants ] = React.useState<Array<User>>([]);
-  const mMessage = useMessage();
+function ParticipantList () {
+  const [participants, setParticipants] = useState<Array<User>>([]);
+  const { raisedHands } = useMessage();
   const mStyles = useStyles();
 
-  React.useEffect(() => {
-    setParticipants(mMessage.raisedHands)
-  }, [ mMessage.raisedHands ])
+  useEffect(
+    () => {
+      setParticipants(raisedHands)
+    },
+    [raisedHands]
+  )
 
   return (
     <div className={mStyles.container}>
-      {participants.map((participant) => {
-        return <RaisedHandItem user={participant} />
-      })}
+      {
+        participants.map(
+          (participant) => {
+            return (
+              <RaisedHandItem
+                user={participant}
+              />
+            )
+          }
+        )
+      }
     </div>
   )
 }

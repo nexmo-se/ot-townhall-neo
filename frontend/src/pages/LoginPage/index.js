@@ -24,9 +24,9 @@ function LoginPage(){
    * By pass login here
    */
    React.useEffect(() => {
-      // if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
-      // if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
-      // if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
+      if(role === "moderator") handleLoggedIn(new User({ name: "Moderator", role: "moderator" }));
+      if(role === "presenter") handleLoggedIn(new User({ name: "Presenter", role: "presenter" }));
+      if(role === "participant") handleLoggedIn(new User({ name: "Participant", role: "participant" }));
       if(role === "ghostrider") handleLoggedIn(new User({ name: "Ghost Rider", role: "participant" }));
    }, [ role, handleLoggedIn ])
   

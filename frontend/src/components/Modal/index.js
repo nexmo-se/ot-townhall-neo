@@ -1,13 +1,14 @@
 // @flow
 import React from "react";
 import clsx from "clsx";
+import { useRef, useEffect } from "react";
 
 import ModalHeader from "./components/ModalHeader";
 import Dismiss from "./components/Dismiss";
 import Content from "./components/Content";
 import Footer from "./components/Footer";
 
-interface IModal {
+interface ModalProps {
   id: string;
   children: any;
   large?: boolean;
@@ -15,21 +16,24 @@ interface IModal {
   onClose?: () => void;
 }
 
-function Modal({ id, children, large, open, onClose }: IModal){
-  const modalRef = React.useRef();
+function Modal ({ id, children, large, open, onClose }: ModalProps) {
+  const modalRef = useRef();
 
-  React.useEffect(() => {
-    if(open) {
-      if(!modalRef.current) modalRef.current = window.Volta.modal.create(id);
-      modalRef.current.open();
-    }else if(!open) {
-      if(modalRef.current) {
-        modalRef.current.dismiss();
-        if(onClose) onClose();
+  useEffect(
+    () => {
+      if (open) {
+        if (!modalRef.current) modalRef.current = window.Volta.modal.create(id);
+        modalRef.current.open();
+      } else if (!open) {
+        if (modalRef.current) {
+          modalRef.current.dismiss();
+          if (onClose) onClose();
+        }
+        modalRef.current = undefined;
       }
-      modalRef.current = undefined;
-    }
-  }, [ open, onClose, id ])
+    },
+    [open, onClose, id]
+  )
   
   return (
     <div

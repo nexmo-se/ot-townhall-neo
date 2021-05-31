@@ -9,6 +9,7 @@ import { Publisher, Subscriber } from "@opentok/client";
 import useStyles from "./styles";
 import useMessage from "hooks/message";
 import useSession from "hooks/session";
+import { useState, useEffect, useCallback } from "react";
 
 import Hangup from "./components/Hangup";
 import Avatar from "components/Avatar";
@@ -28,18 +29,20 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     user, 
     className, 
     publisher,
-    subscriber, 
+    subscriber,
     additionalControls,
     withAvatar = true
   } = props
 
-  const [hasVideo, setHasVideo] = React.useState<boolean>(true);
-  const [hasAudio, setHasAudio] = React.useState<boolean>(true);
+  const [hasVideo, setHasVideo] = useState<boolean>(false);
+  const [hasAudio, setHasAudio] = useState<boolean>(false);
+  const { stream: publisherStream } = publisher ?? { stream: undefined };
+  const { stream: subscriberStream } = subscriber ?? { stream: undefined };
   const mStyles = useStyles();
   const mMessage = useMessage();
   const mSession = useSession();
 
-  function toggleVideo(){
+  function toggleVideo () {
     if (publisher) publisher.publishVideo(!hasVideo);
     else if (subscriber) {
       const { connection } = subscriber.stream;
@@ -57,7 +60,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     }
   }
 
-  const streamPropertyListener = React.useCallback(
+  const streamPropertyListener = useCallback(
     ({ stream, changedProperty, newValue }) => {
       const pubsub = (publisher)? publisher: (subscriber)? subscriber: undefined;
       if (pubsub) {
@@ -69,15 +72,28 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     [publisher, subscriber]
   )
 
-  React.useEffect(
+  useEffect(
     () => {
       if (mSession.session) mSession.session.on("streamPropertyChanged", streamPropertyListener);
-
       return function cleanup () {
         if (mSession.session) mSession.session.on("streamPropertyChanged", streamPropertyListener);
       }
     },
     [mSession.session, streamPropertyListener]
+  )
+
+  useEffect(
+    () => {
+      console.log("here");
+      if (publisherStream) {
+        setHasAudio(publisherStream.hasAudio);
+        setHasVideo(publisherStream.hasVideo);
+      } else if (subscriberStream) {
+        setHasAudio(subscriberStream.hasAudio);
+        setHasVideo(subscriberStream.hasVideo);
+      }
+    },
+    [publisherStream, subscriberStream]
   )
 
   return (
