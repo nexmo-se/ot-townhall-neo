@@ -3,6 +3,7 @@ import React from "react";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
 import clsx from "clsx";
+import { Publisher } from "@opentok/client";
 import { v4 as uuid } from "uuid";
 
 import useStyles from "./styles";
@@ -46,11 +47,22 @@ function Main () {
 
   function handleApproved (user: User) {
     setPrecallOpen(true);
-    // publishCamera({
-    //   session,
-    //   user,
-    //   onError: publishErrorListener
-    // })
+  }
+
+  function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
+    if (!me) return;
+
+    publishCamera({
+      session,
+      user: me,
+      onError: publishErrorListener,
+      extraData: {
+        audioSource: publisher.getAudioSource(),
+        videoSource: publisher.getVideoSource(),
+        publishAudio: hasAudio,
+        publishVideo: hasVideo
+      }
+    });
   }
 
   const forceUnpublishListener = useCallback(
@@ -128,6 +140,7 @@ function Main () {
       <PrecallDialog
         visible={precallOpen}
         setVisible={setPrecallOpen}
+        onApprove={handleApproveClick}
       />
     </>
   )

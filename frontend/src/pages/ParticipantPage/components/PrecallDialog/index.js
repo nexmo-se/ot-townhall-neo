@@ -20,9 +20,10 @@ import Switch from "components/Switch";
 interface PrecallDialogProps {
   visible: boolean;
   setVisible: (value: boolean) => void;
+  onApprove: (value: Publisher) => void;
 }
 
-function PrecallDialog ({ visible, setVisible }: PrecallDialogProps) {
+function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) {
   const [hasCamera, setHasCamera] = useState<boolean>(true);
   const [hasMic, setHasMic] = useState<boolean>(true);
   const [publisher, setPublisher] = useState<Publisher | void>();
@@ -37,6 +38,17 @@ function PrecallDialog ({ visible, setVisible }: PrecallDialogProps) {
     rejectGoLive({ user: me });
 
     // close the dialog
+    setVisible(false);
+  }
+
+  function handleApproveClick () {
+    if (onApprove) {
+      onApprove({
+        hasAudio: hasMic,
+        hasVideo: hasCamera,
+        publisher
+      });
+    }
     setVisible(false);
   }
 
@@ -148,7 +160,10 @@ function PrecallDialog ({ visible, setVisible }: PrecallDialogProps) {
           className="Vlt-btn--tertiary"
           onClick={handleRejectClick}
         />
-        <Button text="Approve" />
+        <Button
+          text="Approve"
+          onClick={handleApproveClick}
+        />
       </Modal.Footer>
     </Modal>
   );
