@@ -78,7 +78,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
       if (foundSubscriber) setCanRaiseHand(true);
       else setCanRaiseHand(false);
     },
-    [subscribers, approvedListener, declinedListener]
+    [subscribers]
   )
 
   useEffect(

@@ -8,35 +8,46 @@ import useStyles from "./styles";
 import useMe from "hooks/me";
 import usePublisher from "hooks/publisher";
 import { useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 
 import LiveParticipantList from "../LiveParticipantList";
 import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
 import MainScreen from "../MainScreen";
+import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
-// import LiveBadge from "components/LiveBadge";
 import ParticipantList from "components/ParticipantList";
 
 interface URLParamters { tenant: string }
 
 function Main () {
-  const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
+  const [publishFailed, setPublishFailed] = useState<boolean>(false);
+  const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
   const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<URLParamters>();
   const mStyles = useStyles();
 
-  const publishErrorListener = React.useCallback(
+  const publishErrorListener = useCallback(
     (error: any) => {
       setPublishFailed(true);
       alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry.\n\nHowever, as Moderator, you are still able to use other functionality");
     },
     []
+  );
+
+  const remotePublishFailedListener = useCallback(
+    () => {
+      // Open a dialog mentioning that the remote publisher
+      // has failed to publish the stream
+      setPublishFailedOpen(true);
+    },
+    []
   )
 
-  React.useEffect(
+  useEffect(
     () => {
       async function connect () {
         if (loggedIn && me) {
@@ -53,7 +64,7 @@ function Main () {
     [loggedIn, me, connectWithCredential, tenant]
   );
 
-  React.useEffect(
+  useEffect(
       () => {
       if (connected && session && me && !publishFailed) {
         publishCamera({
@@ -65,6 +76,16 @@ function Main () {
       }
     },
     [publishFailed, connected, session, me, publishCamera, publishErrorListener]
+  );
+
+  useEffect(
+    () => {
+      if (session) session.on("signal:publish-failed", remotePublishFailedListener);
+      return function cleanup () {
+        if (session) session.off("signal:publish-failed", remotePublishFailedListener);
+      }
+    },
+    [session, remotePublishFailedListener]
   )
 
   return (
@@ -104,20 +125,37 @@ function Main () {
               ): null}
             </LiveParticipantList> 
           </div>
-          <div className={mStyles.chat} style={{ flexBasis: "50%", paddingTop: 32 }}>
-            <h4 className="Vlt-center">PARTICIPANTS ({connections.length})</h4>
+          <div
+            className={mStyles.chat}
+            style={{ flexBasis: "50%", paddingTop: 32 }}
+          >
+            <h4 className="Vlt-center">
+              PARTICIPANTS ({connections.length})
+            </h4>
             <ParticipantList />
           </div>
         </div>
-        <div className={clsx(
-          mStyles.rightPanel,
-          mStyles.black
-        )}>
-          <MainScreen />
-          {/* <LiveBadge className={mStyles.liveBadge} /> */}
+        <div
+          className={
+            clsx(
+              mStyles.rightPanel,
+              mStyles.black
+            )
+          }
+        >
+          <MainScreen />        
         </div>
       </div>
+
+      <InfoDialog
+        title="Remote publish failed"
+        visible={publishFailedOpen}
+        setVisible={setPublishFailedOpen}
+      >
+        <p>Participant / presenter has failed to publish the stream. You can ask them to re-join the session</p>
+      </InfoDialog>
     </>
   )
 }
+
 export default Main;

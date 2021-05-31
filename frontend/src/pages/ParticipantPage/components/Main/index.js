@@ -34,17 +34,17 @@ function Main () {
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { intendedForMe, forcePublishFailed } = useMessage();
+  const { intendedForMe, publishFailed } = useMessage();
   const { tenant } = useParams<IParam>();
   const mStyles = useStyles();
 
   const publishErrorListener = useCallback(
     (error: any) => {
-      forcePublishFailed();
+      publishFailed();
       setRefreshToken(uuid()); // Re-render because publisher has changed
       alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
     },
-    [forcePublishFailed]
+    [publishFailed]
   );
 
   function handleApproved (user: User) {
@@ -86,6 +86,15 @@ function Main () {
     ]
   )
 
+  const requestRaiseHandListener = useCallback(
+    async ({ data }) => {
+      if (intendedForMe({ data })) {
+        setPrecallOpen(true);
+      }
+    },
+    [intendedForMe]
+  )
+
   useEffect(
     () => {
       async function connect () {
@@ -111,11 +120,13 @@ function Main () {
   useEffect(
     () => {
       if (session) session.on("signal:force-unpublish", forceUnpublishListener);
+      if (session) session.on("signal:raisehand.request", requestRaiseHandListener);
       return function cleanup () {
         if (session) session.off("signal:force-unpublish", forceUnpublishListener);
+        if (session) session.off("signal:raisehand.request", requestRaiseHandListener);
       }
     },
-    [session, forceUnpublishListener]
+    [session, forceUnpublishListener, requestRaiseHandListener]
   )
 
   return (
