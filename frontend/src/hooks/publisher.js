@@ -3,6 +3,7 @@ import React from "react";
 import OT from "@opentok/client";
 import User from "entities/user";
 import useSession from "hooks/session";
+import delay from "delay";
 import { Session, Publisher } from "@opentok/client";
 
 interface BasePublishOptions {
@@ -78,7 +79,6 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
               publisherRef.current,
               (err) => {
                 if (err && attempt < 3) {
-                  if (publisherRef.current) publisherRef.current.destroy();
                   publisherRef.current = undefined;
                   resolve({ retry: true, error: err });
                 } if (err && attempt >= 3) {
@@ -91,12 +91,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
 
         if (retry) {
           // Wait for 2 seconds before attempting to publish again
-          await new Promise(
-            (resolve) => {
-              setTimeout(resolve, 2000 * attempt);
-            }
-          );
-
+          await delay(2000 * attempt);
           await publish({
             session,
             user,
@@ -105,9 +100,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
             attempt: attempt + 1,
           });
         } else if (error) {
-          if (publisherRef.current) publisherRef.current.destroy();
           publisherRef.current = undefined;
-          
           if (onError) await onError(error);
           return undefined;
         } else {

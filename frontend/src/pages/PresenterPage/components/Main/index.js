@@ -11,6 +11,7 @@ import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
 import ShareScreen from "../ShareScreen";
+import PublisherFailedDialog from "components/PublisherFailedDialog";
 import FullPageLoading from "components/FullPageLoading";
 import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
@@ -18,7 +19,6 @@ import VideoControl from "components/VideoControl";
 import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
-
 
 interface URLParameters {
   tenant: string;
@@ -35,7 +35,6 @@ function Main () {
   const publishErrorListener = React.useCallback(
     (error: any) => {
       setPublishFailed(true);
-      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry");
     },
     []
   );
@@ -59,7 +58,7 @@ function Main () {
 
   React.useEffect(
     () => {
-      if(connected && session && me && !publishFailed) {
+      if(connected && session && me) {
         publishCamera({
           session,
           user: me,
@@ -68,7 +67,7 @@ function Main () {
         setPublishFailed(false);
       }
     },
-    [publishFailed, connected, session, me, publishCamera, publishErrorListener]
+    [connected, session, me, publishCamera, publishErrorListener]
   );
 
   return (
@@ -104,6 +103,11 @@ function Main () {
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
+
+      <PublisherFailedDialog
+        visible={publishFailed}
+        setVisible={setPublishFailed}
+      />
     </>
   )
 }

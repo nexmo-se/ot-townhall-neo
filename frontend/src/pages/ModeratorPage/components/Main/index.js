@@ -15,6 +15,7 @@ import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
 import MainScreen from "../MainScreen";
+import PublisherFailedDialog from "components/PublisherFailedDialog";
 import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
 import ParticipantList from "components/ParticipantList";
@@ -33,7 +34,6 @@ function Main () {
   const publishErrorListener = useCallback(
     (error: any) => {
       setPublishFailed(true);
-      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry.\n\nHowever, as Moderator, you are still able to use other functionality");
     },
     []
   );
@@ -66,7 +66,7 @@ function Main () {
 
   useEffect(
       () => {
-      if (connected && session && me && !publishFailed) {
+      if (connected && session && me) {
         publishCamera({
           session,
           user: me,
@@ -75,7 +75,7 @@ function Main () {
         setPublishFailed(false);
       }
     },
-    [publishFailed, connected, session, me, publishCamera, publishErrorListener]
+    [connected, session, me, publishCamera, publishErrorListener]
   );
 
   useEffect(
@@ -148,12 +148,18 @@ function Main () {
       </div>
 
       <InfoDialog
+        id="remote-publish-failed"
         title="Remote publish failed"
         visible={publishFailedOpen}
         setVisible={setPublishFailedOpen}
       >
         <p>Participant / presenter has failed to publish the stream. You can ask them to re-join the session</p>
       </InfoDialog>
+
+      <PublisherFailedDialog
+        visible={publishFailed}
+        setVisible={setPublishFailed}
+      />
     </>
   )
 }

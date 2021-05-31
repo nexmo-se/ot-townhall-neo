@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import RaiseHandButton from "../RaiseHandButton";
 import PrecallDialog from "../PrecallDialog";
 import InfoDialog from "components/InfoDialog";
+import PublisherFailedDialog from "components/PublisherFailedDialog";
 import WhiteLayer from "components/WhiteLayer";
 import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
@@ -30,6 +31,7 @@ function Main () {
   const [refreshToken, setRefreshToken] = useState<string>(uuid());
   const [precallOpen, setPrecallOpen] = useState<boolean>(false);
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
+  const [publisherFailedOpen, setPublisherFailedOpen] = useState<boolean>(false);
   
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -42,7 +44,7 @@ function Main () {
     (error: any) => {
       publishFailed();
       setRefreshToken(uuid()); // Re-render because publisher has changed
-      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
+      setPublisherFailedOpen(true);
     },
     [publishFailed]
   );
@@ -155,18 +157,24 @@ function Main () {
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
+
       <PrecallDialog
         visible={precallOpen}
         setVisible={setPrecallOpen}
         onApprove={handleApproveClick}
       />
       <InfoDialog
+        id="moderator-decline"
         title="Moderator has declined your request"
         visible={infoOpen}
         setVisible={setInfoOpen}
       >
         <p>The moderator has declined your request to Go Live. You can make the request again, or ask the moderator via Chat</p>
       </InfoDialog>
+      <PublisherFailedDialog
+        visible={publisherFailedOpen}
+        setVisible={setPublisherFailedOpen}
+      />
     </>
   )
 }
