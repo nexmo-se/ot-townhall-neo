@@ -25,6 +25,7 @@ interface URLParamters { tenant: string }
 function Main () {
   const [publishFailed, setPublishFailed] = useState<boolean>(false);
   const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
+  const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
   const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
@@ -43,6 +44,15 @@ function Main () {
       // Open a dialog mentioning that the remote publisher
       // has failed to publish the stream
       setPublishFailedOpen(true);
+    },
+    []
+  )
+
+  const rejectedRaiseHandListener = useCallback(
+    () => {
+      // When the participant reject the Go Live request,
+      // show the dialog
+      setRejectedOpen(true);
     },
     []
   )
@@ -81,11 +91,13 @@ function Main () {
   useEffect(
     () => {
       if (session) session.on("signal:publish-failed", remotePublishFailedListener);
+      if (session) session.on("signal:raisehand.rejected", rejectedRaiseHandListener);
       return function cleanup () {
         if (session) session.off("signal:publish-failed", remotePublishFailedListener);
+        if (session) session.off("signal:raisehand.rejected", rejectedRaiseHandListener);
       }
     },
-    [session, remotePublishFailedListener]
+    [session, remotePublishFailedListener, rejectedRaiseHandListener]
   )
 
   return (
@@ -160,6 +172,15 @@ function Main () {
         visible={publishFailed}
         setVisible={setPublishFailed}
       />
+
+      <InfoDialog
+        id="raisehand-rejected"
+        title="Go Live request has been rejected"
+        visible={rejectedOpen}
+        setVisible={setRejectedOpen}
+      >
+        <p>Participant / presenter has rejected the Go Live request. Please ask again if they want to be available live</p>
+      </InfoDialog>
     </>
   )
 }
