@@ -3,7 +3,6 @@ import React from "react";
 import CredentialAPI from "api/credential";
 import User from "entities/user";
 import clsx from "clsx";
-import { Publisher } from "@opentok/client";
 import { v4 as uuid } from "uuid";
 
 import useStyles from "./styles";
@@ -16,6 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
 import PrecallDialog from "../PrecallDialog";
+import InfoDialog from "components/InfoDialog";
 import WhiteLayer from "components/WhiteLayer";
 import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
@@ -29,6 +29,7 @@ function Main () {
   // eslint-disable-next-line
   const [refreshToken, setRefreshToken] = useState<string>(uuid());
   const [precallOpen, setPrecallOpen] = useState<boolean>(false);
+  const [infoOpen, setInfoOpen] = useState<boolean>(false);
   
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -48,6 +49,11 @@ function Main () {
 
   function handleApproved (user: User) {
     setPrecallOpen(true);
+  }
+
+  function handleDeclined () {
+    // The moderator has declined your Go Live request.
+    setInfoOpen(true);
   }
 
   function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
@@ -131,6 +137,7 @@ function Main () {
             <RaiseHandButton
               cameraPublisher={cameraPublisher}
               onApproved={handleApproved}
+              onDeclined={handleDeclined}
             />
           </div>
           <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
@@ -142,6 +149,13 @@ function Main () {
         setVisible={setPrecallOpen}
         onApprove={handleApproveClick}
       />
+      <InfoDialog
+        title="Moderator has declined your request"
+        visible={infoOpen}
+        setVisible={setInfoOpen}
+      >
+        <p>The moderator has declined your request to Go Live. You can make the request again, or ask the moderator via Chat</p>
+      </InfoDialog>
     </>
   )
 }

@@ -90,7 +90,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
 
       }
     },
-    [session]
+    [session, approvedListener, declinedListener]
   )
 
   if (cameraPublisher || !display.raiseHand || !canRaiseHand) {

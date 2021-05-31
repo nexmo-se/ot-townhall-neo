@@ -9,7 +9,6 @@ import MessageProvider from "contexts/message";
 import PollingProvider from "contexts/polling";
 
 import Main from "./components/Main";
-import PrecallDialog from "./components/PrecallDialog";
 import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
