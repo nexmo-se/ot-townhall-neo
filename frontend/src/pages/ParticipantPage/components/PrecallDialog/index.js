@@ -68,6 +68,11 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         }
       });
       setPublisher(publisher);
+
+      return function cleanup () {
+        // destroy the publisher when the dialog is hidden
+        if (publisher) publisher.destroy();
+      }
     },
     []
   );
@@ -88,7 +93,9 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
       publisher.publishAudio(hasMic);
     },
     [hasMic, publisher]
-  )
+  );
+
+
 
   return (
     <Modal
