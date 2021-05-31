@@ -12,9 +12,9 @@ class DownloadService {
     link.target = "_blank";
     if (name) link.download = name;
 
-    document.body?.appendChild(link); // eslint-disable-line
+    if (document.body) document.body.appendChild(link);
     link.click();
-    document.body?.removeChild(link); // eslint-disable-line
+    if (document.body) document.body.removeChild(link);
   }
 }
 export default DownloadService;

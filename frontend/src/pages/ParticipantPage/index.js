@@ -13,7 +13,7 @@ import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
 interface IParam { tenant: string }
-function ParticipantPage(){
+function ParticipantPage () {
   const { loggedIn } = useMe();
   const { push } = useHistory();
   const { tenant } = useParams<IParam>();
