@@ -166,7 +166,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
   async function rejectGoLive ({ user }: IUserOnly) {
     const payload = user.toJSON();
     await signal({
-      type: "raishand.rejected",
+      type: "raisehand.rejected",
       data: JSON.stringify(payload)
     });
   }

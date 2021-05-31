@@ -31,6 +31,13 @@ function InviteLiveButton ({ user }: InviteLiveButtonProps) {
     [user.id]
   );
 
+  const rejectedRaiseHandListener = useCallback(
+    ({ from }) => {
+      if (from.id === user.id) setDisabled(false);
+    },
+    [user.id]
+  )
+
   useEffect(
     () => {
       const stream = streams.find((stream) => {
@@ -48,11 +55,13 @@ function InviteLiveButton ({ user }: InviteLiveButtonProps) {
   useEffect(
     () => {
       if (session) session.on("signal:publish-failed", publishFailedListener);
+      if (session) session.on("signal:raisehand.rejected", rejectedRaiseHandListener);
       return function cleanup(){
         if (session) session.off("signal:publish-failed", publishFailedListener);
+        if (session) session.off("signal:raisehand.rejected", rejectedRaiseHandListener);
       }
     },
-    [session, publishFailedListener]
+    [session, publishFailedListener, rejectedRaiseHandListener]
   )
   
   // Do not show invite live button when you are not moderators
