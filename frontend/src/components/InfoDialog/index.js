@@ -5,13 +5,14 @@ import Button from "components/Button";
 import Modal from "components/Modal";
 
 interface InfoDialogProps {
+  id: string;
   title: string;
   children: any;
   visible: boolean;
   setVisible: (value: boolean) => void;
 }
 
-function InfoDialog ({ title, children, visible, setVisible }: InfoDialogProps) {
+function InfoDialog ({ id, title, children, visible, setVisible }: InfoDialogProps) {
   function toggleModal () {
     if (visible) setVisible(false);
     if (!visible) setVisible(true);
@@ -19,7 +20,7 @@ function InfoDialog ({ title, children, visible, setVisible }: InfoDialogProps) 
 
   return (
     <Modal
-      id="info-dialog"
+      id={id}
       open={visible}
     >
       <Modal.Header>
