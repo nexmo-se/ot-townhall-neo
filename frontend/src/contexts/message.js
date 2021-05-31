@@ -52,10 +52,11 @@ interface MessageContextProps {
   startPolling: () => Promise<void>;
   stopPolling: () => Promise<void>;
   ack: (args: IAck) => Promise<void>;
-  forcePublishFailed: () => Promise<void>;
+  publishFailed: () => Promise<void>;
   approveGoLive: (args: IUserOnly) => Promise<void>;
   declineGoLive: (args: IUserOnly) => Promise<void>;
   rejectGoLive: (args: IUserOnly) => Promise<void>;
+  requestGoLive: (args: IUserOnly) => Promise<void>;
   intendedForMe: ({ data: any }) => boolean;
 }
 
@@ -75,11 +76,12 @@ export const MessageContext = createContext<MessageContextProps>({
   startPolling: () => Promise.resolve(),
   send: (args: ISend) => Promise.resolve(),
   ack: (args: IAck) => Promise.resolve(),
-  forcePublishFailed: () => Promise.resolve(),
+  publishFailed: () => Promise.resolve(),
   intendedForMe: ({ data: any }) => false,
   approveGoLive: (args: IUserOnly) => Promise.resolve(),
   declineGoLive: (args: IUserOnly) => Promise.resolve(),
-  rejectGoLive: (args: IUserOnly) => Promise.resolve()
+  rejectGoLive: (args: IUserOnly) => Promise.resolve(),
+  requestGoLive: (args: IUserOnly) => Promise.resolve()
 });
 
 export default function MessageProvider ({ children }: MessageProviderProps) {
@@ -136,8 +138,8 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     await signal({ type: "revoke-slides-access", data: JSON.stringify(user.toJSON()) });
   }
 
-  async function forcePublishFailed () {
-    await signal({ type: "force-publish-failed" });
+  async function publishFailed () {
+    await signal({ type: "publish-failed" });
   }
 
   // TODO: remove this because Moderator should not able to force publish
@@ -167,6 +169,18 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
       type: "raishand.rejected",
       data: JSON.stringify(payload)
     });
+  }
+
+  /**
+   * This function should be called by Moderator only to request participant to go live
+   * the participant should listen for it, and display PrecallDialog
+   */
+  async function requestGoLive ({ user }: IUserOnly) {
+    const payload = user.toJSON();
+    await signal({
+      type: "raisehand.request",
+      data: JSON.stringify(payload)
+    })
   }
 
   async function forceUnpublish ({ user }: IUserOnly) {
@@ -272,10 +286,11 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
         slidesAccess,
         revokeSlidesAccess,
         ack,
-        forcePublishFailed,
+        publishFailed,
         approveGoLive,
         declineGoLive,
-        rejectGoLive
+        rejectGoLive,
+        requestGoLive
       }}
     >
       <div ref={modalContainer} />
