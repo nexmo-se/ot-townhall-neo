@@ -40,6 +40,7 @@ function Main () {
   const publishErrorListener = useCallback(
     (error: any) => {
       forcePublishFailed();
+      setRefreshToken(uuid()); // Re-render because publisher has changed
       alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
     },
     [forcePublishFailed]
@@ -104,7 +105,6 @@ function Main () {
   useEffect(
     () => {
       if (session) session.on("signal:force-unpublish", forceUnpublishListener);
-
       return function cleanup () {
         if (session) session.off("signal:force-unpublish", forceUnpublishListener);
       }
