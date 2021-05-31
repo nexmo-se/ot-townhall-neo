@@ -39,13 +39,6 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
     send({ message });
   }
 
-  const publishErrorListener = useCallback(
-    (error: any) => {
-      alert("We tried to access your camera 3 times but failed. Please make sure you allow us to access your camera and no other application is using it. You may refresh the page to retry. \n\nWe will inform Moderator that your camera is not available.");
-    },
-    []
-  );
-
   const approvedListener = useCallback(
     ({ data }) => {
       if (!intendedForMe({ data }));
@@ -55,7 +48,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
       const user = User.fromJSON(JSON.parse(data));
       onApproved(user);
     },
-    [intendedForMe]
+    [intendedForMe, onApproved]
   )
 
   const declinedListener = useCallback(
@@ -65,7 +58,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
       setRequesting(false);
       if (onDeclined) onDeclined();
     },
-    [intendedForMe]
+    [intendedForMe, onDeclined]
   )
 
   useEffect(

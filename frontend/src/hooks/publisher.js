@@ -63,6 +63,8 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
         };
 
         const finalOptions = Object.assign({}, options, extraData);
+        console.log(finalOptions);
+        
         if (finalOptions.insertDefaultUI === false) {
           publisherRef.current = OT.initPublisher(undefined, finalOptions);
         } else {
