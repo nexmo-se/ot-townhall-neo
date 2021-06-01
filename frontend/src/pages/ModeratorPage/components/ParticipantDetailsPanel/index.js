@@ -3,10 +3,10 @@ import React from "react";
 import Config from "config";
 import Papa from "papaparse";
 import DownloadService from "services/download";
-import { useParams } from "react-router-dom";
 
-import SettingsModal from "../SettingsModal";
-import SettingsProvider from "../SettingsProvider";
+import { useParams } from "react-router-dom";
+import { useState } from "react";
+
 import Button from "components/Button";
 
 interface IParams {
@@ -14,37 +14,50 @@ interface IParams {
 }
 
 function ParticipantDetailsPanel () {
+  const [isRequesting, setIsRequesting] = useState<boolean>(false);
   const { tenant } = useParams<IParams>();
 
   async function handleResetClick () {
-    // Call the API
-    const url = `${Config.apiURL}/ama`;
-    const body = { tenant };
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
+    try {
+      setIsRequesting(true);
+
+      // Call the API
+      const url = `${Config.apiURL}/ama`;
+      const body = { tenant };
+      await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsRequesting(false);
+    }
   }
 
   async function handleDownloadClick () {
-    const url = `${Config.apiURL}/ama`;
-    const body = { tenant };
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
+    try {
+      setIsRequesting(true);
 
-    if (response.ok) {
-      const jsonResponse = await response.json();
-      const csvData = Papa.unparse(jsonResponse);
-      const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
-      const downloadUrl = encodeURI(csvContent);
-      const fileName = `participant_list_${tenant}`;
-      DownloadService.download({
-        url: downloadUrl,
-        name: fileName
-      });
+      const url = `${Config.apiURL}/ama?tenant=${tenant}`;
+      const response = await fetch(url);
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        const csvData = Papa.unparse(jsonResponse);
+        const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
+        const downloadUrl = encodeURI(csvContent);
+        const fileName = `participant_list_${tenant}`;
+        DownloadService.download({
+          url: downloadUrl,
+          name: fileName
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsRequesting(false);
     }
   }
 
@@ -56,11 +69,13 @@ function ParticipantDetailsPanel () {
           className="Vlt-btn--primary Vlt-btn--app"
           text="Download Details"
           onClick={handleDownloadClick}
+          disabled={isRequesting}
         />
         <Button
           className="Vlt-btn--app Vlt-btn--tertiary"
           text="Reset"
           onClick={handleResetClick}
+          disabled={isRequesting}
         />
       </div>
     </>
