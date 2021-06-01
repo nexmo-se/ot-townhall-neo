@@ -53,5 +53,8 @@ export default makeStyles(
       right: 32
     }
   }),
-  { index: 2 }
+  {
+    index: 1,
+    name: "main"
+  }
 )
