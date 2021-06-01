@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 
 const loginTypes = [
-  { id: "sso", value: "Google SSO" },
+  // { id: "sso", value: "Google SSO" },
   { id: "default", value: "PIN Only" },
   { id: "ama", value: "Customer Detatils" }
 ]

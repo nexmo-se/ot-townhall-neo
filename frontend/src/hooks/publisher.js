@@ -1,4 +1,6 @@
 // @flow
+import AvatarImage from "assets/img/avatar.png";
+
 import React from "react";
 import OT from "@opentok/client";
 import User from "entities/user";
@@ -59,7 +61,8 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
           name: name? name: user.name,
           style: { 
             buttonDisplayMode: "off",
-            nameDisplayMode: "on"
+            nameDisplayMode: "on",
+            backgroundImageURI: AvatarImage
           }
         };
 
