@@ -3,16 +3,16 @@ import PinConfiguration from "./pin";
 const config = {
   default: {
     presenter: {
-      login_type: "sso",
+      login_type: "default",
       pin: PinConfiguration.presenter
     },
     participant: {
-      login_type: "sso",
+      login_type: "default",
       pin: PinConfiguration.participant,
       raise_hand: true
     },
     moderator: {
-      login_type: "sso",
+      login_type: "default",
       pin: PinConfiguration.moderator
     },
     tabs: {
