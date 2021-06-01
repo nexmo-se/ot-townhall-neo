@@ -28,7 +28,8 @@ class DatabaseAPI{
           last_name VARCHAR(255),
           email VARCHAR(255),
           company_name VARCHAR(255),
-          created_at TIMESTAMP
+          created_at TIMESTAMP,
+          is_deleted INT2
         );
       `);
       await client.query(`

@@ -9,9 +9,7 @@
     "copy-certs": "mkdir ./build/certs && cp -a ./src/certs/. ./build/certs/",
     "start:dev": "nodemon",
     "start:prod": "node -r dotenv/config build/index.js",
-    "build": "rimraf ./build && tsc && yarn run copy-certs",
-    "migrate": "sequelize-cli db:migrate",
-    "migrate:undo": "sequelize-cli db:migrate:undo"
+    "build": "rimraf ./build && tsc && yarn run copy-certs"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",
