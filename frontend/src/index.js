@@ -7,8 +7,19 @@ import App from './App';
 // import OT from "@opentok/client"
 import * as serviceWorker from './serviceWorker';
 
+import { StylesProvider, createGenerateClassName } from '@material-ui/core/styles';
+const generateClassName = createGenerateClassName({
+  productionPrefix: 'c',
+  disableGlobal: true
+});
+
 // OT.setLogLevel(OT.DEBUG);
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <StylesProvider generateClassName={generateClassName}>
+    <App />
+  </StylesProvider>,
+  document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
