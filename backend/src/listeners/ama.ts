@@ -20,8 +20,10 @@ class AMAListener{
   }
 
   static async listParticipant (req: Request, res: Response) {
-    const { tenant } = req.body;
-    const participants = await AMAAPI.listParticipant({ tenant });
+    const { tenant } = req.query;
+    const participants = await AMAAPI.listParticipant({
+      tenant: `${tenant}`
+    });
 
     // convert participant entity to JSON response
     const payload = participants.map(
@@ -38,10 +40,8 @@ class AMAListener{
   }
 
   static async resetParticipants (req: Request, res: Response) {
-    const { tenant } = req.query;
-    await AMAAPI.deleteParticipants({
-      tenant: `${tenant}`
-    });
+    const { tenant } = req.body;
+    await AMAAPI.deleteParticipants({ tenant });
     return res.status(200).end();
   }
 }
