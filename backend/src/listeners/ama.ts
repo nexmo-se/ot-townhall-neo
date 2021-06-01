@@ -38,8 +38,10 @@ class AMAListener{
   }
 
   static async resetParticipants (req: Request, res: Response) {
-    const { tenant } = req.body;
-    await AMAAPI.deleteParticipants({ tenant });
+    const { tenant } = req.query;
+    await AMAAPI.deleteParticipants({
+      tenant: `${tenant}`
+    });
     return res.status(200).end();
   }
 }
