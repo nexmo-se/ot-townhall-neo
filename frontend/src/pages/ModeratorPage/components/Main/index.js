@@ -104,8 +104,8 @@ function Main () {
     <>
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
-        <div className={mStyles.leftPanel}>
-          <div className={mStyles.chat} style={{ 
+        <div className={mStyles.leftSection}>
+          <div className={mStyles.item} style={{ 
               borderBottom: "1px solid #e7ebee",
               flexBasis: "30%"
             }}
@@ -113,7 +113,7 @@ function Main () {
             <h4 className="Vlt-center">RAISING HAND</h4>
             <RaisedHandList />
           </div>
-          <div className={mStyles.chat} style={{ 
+          <div className={mStyles.item} style={{ 
               flexBasis: "70%",
               paddingLeft: 32, 
               paddingRight: 32, 
@@ -124,7 +124,7 @@ function Main () {
           </div>
         </div>
         <div className={mStyles.centerPanel}>
-          <div className={mStyles.chat} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
+          <div className={mStyles.item} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
             <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
             <LiveParticipantList>
               {(me)? (
@@ -138,7 +138,7 @@ function Main () {
             </LiveParticipantList> 
           </div>
           <div
-            className={mStyles.chat}
+            className={mStyles.item}
             style={{ flexBasis: "50%", paddingTop: 32 }}
           >
             <h4 className="Vlt-center">
