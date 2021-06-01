@@ -9,7 +9,7 @@ export default makeStyles(
       display: "flex", 
       flexDirection: "row" 
     },
-    leftPanel: { 
+    leftSection: { 
       flexBasis: "25%",
       overflow: "hidden",
       display: "flex",
@@ -18,7 +18,7 @@ export default makeStyles(
       paddingLeft: 0,
       paddingRight: 0
     },
-    chat: {
+    item: {
       flex: 1,
       display: "flex",
       flexDirection: "column",
@@ -53,5 +53,5 @@ export default makeStyles(
       right: 32
     }
   }),
-  { index: 1 }
+  { index: 2 }
 )

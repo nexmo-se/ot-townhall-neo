@@ -9,4 +9,4 @@ export default makeStyles(() => ({
   big: { flexBasis: "100%" },
   screen: { flexBasis: "80%" },
   hidden: { display: "none" }
-}));
+}), { index: 1 });

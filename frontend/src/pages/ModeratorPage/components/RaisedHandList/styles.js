@@ -9,4 +9,4 @@ export default makeStyles(() => ({
     height: "100%", 
     padding: 32
   }
-}))
+}), { index: 1 })
