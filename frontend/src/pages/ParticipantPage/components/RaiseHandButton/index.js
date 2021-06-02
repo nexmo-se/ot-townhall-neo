@@ -41,7 +41,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
 
   const approvedListener = useCallback(
     ({ data }) => {
-      if (!intendedForMe({ data }));
+      if (!intendedForMe({ data })) return;
       setRequesting(false);
 
       if (!onApproved) return;
