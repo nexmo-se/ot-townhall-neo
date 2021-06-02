@@ -66,7 +66,6 @@ function Main () {
       user: me,
       onError: publishErrorListener,
       extraData: {
-        audioSource: publisher.getAudioSource(),
         videoSource: publisher.getVideoSource(),
         publishAudio: hasAudio,
         publishVideo: hasVideo
