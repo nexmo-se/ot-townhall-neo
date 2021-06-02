@@ -20,7 +20,6 @@ function QuestionInput(){
   const mMe = useMe();
   
   async function handleSubmit(e){
-    e.preventDefault();
     setSending(true);
     if(!mMe.me) throw new Error("Ops!");
     const { sessionId: sessionID, connection } = mSession.session;
