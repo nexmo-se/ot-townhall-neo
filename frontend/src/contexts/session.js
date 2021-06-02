@@ -1,4 +1,6 @@
 // @flow
+import AvatarImage from "assets/img/avatar.png";
+
 import React from "react";
 import Credential from "entities/credential";
 import User from "entities/user";
@@ -81,7 +83,8 @@ export default function SesisonProvider ({
         insertMode: "append",
         style: { 
           buttonDisplayMode: "off",
-          nameDisplayMode: "on"
+          nameDisplayMode: "on",
+          backgroundImageURI: AvatarImage
         }
       });
       const subscriber = await new Promise((resolve, reject) => {
