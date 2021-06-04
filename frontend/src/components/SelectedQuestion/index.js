@@ -42,7 +42,8 @@ function SelectedQuestion(){
   if(!selected) return null
   return (
     <div className={clsx({
-      "Vlt-gradient--purple-to-peach": true,
+      "Vlt-black": true,
+      "Vlt-bg-blue-lighter": true,
       [mStyles.root]: true
     })}>
       <Marquee 
@@ -51,7 +52,7 @@ function SelectedQuestion(){
         delay={3000}
         childMargin={160}
       >
-        {selected?.content}
+        <b>{selected?.content}</b>
       </Marquee>
     </div>
   )
