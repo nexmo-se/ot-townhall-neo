@@ -36,7 +36,7 @@ function PresenterHangup () {
         loading={false}
         onClick={handleClick}
       >
-        <Tooltip title="Hang Up">
+        <Tooltip title="Leave the Room">
           <PhoneDisabledIcon fontSize="inherit"/>
         </Tooltip>
       </ControlButton>
