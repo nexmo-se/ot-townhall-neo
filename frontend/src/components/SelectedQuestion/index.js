@@ -47,7 +47,7 @@ function SelectedQuestion(){
     })}>
       <Marquee 
         direction="left"
-        speed={0.06}
+        speed={0.03}
         delay={3000}
         childMargin={160}
       >
