@@ -22,6 +22,7 @@ interface LiveParticipantItemProps {
   subscriber?: Subscriber;
   additionalControls?: Node;
   withAvatar?: boolean;
+  onForbidden?: () => {};
 }
 
 function LiveParticipantItem (props: LiveParticipantItemProps) {
@@ -31,6 +32,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     publisher,
     subscriber,
     additionalControls,
+    onForbidden,
     withAvatar = true
   } = props
 
@@ -44,19 +46,31 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   function toggleVideo () {
     if (publisher) publisher.publishVideo(!hasVideo);
-    else if (subscriber) {
+    else if (subscriber && hasVideo) {
       const { connection } = subscriber.stream;
       const user = User.fromConnection(connection);
-      mMessage.forceVideo({ user, hasVideo: !hasVideo })
+
+      // Always set it false because we don't want Moderator to 
+      // turn on the video remotely
+      mMessage.forceVideo({ user, hasVideo: false });
+    } else if (subscriber && !hasVideo) {
+      // Notify moderator if the ability to turn on audio/video is not possible
+      if (onForbidden) onForbidden();
     }
   }
 
   function toggleAudio () {
     if (publisher) publisher.publishAudio(!hasAudio);
-    else if (subscriber) {
+    else if (subscriber && hasAudio) {
       const { connection } = subscriber.stream;
       const user = User.fromConnection(connection);
-      mMessage.forceAudio({ user, hasAudio: !hasAudio });
+
+      // Always set it false because we don't want Moderator to
+      // turon on the audio remotely
+      mMessage.forceAudio({ user, hasAudio: false });
+    } else if (subscriber && !hasAudio) {
+      // Notify moderator if the ability to turn on audio/video is not possible
+      if (onForbidden) onForbidden();
     }
   }
 
@@ -84,7 +98,6 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   useEffect(
     () => {
-      console.log("here");
       if (publisherStream) {
         setHasAudio(publisherStream.hasAudio);
         setHasVideo(publisherStream.hasVideo);
