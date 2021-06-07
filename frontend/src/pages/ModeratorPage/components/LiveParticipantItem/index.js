@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import lodash from "lodash";
 import type { Node } from "react";
 
 import clsx from "clsx";
@@ -38,6 +39,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   const [hasVideo, setHasVideo] = useState<boolean>(false);
   const [hasAudio, setHasAudio] = useState<boolean>(false);
+  const [showHangup, setShowHangup] = useState<boolean>(false);
   const { stream: publisherStream } = publisher ?? { stream: undefined };
   const { stream: subscriberStream } = subscriber ?? { stream: undefined };
   const mStyles = useStyles();
@@ -109,6 +111,19 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     [publisherStream, subscriberStream]
   )
 
+  useEffect(
+    () => {
+      if (!subscriber) return;
+      if (!subscriber.stream) return;
+
+      const connection = lodash(subscriber).get("stream.connection");
+      const user = User.fromConnection(connection);
+      if (user.role === "presenter") setShowHangup(false);
+      else setShowHangup(true);
+    },
+    [subscriber]
+  )
+
   return (
     <div 
       className={
@@ -162,7 +177,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
               hasAudio={hasAudio}
               disabled={(subscriber || publisher)? false: true}
             />
-            <Hangup subscriber={subscriber} />
+            { showHangup && <Hangup subscriber={subscriber} /> }
           </div> 
         </div>
       </div>
