@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import lodash from "lodash";
 import type { Node } from "react";
 
 import clsx from "clsx";
@@ -22,6 +23,7 @@ interface LiveParticipantItemProps {
   subscriber?: Subscriber;
   additionalControls?: Node;
   withAvatar?: boolean;
+  onForbidden?: () => {};
 }
 
 function LiveParticipantItem (props: LiveParticipantItemProps) {
@@ -31,11 +33,13 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     publisher,
     subscriber,
     additionalControls,
+    onForbidden,
     withAvatar = true
   } = props
 
   const [hasVideo, setHasVideo] = useState<boolean>(false);
   const [hasAudio, setHasAudio] = useState<boolean>(false);
+  const [showHangup, setShowHangup] = useState<boolean>(false);
   const { stream: publisherStream } = publisher ?? { stream: undefined };
   const { stream: subscriberStream } = subscriber ?? { stream: undefined };
   const mStyles = useStyles();
@@ -44,19 +48,31 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   function toggleVideo () {
     if (publisher) publisher.publishVideo(!hasVideo);
-    else if (subscriber) {
+    else if (subscriber && hasVideo) {
       const { connection } = subscriber.stream;
       const user = User.fromConnection(connection);
-      mMessage.forceVideo({ user, hasVideo: !hasVideo })
+
+      // Always set it false because we don't want Moderator to 
+      // turn on the video remotely
+      mMessage.forceVideo({ user, hasVideo: false });
+    } else if (subscriber && !hasVideo) {
+      // Notify moderator if the ability to turn on audio/video is not possible
+      if (onForbidden) onForbidden();
     }
   }
 
   function toggleAudio () {
     if (publisher) publisher.publishAudio(!hasAudio);
-    else if (subscriber) {
+    else if (subscriber && hasAudio) {
       const { connection } = subscriber.stream;
       const user = User.fromConnection(connection);
-      mMessage.forceAudio({ user, hasAudio: !hasAudio });
+
+      // Always set it false because we don't want Moderator to
+      // turon on the audio remotely
+      mMessage.forceAudio({ user, hasAudio: false });
+    } else if (subscriber && !hasAudio) {
+      // Notify moderator if the ability to turn on audio/video is not possible
+      if (onForbidden) onForbidden();
     }
   }
 
@@ -84,7 +100,6 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   useEffect(
     () => {
-      console.log("here");
       if (publisherStream) {
         setHasAudio(publisherStream.hasAudio);
         setHasVideo(publisherStream.hasVideo);
@@ -94,6 +109,19 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
       }
     },
     [publisherStream, subscriberStream]
+  )
+
+  useEffect(
+    () => {
+      if (!subscriber) return;
+      if (!subscriber.stream) return;
+
+      const connection = lodash(subscriber).get("stream.connection");
+      const user = User.fromConnection(connection);
+      if (user.role === "presenter") setShowHangup(false);
+      else setShowHangup(true);
+    },
+    [subscriber]
   )
 
   return (
@@ -149,7 +177,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
               hasAudio={hasAudio}
               disabled={(subscriber || publisher)? false: true}
             />
-            <Hangup subscriber={subscriber} />
+            { showHangup && <Hangup subscriber={subscriber} /> }
           </div> 
         </div>
       </div>
