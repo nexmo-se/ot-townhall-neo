@@ -6,6 +6,7 @@ import { Publisher } from "@opentok/client";
 
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ControlButton from "../index";
+import Tooltip from "components/Tooltip";
 
 interface ParticipantHangupProps {
   publisher: Publisher;
@@ -27,7 +28,9 @@ function ParticipantHangup ({ publisher, unpublish }: ParticipantHangupProps) {
       loading={false}
       onClick={handleClick}
     >
-      <ExitToAppIcon fontSize="inherit" />
+      <Tooltip title="Leave from Live">
+        <ExitToAppIcon fontSize="inherit" />
+      </Tooltip>
     </ControlButton>
   )
 }

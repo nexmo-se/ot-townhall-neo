@@ -168,7 +168,7 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
           onClick={handleRejectClick}
         />
         <Button
-          text="Approve"
+          text="Join Live"
           onClick={handleApproveClick}
         />
       </Modal.Footer>
