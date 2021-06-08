@@ -75,7 +75,7 @@ function InviteLiveButton ({ user }: InviteLiveButtonProps) {
       style={{ margin: 0 }}
       onClick={handleInviteClick}
     >
-      Request Go Live
+      Invite Live
     </button>
   )
 }
