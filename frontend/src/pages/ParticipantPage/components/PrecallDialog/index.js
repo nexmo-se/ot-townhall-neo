@@ -163,7 +163,7 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
       </Modal.Content>
       <Modal.Footer>
         <Button
-          text="Reject"
+          text="Decline"
           className="Vlt-btn--tertiary"
           onClick={handleRejectClick}
         />

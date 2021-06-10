@@ -11,7 +11,6 @@ import ModeratorPolling from "../ModeratorPolling";
 import QuestionPanel from "../QuestionPanel";
 import SettingsPanel from "../SettingsPanel";
 import RecordingPanel from "../RecordingPanel";
-import ParticipantDetailsPanel from "../ParticipantDetailsPanel";
 import Tab from "components/Tab";
 import TabHeader from "components/TabHeader";
 import TabItem from "components/TabItem";
@@ -70,12 +69,6 @@ function ModeratorMessageTab(){
         >
           Recording
         </TabItem>
-        <TabItem
-          isActive={activeTab === "participant-details"}
-          onClick={() => setActiveTab("participant-details")}
-        >
-          Participant Details
-        </TabItem>
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -99,10 +92,6 @@ function ModeratorMessageTab(){
         <TabPanel isActive={activeTab === "recording"}>
           <RecordingPanel />
         </TabPanel>
-        <TabPanel isActive={activeTab === "participant-details"}>
-          <ParticipantDetailsPanel />
-        </TabPanel>
-        
       </TabContent>
     </Tab>
   )
