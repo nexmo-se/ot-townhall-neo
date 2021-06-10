@@ -115,10 +115,7 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
               id="precall-publisher"
               className={mStyles.marginRight}
             />
-            <div>
-              <p style={{ marginTop: 16 }}>
-                You can setup your camera and microphone first before joinning the session
-              </p>
+            <div style={{ width: "100%", marginTop: 16 }}>
               <div className={mStyles.item}>
                 <div className={mStyles.subItem}>
                   <Icon

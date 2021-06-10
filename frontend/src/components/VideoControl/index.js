@@ -75,16 +75,24 @@ function VideoControl ({ sizeMultiplier=1, publisher, unpublish, children }: Vid
 
   const forceAudioListener = React.useCallback(
     ({ data }) => {
-      if( intendedForMe({ data })) toggleAudio();
+      // Only force when it has audio. Do not allow remote to turn on audio
+      // without permissions
+      if (intendedForMe({ data }) && hasAudio) {
+        toggleAudio();
+      }
     },
-    [intendedForMe, toggleAudio]
+    [intendedForMe, toggleAudio, hasAudio]
   );
 
   const forceVideoListener = React.useCallback(
     ({ data }) => {
-      if (intendedForMe({ data })) toggleVideo();
+      // Only force when it has video. Do not allow remote to turn on video
+      // without permissions
+      if (intendedForMe({ data }) && hasVideo) {
+        toggleVideo();
+      }
     },
-    [intendedForMe, toggleVideo]
+    [intendedForMe, toggleVideo, hasVideo]
   );
   
   React.useEffect(

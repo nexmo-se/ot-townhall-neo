@@ -181,11 +181,11 @@ function Main () {
 
       <InfoDialog
         id="raisehand-rejected"
-        title="Go Live request has been rejected"
+        title={`"Invite Live request has been declined`}
         visible={rejectedOpen}
         setVisible={setRejectedOpen}
       >
-        <p>Participant / presenter has rejected the Go Live request. Please ask again if they want to be available live</p>
+        <p>The participant has declined the "Invite Live" request. You may try again at a later time.</p>
       </InfoDialog>
     </>
   )
