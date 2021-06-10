@@ -15,6 +15,7 @@ import ModeratorParticipantItem from "../ModeratorParticipantItem";
 import RaisedHandList from "../RaisedHandList";
 import ModeratorMessageTab from "../ModeratorMessageTab";
 import MainScreen from "../MainScreen";
+import ParticipantDownload from "../ParticipantDownload";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
@@ -141,9 +142,14 @@ function Main () {
             className={mStyles.item}
             style={{ flexBasis: "50%", paddingTop: 32 }}
           >
-            <h4 className="Vlt-center">
-              PARTICIPANTS ({connections.length})
-            </h4>
+            <div className={mStyles.titleContainer}>
+              <h4
+                className={mStyles.noMargin}
+              >
+                PARTICIPANTS ({connections.length})
+              </h4>
+              <ParticipantDownload />
+            </div>
             <ParticipantList />
           </div>
         </div>

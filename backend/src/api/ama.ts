@@ -17,7 +17,7 @@ interface DeleteParticipantOptions extends BaseOptions {};
 class AMAAPI{
   static async createParticipant({ tenant, participant }: CreateOptions): Promise<void>{
     await DatabaseAPI.query(async (client: PoolClient) => {
-      const query = "INSERT INTO participants(id, first_name, last_name, email, company_name, tenant, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())";
+      const query = "INSERT INTO participants(id, first_name, last_name, email, company_name, tenant, created_at, is_deleted) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 0)";
       const params = [ uuid(), participant.firstName, participant.lastName, participant.email, participant.companyName, tenant ];
       await client.query(query, params);
     });
