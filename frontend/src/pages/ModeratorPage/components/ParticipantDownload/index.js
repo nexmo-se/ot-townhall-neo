@@ -63,7 +63,7 @@ function ParticipantDownload () {
   if (loginType !== "ama") return null;
   else {
     return (
-      <Tooltip title="Download Participant">
+      <Tooltip title="Download List">
         {isRequesting? (
           <div className="Vlt-spinner Vlt-spinner--smaller" />
         ): (
