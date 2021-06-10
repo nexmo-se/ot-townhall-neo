@@ -115,7 +115,7 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
               id="precall-publisher"
               className={mStyles.marginRight}
             />
-            <div>
+            <div style={{ width: "100%", marginTop: 16 }}>
               <div className={mStyles.item}>
                 <div className={mStyles.subItem}>
                   <Icon
