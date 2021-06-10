@@ -21,13 +21,11 @@ function Hangup({ subscriber }: IHangup){
   
   if(!subscriber) return null;
   else return (
-    <Tooltip title="Remove from Live">
       <HangupButton 
         size={32}
         fontSize={16}
         onClick={handleClick}
       />
-    </Tooltip>
   )
 }
 export default Hangup;
