@@ -5,6 +5,7 @@ import useMessage from "hooks/message";
 import { Subscriber } from "@opentok/client";
 
 import HangupButton from "components/HangupButton";
+import Tooltip from "components/Tooltip";
 
 interface IHangup { subscriber?: Subscriber }
 function Hangup({ subscriber }: IHangup){
@@ -20,11 +21,13 @@ function Hangup({ subscriber }: IHangup){
   
   if(!subscriber) return null;
   else return (
-    <HangupButton 
-      size={32}
-      fontSize={16}
-      onClick={handleClick}
-    />
+    <Tooltip title="Remove from Live">
+      <HangupButton 
+        size={32}
+        fontSize={16}
+        onClick={handleClick}
+      />
+    </Tooltip>
   )
 }
 export default Hangup;

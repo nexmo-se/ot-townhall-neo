@@ -35,7 +35,7 @@ function RaiseHandButton ({ cameraPublisher, onApproved, onDeclined }: RaiseHand
     raiseHand({ user });
     setRequesting(true);
     
-    const message = new Message(user, `${user.name} is raising hand`);
+    const message = new Message(user, `${user.name} has requested to go Live`);
     send({ message });
   }
 

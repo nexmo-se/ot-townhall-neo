@@ -43,14 +43,13 @@ export default makeStyles(
       flexDirection: "column"
     },
     black: { backgroundColor: "black" },
-    
-    visible: { display: "inherit" },
-    hidden: { display: "none !important" },
-    liveBadge: {
-      alignSelf: "flex-end",
-      position: "absolute",
-      top: 32,
-      right: 32
+    titleContainer: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    },
+    noMargin: {
+      marginBottom: 0
     }
   }),
   {

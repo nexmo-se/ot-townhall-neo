@@ -1,6 +1,7 @@
 // @flow
 // This will not create a new session.
 // However, a new publisher will be there
+import AvatarImage from "assets/img/avatar.png";
 
 import React from "react";
 import OT from "@opentok/client";
@@ -64,7 +65,8 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         name: "Precall",
         style: {
           buttonDisplayMode: "off",
-          nameDisplayMode: "on"
+          nameDisplayMode: "on",
+          backgroundImageURI: AvatarImage
         }
       });
       setPublisher(publisher);
@@ -163,7 +165,7 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
       </Modal.Content>
       <Modal.Footer>
         <Button
-          text="Reject"
+          text="Decline"
           className="Vlt-btn--tertiary"
           onClick={handleRejectClick}
         />
