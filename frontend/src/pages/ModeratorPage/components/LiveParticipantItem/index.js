@@ -92,7 +92,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
     () => {
       if (mSession.session) mSession.session.on("streamPropertyChanged", streamPropertyListener);
       return function cleanup () {
-        if (mSession.session) mSession.session.on("streamPropertyChanged", streamPropertyListener);
+        if (mSession.session) mSession.session.off("streamPropertyChanged", streamPropertyListener);
       }
     },
     [mSession.session, streamPropertyListener]
