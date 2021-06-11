@@ -181,7 +181,7 @@ function Main () {
 
       <InfoDialog
         id="raisehand-rejected"
-        title={`"Invite Live request has been declined`}
+        title={`"Invite Live" request has been declined`}
         visible={rejectedOpen}
         setVisible={setRejectedOpen}
       >
