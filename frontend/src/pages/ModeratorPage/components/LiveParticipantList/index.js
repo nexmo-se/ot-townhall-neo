@@ -64,17 +64,6 @@ function LiveParticipantList ({ children }: LiveParticipantListProps) {
                 subscriber={participant.subscriber}
                 onForbidden={handleForbidden}
                 withAvatar
-                additionalControls={(
-                  <>
-                    {participant.subscriber && (
-                      <RemoteSlidesButton
-                        size={32}
-                        style={{ marginRight: 8 }}
-                        user={participant}
-                      />
-                    )}
-                  </>
-                )}
               />
             )
           }
