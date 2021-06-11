@@ -2,6 +2,7 @@ import React from "react";
 import posed from "react-pose";
 
 import PhoneDisabledIcon from '@material-ui/icons/PhoneDisabled';
+import Tooltip from 'components/Tooltip'
 
 function HangupButton(props){
   const { size, fontSize } = props;
@@ -29,7 +30,9 @@ function HangupButton(props){
     <Container 
       pose={isBig? "big": "small"} className="Vlt-bg-red Vlt-white" style={styles.hangup}
       onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleClick}>
-      <PhoneDisabledIcon fontSize="inherit"/>
+      <Tooltip title="Remove from Live">
+        <PhoneDisabledIcon fontSize="inherit"/>
+      </Tooltip>
     </Container>
   )
 }

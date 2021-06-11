@@ -47,7 +47,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
   const mSession = useSession();
 
   function toggleVideo () {
-    if (publisher) publisher.publishVideo(!hasVideo);
+    if (publisher) publisher.publishVideo(!hasVideo); // if publisher set, send it thru the stream
     else if (subscriber && hasVideo) {
       const { connection } = subscriber.stream;
       const user = User.fromConnection(connection);
@@ -75,12 +75,13 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
       if (onForbidden) onForbidden();
     }
   }
-
+  // useCallback wont be rerun on useEffect if it changes.
   const streamPropertyListener = useCallback(
     ({ stream, changedProperty, newValue }) => {
       const pubsub = (publisher)? publisher: (subscriber)? subscriber: undefined;
       if (pubsub) {
         const { stream: localStream } = pubsub;
+        console.log("StreamPropertyListener:", localStream, changedProperty)
         if(stream.id === localStream.id && changedProperty === "hasAudio") setHasAudio(newValue);
         if(stream.id === localStream.id && changedProperty === "hasVideo") setHasVideo(newValue); 
       }
@@ -90,16 +91,18 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   useEffect(
     () => {
+      // If streamPropertyChanged e.g Video/Audio/Share Run streamPropertyListner
       if (mSession.session) mSession.session.on("streamPropertyChanged", streamPropertyListener);
       return function cleanup () {
         if (mSession.session) mSession.session.off("streamPropertyChanged", streamPropertyListener);
       }
-    },
+    }, // Anytime these two change, we will rerun the useEffect
     [mSession.session, streamPropertyListener]
   )
 
   useEffect(
     () => {
+      console.log("UseEffect:", publisherStream, subscriberStream)
       if (publisherStream) {
         setHasAudio(publisherStream.hasAudio);
         setHasVideo(publisherStream.hasVideo);
