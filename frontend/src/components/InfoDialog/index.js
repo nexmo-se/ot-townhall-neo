@@ -31,7 +31,7 @@ function InfoDialog ({ id, title, children, visible, setVisible }: InfoDialogPro
       </Modal.Content>
       <Modal.Footer>
         <Button
-          text="Dismiss"
+          text="Ok, got it"
           onClick={toggleModal}
         />
       </Modal.Footer>

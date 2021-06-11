@@ -1,7 +1,9 @@
 // @flow
 import React from "react";
+import OT from "@opentok/client";
 import { BaseProps } from "../types";
 import { Publisher } from "@opentok/client";
+import { useState, useEffect } from "react";
 
 import FlipCameraIosIcon from '@material-ui/icons/FlipCameraIos';
 import ControlButton from "../index";
@@ -12,6 +14,8 @@ interface CycleCameraProps extends BaseProps {
 }
 
 function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
+  const [countCamera, setCountCamera] = useState<number>(1);
+
   function handleClick () {
     try {
       publisher.cycleVideo();
@@ -20,17 +24,37 @@ function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
     }
   }
 
-  return (
-    <ControlButton
-      {...props}
-      onClick={handleClick}
-      forceColor="Vlt-bg-aqua-dark"
-    >
-      <Tooltip title="Cycle Camera">
-        <FlipCameraIosIcon fontSize="inherit" />
-      </Tooltip>
-    </ControlButton>
+  useEffect(
+    () => {
+      OT.getDevices(
+        (err, devices) => {
+          if (err) return;
+
+          const cameras = devices.filter(
+            (device) => device.kind === "videoInput"
+          );
+          console.log(cameras);
+          setCountCamera(cameras.length);
+        }
+      )
+    },
+    []
   )
+
+  if (countCamera === 1) return null;
+  else {
+    return (
+      <ControlButton
+        {...props}
+        onClick={handleClick}
+        forceColor="Vlt-bg-aqua-dark"
+      >
+        <Tooltip title="Switch Camera">
+          <FlipCameraIosIcon fontSize="inherit" />
+        </Tooltip>
+      </ControlButton>
+    )
+  }
 }
 
 export default CycleCameraButton;

@@ -60,6 +60,8 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
 
   useEffect(
     () => {
+      if (!visible) return;
+      
       const publisher = OT.initPublisher("precall-publisher", {
         insertMode: "append",
         name: "Precall",
@@ -70,13 +72,8 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         }
       });
       setPublisher(publisher);
-
-      return function cleanup () {
-        // destroy the publisher when the dialog is hidden
-        if (publisher) publisher.destroy();
-      }
     },
-    []
+    [visible]
   );
 
   useEffect(
@@ -97,6 +94,17 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
     [hasMic, publisher]
   );
 
+  useEffect(
+    () => {
+      if (!publisher) return;
+
+      if (!visible) {
+        publisher.destroy()
+        setPublisher(undefined);
+      }
+    },
+    [publisher, visible]
+  )
 
 
   return (
