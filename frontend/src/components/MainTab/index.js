@@ -149,14 +149,6 @@ function MainTab ({ user }: MainTabProps) {
             Polling
           </TabItem>
         )}
-        { activeTab === "remote-slides" && (
-          <TabItem
-            onClick={() => setActiveTab("remote-slides")}
-            isActive={activeTab === "remote-slides"}
-          >
-            Remote Slides
-          </TabItem>
-        )}
       </TabHeader>
       <TabContent>
         {display.chat && (
@@ -182,11 +174,6 @@ function MainTab ({ user }: MainTabProps) {
             <PollingPanel />
           </TabPanel>
         )}
-        {/* { activeTab === "remote-slides" && ( */}
-          <TabPanel isActive={activeTab === "remote-slides"}>
-            <RemoteSlidesPanel />
-          </TabPanel>
-        {/* )} */}
       </TabContent>
     </Tab>
   )
