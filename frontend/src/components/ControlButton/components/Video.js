@@ -16,11 +16,11 @@ function VideoButton ({ hasVideo, ...props }: VideoButtonProps) {
       {...props}
       active={hasVideo}
     >
-      {hasVideo? <Tooltip title="Video Off">
+      {hasVideo? <Tooltip title="Turn off Camera">
                     <VideocamIcon fontSize="inherit"/>
                  </Tooltip>
                  : 
-                 <Tooltip title="Video On">
+                 <Tooltip title="Turn on Camera">
                     <VideocamOffIcon fontSize="inherit"/>
                  </Tooltip>}
     </ControlButton>
