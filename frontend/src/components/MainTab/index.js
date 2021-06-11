@@ -10,7 +10,6 @@ import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
 import PollingPanel from "./components/PollingPanel";
-import RemoteSlidesPanel from "./components/RemoteSlidesPanel";
 import TabItem from "components/TabItem";
 import TabHeader from "components/TabHeader";
 import TabContent from "components/TabContent";

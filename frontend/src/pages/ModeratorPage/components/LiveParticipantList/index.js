@@ -8,7 +8,6 @@ import useSession from "hooks/session";
 import { useState, useEffect } from "react";
 
 import LiveParticipantItem from "../LiveParticipantItem";
-import RemoteSlidesButton from "./components/RemoteSlidesButton";
 import InfoDialog from "components/InfoDialog";
 
 interface LiveParticipantListProps {
