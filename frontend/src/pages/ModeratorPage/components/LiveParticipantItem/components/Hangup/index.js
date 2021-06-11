@@ -5,7 +5,6 @@ import useMessage from "hooks/message";
 import { Subscriber } from "@opentok/client";
 
 import HangupButton from "components/HangupButton";
-import Tooltip from "components/Tooltip";
 
 interface IHangup { subscriber?: Subscriber }
 function Hangup({ subscriber }: IHangup){
