@@ -111,7 +111,7 @@ function Main () {
               flexBasis: "30%"
             }}
           >
-            <h4 className="Vlt-center">RAISING HAND</h4>
+            <h4 className="Vlt-center">REQUESTS TO GO LIVE</h4>
             <RaisedHandList />
           </div>
           <div className={mStyles.item} style={{ 

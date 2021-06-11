@@ -108,7 +108,7 @@ function VODButton({ size, fontSize, ...props }: IVODButton){
         active={!lodash.isEmpty(videoSource)}
         onClick={handleClick}
       >
-        <Tooltip title="Theater">
+        <Tooltip title={lodash.isEmpty(videoSource)? "Play Video File": "Stop Playback"}>
           <TheatersIcon fontSize="inherit" />
         </Tooltip>
       </ControlButton>
