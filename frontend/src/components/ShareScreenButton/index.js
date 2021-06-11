@@ -35,7 +35,7 @@ function ShareScreenButton({ onClick, size, fontSize, style, isSharing }){
       onMouseLeave={handleMouseLeave} 
       onClick={handleClick}
     >
-      <Tooltip title="Share Screen">
+      <Tooltip title={isSharing? "Stop Sharing": "Share Screen"}>
         <ShareScreenIcon fontSize="inherit"/>
       </Tooltip>
     </Container>
