@@ -6,7 +6,6 @@ import { Publisher } from "@opentok/client";
 import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 
-import VODButton from "../VODButton";
 import RecordButton from "../RecordButton";
 import LiveParticipantItem from "../LiveParticipantItem";
 import ShareScreenButton from "components/ShareScreenButton";
@@ -70,11 +69,6 @@ function ModeratorParticipantItem ({ user, publisher }: ModeratorParticipantItem
       withAvatar={false}
       additionalControls={(
         <>
-          <VODButton 
-            size={32}
-            fontSize={16}
-            style={{ marginRight: 8 }}
-          />
           <RecordButton 
             size={32}
             fontSize={16}
