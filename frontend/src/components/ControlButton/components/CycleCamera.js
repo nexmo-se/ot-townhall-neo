@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 
 import FlipCameraIosIcon from '@material-ui/icons/FlipCameraIos';
 import ControlButton from "../index";
-import Tooltip from 'components/Tooltip';
 
 interface CycleCameraProps extends BaseProps {
   publisher: Publisher;
@@ -48,10 +47,9 @@ function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
         {...props}
         onClick={handleClick}
         forceColor="Vlt-bg-aqua-dark"
+        tooltip="Switch Camera"
       >
-        <Tooltip title="Switch Camera">
-          <FlipCameraIosIcon fontSize="inherit" />
-        </Tooltip>
+        <FlipCameraIosIcon fontSize="inherit" />
       </ControlButton>
     )
   }
