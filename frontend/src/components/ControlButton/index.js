@@ -1,38 +1,37 @@
 // @flow
 import React from "react";
 import clsx from "clsx";
-import posed from "react-pose";
+import lodash from "lodash";
 import useStyles from "./styles";
 import { BaseProps } from "./types";
 
 
 import Loader from "react-spinners/BounceLoader";
+import Tooltip from "components/Tooltip";
 import CycleCamera from "./components/CycleCamera";
 import Hangup from "./components/Hangup";
 import Mute from "./components/Mute";
 import Video from "./components/Video";
 
-interface ControlButtonProps extends BaseProps {}
+interface ControlButtonProps extends BaseProps {
+  tooltip: string;
+}
 
 function ControlButton(props: ControlButtonProps) {
   const { 
-    size = 50, 
-    fontSize = 24, 
-    loading, 
-    active, 
-    onClick, 
-    className, 
-    children, 
+    size = 50,
+    fontSize = 24,
+    loading,
+    active,
+    onClick,
+    className,
+    children,
+    tooltip,
     ...otherProps 
   } = props
 
   const [isBig, setIsBig] = React.useState(false);
   const mStyles = useStyles({ size, fontSize });
-
-  const Container = posed.div({
-    big: { scale: 1.1 },
-    small: { scale: 1 }
-  });
 
   const handleMouseEnter = () => setIsBig(true);
   const handleMouseLeave = () => setIsBig(false);
@@ -41,9 +40,8 @@ function ControlButton(props: ControlButtonProps) {
   }
 
   return (
-    <Container 
+    <div 
       {...otherProps}
-      pose={isBig? "big": "small"} 
       className={
         clsx({
           [className]: true,
@@ -55,13 +53,27 @@ function ControlButton(props: ControlButtonProps) {
           [mStyles.icon]: true,
         })
       }
+      style={{
+        zIndex: (isBig)? 9999: 1,
+        ...otherProps.style
+      }}
       onMouseEnter={handleMouseEnter} 
       onMouseLeave={handleMouseLeave} 
-      onClick={handleClick}
+      onClick={lodash.debounce(handleClick, 3000, { leading: true, trailing: false })}
       disabled={loading || otherProps.disabled}
     >
-      {loading? <Loader size={fontSize} color="white" />: children}
-    </Container>
+      {
+        loading
+        ? <Loader size={fontSize} color="white" />
+        : (
+          <Tooltip title={tooltip}>
+            <div style={{ zIndex: 99999 }}>
+              {children}
+            </div>
+          </Tooltip>
+        )
+      }
+    </div>
   )
 }
 

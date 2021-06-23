@@ -9,7 +9,6 @@ import Modal from "components/Modal";
 import Button from "components/Button";
 import ControlButton from "../index";
 import { Portal } from "@material-ui/core";
-import Tooltip from 'components/Tooltip';
 
 function PresenterHangup () {
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -35,10 +34,9 @@ function PresenterHangup () {
         active={false}
         loading={false}
         onClick={handleClick}
+        tooltip="Leave the Room"
       >
-        <Tooltip title="Leave the Room">
-          <PhoneDisabledIcon fontSize="inherit"/>
-        </Tooltip>
+        <PhoneDisabledIcon fontSize="inherit"/>
       </ControlButton>
       <Portal container={modalContainer.current}>
         <Modal
