@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 
-import MeProvider from "contexts/me";
-import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import MeProvider from "components/MeProvider";
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import PresenterPage from "pages/PresenterPage";
@@ -11,10 +11,11 @@ import ModeratorPage from "pages/ModeratorPage";
 import GhostRiderPage from "pages/GhostRiderPage";
 import LoginPage from "pages/LoginPage";
 import ThankYouPage from "pages/ThankYouPage";
+import LobbyPage from "pages/LobbyPage";
 
 function App() {
   return (
-    <ThemeProvider theme={createMuiTheme()}>
+    <ThemeProvider theme={createTheme()}>
       <BrowserRouter>
         <MeProvider>
           <Switch>
@@ -22,6 +23,7 @@ function App() {
             <Route exact path="/:tenant/participant" component={ParticipantPage} />
             <Route exact path="/:tenant/moderator" component={ModeratorPage} />
             <Route exact path="/:tenant/ghostrider" component={GhostRiderPage} />
+            <Route exact path="/:tenant/:role/lobby" component={LobbyPage} />
             <Route exact path="/:tenant/:role/login" component={LoginPage} />
             <Route exact path="/thank-you" component={ThankYouPage} />
           </Switch>

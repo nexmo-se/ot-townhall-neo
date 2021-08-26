@@ -1,7 +1,7 @@
-// @flow
 import React from "react";
 
-import useMe from "hooks/me";
+import { useMe } from "components/MeProvider";
+import { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
 import SessionProvider from "contexts/session";
@@ -12,15 +12,22 @@ import Main from "./components/Main";
 import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
-interface IParam { tenant: string }
 function ParticipantPage () {
   const { loggedIn } = useMe();
   const { push } = useHistory();
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams();
 
-  React.useEffect(() => {
-    if(!loggedIn) push(`/${tenant}/participant/login`);
-  }, [ loggedIn, push, tenant ]);
+  useEffect(
+    () => {
+      if (!loggedIn) push(`/${tenant}/participant/login`);
+      else if (loggedIn) {
+        // Force go to the lobby
+        // TODO: get the room configuration
+        push(`/${tenant}/participant/lobby`)
+      }
+    },
+    [loggedIn, push, tenant]
+  );
 
   return (
     <SessionProvider>

@@ -1,14 +1,13 @@
-// @flow
 import React from "react";
 import User from "entities/user";
 import CredentialAPI from "api/credential";
 import clsx from "clsx";
 
 import useStyles from "./styles";
-import useMe from "hooks/me";
 import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
+import { useMe } from "components/MeProvider";
 
 import ShareScreen from "../ShareScreen";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
@@ -20,20 +19,16 @@ import RightPanel from "components/RightPanel";
 import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
 
-interface URLParameters {
-  tenant: string;
-}
-
 function Main () {
-  const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
+  const [publishFailed, setPublishFailed] = React.useState(false);
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { tenant } = useParams<URLParameters>();
+  const { tenant } = useParams();
   const mStyles = useStyles();
 
   const publishErrorListener = React.useCallback(
-    (error: any) => {
+    (error) => {
       setPublishFailed(true);
     },
     []

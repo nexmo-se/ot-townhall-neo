@@ -1,16 +1,8 @@
-// @flow
 import Credential from "entities/credential";
 import config from "config";
 
-interface IGenerate{
-  role: "publisher" | "moderator" | "subscriber";
-  data: any;
-  tenant: string;
-}
-
-export default class CredentialAPI{
-  // static async generateCredential(role:string="publisher", data:any={}){
-  static async generateCredential({ role = "publisher", data = {}, tenant }: IGenerate){
+export default class CredentialAPI {
+  static async generateCredential ({ role = "publisher", data = {}, tenant }) {
     const response = await fetch(`${config.apiURL}/rooms/${tenant}/info`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

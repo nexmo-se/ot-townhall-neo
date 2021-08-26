@@ -1,20 +1,18 @@
-// @flow
 import React from "react";
 import User from "entities/user";
 
-import useMe from "hooks/me";
+import { useMe } from "components/MeProvider";
 import { useParams, useHistory } from "react-router-dom";
 
 import LoginDialog from "./components/LoginDialog";
 
-interface IParam { role: string, tenant: string }
 function LoginPage(){
-  const [ loading, setLoading ] = React.useState<boolean>(false);
-  const { tenant, role } = useParams<IParam>();
+  const [ loading, setLoading ] = React.useState(false);
+  const { tenant, role } = useParams();
   const { login } = useMe();
   const { push } = useHistory();
 
-  const handleLoggedIn = React.useCallback(async (user: User): Promise<void> => {
+  const handleLoggedIn = React.useCallback(async (user) => {
     setLoading(true);
     login(user);
     push(`/${tenant}/${role}`);

@@ -6,12 +6,12 @@ import clsx from "clsx";
 import { v4 as uuid } from "uuid";
 
 import useStyles from "./styles";
-import useMe from "hooks/me";
 import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
 import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
+import { useMe } from "components/MeProvider";
 
 import RaiseHandButton from "../RaiseHandButton";
 import PrecallDialog from "../PrecallDialog";
@@ -25,23 +25,22 @@ import VideoHoverContainer from "components/VideoHoverContainer";
 import VonageLogo from "components/VonageLogo";
 import MainScreen from "components/MainScreen";
 
-interface IParam { tenant: string }
 function Main () {
   // eslint-disable-next-line
-  const [refreshToken, setRefreshToken] = useState<string>(uuid());
-  const [precallOpen, setPrecallOpen] = useState<boolean>(false);
-  const [infoOpen, setInfoOpen] = useState<boolean>(false);
-  const [publisherFailedOpen, setPublisherFailedOpen] = useState<boolean>(false);
+  const [refreshToken, setRefreshToken] = useState(uuid());
+  const [precallOpen, setPrecallOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [publisherFailedOpen, setPublisherFailedOpen] = useState(false);
   
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { intendedForMe, publishFailed } = useMessage();
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams();
   const mStyles = useStyles();
 
   const publishErrorListener = useCallback(
-    (error: any) => {
+    (error) => {
       publishFailed();
       setRefreshToken(uuid()); // Re-render because publisher has changed
       setPublisherFailedOpen(true);
@@ -49,7 +48,7 @@ function Main () {
     [publishFailed]
   );
 
-  function handleApproved (user: User) {
+  function handleApproved (user) {
     setPrecallOpen(true);
   }
 

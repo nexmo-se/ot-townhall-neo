@@ -1,7 +1,6 @@
-// @flow
 import React from "react";
 
-import useMe from "hooks/me";
+import { useMe } from "components/MeProvider";
 import { useHistory, useParams } from "react-router-dom";
 
 import VODProvider from "./contexts/vod";
@@ -13,11 +12,10 @@ import Main from "./components/Main";
 import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
-interface IParam { tenant: string };
 function ModeratorPage(){
   const { loggedIn } = useMe();
   const { push } = useHistory();
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams();
 
   React.useEffect(() => {
     if(!loggedIn) push(`/${tenant}/moderator/login`);

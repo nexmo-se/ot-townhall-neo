@@ -3,12 +3,7 @@ import voltaIcon from "@vonagevolta/volta2/dist/symbol/volta-icons.svg";
 import React from "react";
 import clsx from "clsx";
 
-interface IIcon { 
-  name: string,
-  className?: any
-}
-
-function Icon({ name, className }: IIcon) {
+function Icon({ name, className }) {
 
   const Icon = React.useMemo(() => {
     return (

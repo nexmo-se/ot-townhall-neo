@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import clsx from "clsx";
 import QuestionAPI from "api/question";
@@ -7,14 +6,13 @@ import User from "entities/user";
 import Question from "entities/question";
 
 import useStyles from "./styles";
-import useMe from "hooks/me";
 import useSession from "hooks/session";
+import { useMe } from "components/MeProvider";
 
 import Icon from "components/Icon";
 
-interface IVote { question: Question };
-function Vote({ question }: IVote){
-  const [ voted, setVoted ] = React.useState<boolean>(false);
+function Vote({ question }){
+  const [ voted, setVoted ] = React.useState(false);
   const mStyles = useStyles();
   const mSession = useSession();
   const mMe = useMe();

@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import QuestionAPI from "api/question";
 
@@ -7,14 +6,14 @@ import User from "entities/user";
 
 import useStyles from "./styles";
 import useSession from "hooks/session";
-import useMe from "hooks/me";
+import { useMe } from "components/MeProvider"
 
 import TextInput from "components/TextInput";
 import Button from "components/Button";
 
-function QuestionInput(){
-  const [ sending, setSending ] = React.useState<boolean>(false);
-  const [ text, setText ] = React.useState<string>("");
+function QuestionInput () {
+  const [ sending, setSending ] = React.useState(false);
+  const [ text, setText ] = React.useState("");
   const mStyles = useStyles();
   const mSession = useSession();
   const mMe = useMe();

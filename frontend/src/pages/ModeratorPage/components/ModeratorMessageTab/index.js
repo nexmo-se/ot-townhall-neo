@@ -4,7 +4,7 @@ import User from "entities/user";
 
 import useStyles from "./styles";
 import useDisplay from "./hooks/display";
-import useMe from "hooks/me";
+import { useMe } from "components/MeProvider";
 import { useParams } from "react-router-dom";
 
 import ModeratorPolling from "../ModeratorPolling";
@@ -18,14 +18,10 @@ import TabContent from "components/TabContent";
 import TabPanel from "components/TabPanel";
 import Chat from "components/Chat";
 
-interface IParams {
-  tenant: string;
-}
-
-function ModeratorMessageTab(){
-  const [ activeTab, setActiveTab ] = React.useState<string>("settings");
+function ModeratorMessageTab () {
+  const [ activeTab, setActiveTab ] = React.useState("settings");
   const { me } = useMe();
-  const { tenant } = useParams<IParams>();
+  const { tenant } = useParams();
   const { display } = useDisplay({ tenant });
   const mStyles = useStyles();
   

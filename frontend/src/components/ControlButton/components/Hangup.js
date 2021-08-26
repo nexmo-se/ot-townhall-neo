@@ -1,17 +1,11 @@
 // @flow
 import React from "react";
-import useMe from "hooks/me";
-import { Publisher } from "@opentok/client";
+import { useMe } from "components/MeProvider";
 
 import PresenterHangup from "./PresenterHangup";
 import ParticipantHangup from "./ParticipantHangup";
 
-interface HangupButtonProps {
-  publisher: Publisher;
-  unpublish: any;
-}
-
-function HangupButton ({ publisher, unpublish }: HangupButtonProps) {
+function HangupButton ({ publisher, unpublish }) {
   const { me } = useMe();
 
   if (!me) return null

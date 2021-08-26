@@ -1,14 +1,13 @@
-// @flow
 import React from "react";
 import CredentialAPI from "api/credential";
 import clsx from "clsx";
 
 import useSession from "hooks/session";
 import useStyles from "./styles";
-import useMe from "hooks/me";
 import usePublisher from "hooks/publisher";
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
+import { useMe } from "components/MeProvider";
 
 import LiveParticipantList from "../LiveParticipantList";
 import ModeratorParticipantItem from "../ModeratorParticipantItem";
@@ -21,20 +20,18 @@ import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
 import ParticipantList from "components/ParticipantList";
 
-interface URLParamters { tenant: string }
-
 function Main () {
-  const [publishFailed, setPublishFailed] = useState<boolean>(false);
-  const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
-  const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
+  const [publishFailed, setPublishFailed] = useState(false);
+  const [publishFailedOpen, setPublishFailedOpen] = useState(false);
+  const [rejectedOpen, setRejectedOpen] = useState(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
   const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
-  const { tenant } = useParams<URLParamters>();
+  const { tenant } = useParams();
   const mStyles = useStyles();
 
   const publishErrorListener = useCallback(
-    (error: any) => {
+    (error) => {
       setPublishFailed(true);
     },
     []

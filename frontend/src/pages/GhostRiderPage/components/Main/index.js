@@ -3,8 +3,8 @@ import React from "react";
 import CredentialAPI from "api/credential";
 
 import useStyles from "./styles";
-import useMe from "hooks/me";
 import useSession from "hooks/session";
+import { useMe } from "components/MeProvider"
 import { useParams } from "react-router-dom";
 
 import LiveBadge from "components/LiveBadge";
@@ -16,12 +16,11 @@ import FullPageLoading from "components/FullPageLoading";
 import MainScreen from "components/MainScreen";
 import ModeratorStream from "components/ModeratorStream";
 
-interface IParam { tenant: string }
-function GhostRiderPage(){
+function GhostRiderPage () {
   const mStyles = useStyles();
   const { me, loggedIn } = useMe();
   const { connected, connectWithCredential } = useSession();
-  const { tenant } = useParams<IParam>();
+  const { tenant } = useParams();
 
   React.useEffect(() => {
     async function connect(){

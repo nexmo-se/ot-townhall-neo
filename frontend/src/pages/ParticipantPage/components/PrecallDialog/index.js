@@ -9,26 +9,20 @@ import clsx from "clsx";
 import { Publisher } from "@opentok/client";
 
 import useStyles from "./styles";
-import useUser from "hooks/me";
 import useMessage from "hooks/message";
 import { useEffect, useState } from "react";
+import { useMe } from "components/MeProvider";
 
 import Modal from "components/Modal";
 import Button from "components/Button";
 import Icon from "components/Icon";
 import Switch from "components/Switch";
 
-interface PrecallDialogProps {
-  visible: boolean;
-  setVisible: (value: boolean) => void;
-  onApprove: (value: Publisher) => void;
-}
-
-function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) {
-  const [hasCamera, setHasCamera] = useState<boolean>(true);
-  const [hasMic, setHasMic] = useState<boolean>(true);
-  const [publisher, setPublisher] = useState<Publisher | void>();
-  const { me } = useUser();
+function PrecallDialog ({ visible, setVisible, onApprove }) {
+  const [hasCamera, setHasCamera] = useState(true);
+  const [hasMic, setHasMic] = useState(true);
+  const [publisher, setPublisher] = useState();
+  const { me } = useMe();
   const { rejectGoLive } = useMessage();
   const mStyles = useStyles();
 

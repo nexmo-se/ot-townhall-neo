@@ -1,19 +1,13 @@
-// @flow
 import React from "react";
-import User from "entities/user";
 
-import useMe from "hooks/me";
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
+import { useMe } from "components/MeProvider";
 import { useEffect, useState, useCallback } from "react";
 
-interface InviteLiveButtonProps {
-  user: User
-}
-
-function InviteLiveButton ({ user }: InviteLiveButtonProps) {
-  const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [publishing, setPublishing] = useState<boolean>(false);
+function InviteLiveButton ({ user }) {
+  const [disabled, setDisabled] = React.useState(false);
+  const [publishing, setPublishing] = useState(false);
   const { me } = useMe();
   const { session, streams } = useSession();
   const { requestGoLive } = useMessage();
