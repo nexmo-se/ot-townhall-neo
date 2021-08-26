@@ -1,24 +1,24 @@
-// @flow
-import * as firebase from "firebase/app";
-import "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 import config from "config/firebase";
 
-class Firestore{
-  static instance:any;
+class Firestore {
+  static instance;
   
-  static init(){
-    firebase.initializeApp({
+  static init () {
+    const app = initializeApp({
       apiKey: config.apiKey,
       authDomain: config.authDomain,
       projectId: config.projectID
     });
-    Firestore.instance = firebase.firestore();
+    Firestore.instance = getFirestore(app);
   }
   
-  static getInstance(){
-    if(!Firestore.instance) Firestore.init();
+  static getInstance () {
+    if (!Firestore.instance) Firestore.init();
     return Firestore.instance;
   }
 }
+
 export default Firestore;

@@ -1,4 +1,3 @@
-// @flow
 import styles from "./QuestionDownload.module.css";
 
 import React from "react";
@@ -8,9 +7,11 @@ import DownloadService from "services/download";
 import lodash from "lodash";
 import clsx from "clsx";
 import { DateTime } from "luxon";
+import { collection, getDocs } from "firebase/firestore";
 
 import useSession from "hooks/session";
 import useMessage from "hooks/message";
+import { useEffect, useState, useCallback } from "react";
 
 import Icon from "components/Icon";
 import Modal from "components/Modal";
@@ -18,8 +19,8 @@ import Button from "components/Button";
 import { Portal } from "@material-ui/core";
 
 function QuestionDownload () {
-  const [hasQuestions, setHasQuestions] = React.useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [hasQuestions, setHasQuestions] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { session } = useSession();
   const { modalContainer } = useMessage();
 
@@ -28,7 +29,7 @@ function QuestionDownload () {
    * It will retrieve for every status. Even if you don't see your data in the UI
    * The data can be in the database itself.
    */
-  const retrieveQuestions = React.useCallback(
+  const retrieveQuestions = useCallback(
     async () => {
       const convertFirebase = (doc) => {
         const data = lodash(doc.data())
@@ -41,10 +42,11 @@ function QuestionDownload () {
         })
       }
 
-      const db = Firestore.getInstance();
       const sessionId = lodash(session).get("sessionId");
-      const querySnapshot = await db.collection(`questions_${sessionId}`).get();
+      const db = Firestore.getInstance();
+      const querySnapshot = await getDocs(collection(db, `questions_${sessionId}`));
       const data = lodash(querySnapshot.docs).map(convertFirebase).value();
+      console.log("MY50", db, sessionId, data);
       return data;
     },
     [session]
@@ -81,7 +83,7 @@ function QuestionDownload () {
     )
   }
 
-  React.useEffect(
+  useEffect(
     () => {
       async function doSomething () {
         const questions = await retrieveQuestions()
