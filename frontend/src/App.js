@@ -21,9 +21,9 @@ function App() {
           <Switch>
             <Route exact path="/:tenant/presenter" component={PresenterPage} />
             <Route exact path="/:tenant/participant" component={ParticipantPage} />
+            <Route exact path="/:tenant/participant/lobby" component={LobbyPage} />
             <Route exact path="/:tenant/moderator" component={ModeratorPage} />
             <Route exact path="/:tenant/ghostrider" component={GhostRiderPage} />
-            <Route exact path="/:tenant/:role/lobby" component={LobbyPage} />
             <Route exact path="/:tenant/:role/login" component={LoginPage} />
             <Route exact path="/thank-you" component={ThankYouPage} />
           </Switch>
