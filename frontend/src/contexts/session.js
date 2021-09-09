@@ -1,48 +1,16 @@
-// @flow
 import AvatarImage from "assets/img/avatar.png";
 
 import React from "react";
-import Credential from "entities/credential";
 import User from "entities/user";
 import OT from "@opentok/client";
-import type { Session, Connection, Subscriber, Stream } from "@opentok/client";
-import type { Node } from "react";
 
-interface IGetContainerID {
-  user: User;
-  videoType: string;
-}
-
-interface ISubscriberContainer{
-  camera: string;
-  screen: string;
-  custom: string;
-  moderator: string;
-}
-
-interface ISessionContext {
-  connected: boolean;
-  session: Session;
-  connections: Connection[];
-  subscribers: Subscriber[];
-  streams: Stream[];
-  connectWithCredential: (credential: Credential) => Promise<Session>;
-  addStream: ({ stream: Stream }) => void;
-  removeStream: ({ stream: Stream }) => void;
-}
-
-interface ISessionProvider {
-  children: Node;
-  subscriberContainer?: ISubscriberContainer
-}
-
-export const SessionContext = React.createContext<ISessionContext>({
+export const SessionContext = React.createContext({
   connected: false,
   session: undefined,
   connections: [],
   subscribers: [],
   streams: [],
-  connectWithCredential: (credential: Credential) => Promise.resolve(),
+  connectWithCredential: (credential) => Promise.resolve(),
   addStream: ({ stream: Stream }) => {},
   removeStream: ({ stream: Stream }) => {}
 });
@@ -55,16 +23,16 @@ export default function SesisonProvider ({
     moderator: "moderatorContainer",
     custom: "cameraContainer"
   }
-}: ISessionProvider) {
-  const [ connected, setConnected ] = React.useState<boolean>(false);
-  const [ connections, setConnections ] = React.useState<Connection[]>([]);
-  const [ subscribers, setSubscribers ] = React.useState<Subscriber[]>([]);
-  const [ streams, setStreams ] = React.useState<Stream[]>([]);
-  const sessionRef = React.useRef<Session>();
+}) {
+  const [ connected, setConnected ] = React.useState(false);
+  const [ connections, setConnections ] = React.useState([]);
+  const [ subscribers, setSubscribers ] = React.useState([]);
+  const [ streams, setStreams ] = React.useState([]);
+  const sessionRef = React.useRef();
 
   const subscribe = React.useCallback(
-    async (stream: Stream) => {
-      function getContainerID({ user, videoType }: IGetContainerID){
+    async (stream) => {
+      function getContainerID({ user, videoType }){
         if(user.role === "moderator" && videoType === "camera") return subscriberContainer.moderator ?? "moderatorContainer";
         else if(user.role === "moderator" && videoType === "screen") return subscriberContainer.screen ?? "cameraContainer";
         else if(user.role === "moderator" && videoType === "custom") return subscriberContainer.screen ?? "cameraContainer";
@@ -161,7 +129,7 @@ export default function SesisonProvider ({
   }
 
   const connectWithCredential = React.useCallback(
-    async (credential: Credential) => {
+    async (credential) => {
       if (!sessionRef.current) {
         setConnected(false);
         sessionRef.current = OT.initSession(credential.apiKey, credential.sessionId);

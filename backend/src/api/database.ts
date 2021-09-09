@@ -6,7 +6,7 @@ class DatabaseAPI{
   static pool: Pool;
 
   static initialize(): void{
-    if(DatabaseAPI.pool) throw new CustomError("database/initialized", "You can only initialized once");
+    if (DatabaseAPI.pool) throw new CustomError("database/initialized", "You can only initialized once");
     DatabaseAPI.pool = new Pool({ connectionString: database.url });
   }
 

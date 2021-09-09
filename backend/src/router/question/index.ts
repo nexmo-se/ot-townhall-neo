@@ -1,9 +1,8 @@
-import express from "express";
-import ash from "express-async-handler";
-import validate from "express-validation";
-
 import QuestionListener from "../../listeners/question";
 import Validator from "./validation";
+import express from "express";
+import ash from "express-async-handler";
+import { validate } from "express-validation";
 
 const router = express.Router();
 router.post("/", validate(Validator.create), ash(QuestionListener.create));

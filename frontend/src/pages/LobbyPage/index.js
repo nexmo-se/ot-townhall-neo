@@ -34,7 +34,7 @@ function LobbyPage () {
       const configuration = await ConfigurationService.retrieve({ tenant });
       setRoomIsOpen(configuration.status === "open");
     },
-    [tenant, push]
+    [tenant]
   )
 
   useEffect(

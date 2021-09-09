@@ -1,6 +1,7 @@
 // Ignoring becuase no type definition found
 // @ts-ignore
 import $ from "mongo-dot-notation";
+import lodash from "lodash";
 
 import MongoDBService from "../utils/mongodb";
 import ConfigurationConfig from "../config/configuration";
@@ -46,6 +47,26 @@ class ConfigurationAPI{
 
   static async update(tenant: string, data: any){
     const updateData = { configuration: data };
+
+    const convertManually = (source: Record<string, any>, sourcePath: string, destinationPath: string) => {
+      lodash(source).set(
+        destinationPath,
+        lodash(source).get(sourcePath)
+      ).value();
+    }
+
+    // Change manually to snake case
+    convertManually(updateData, "configuration.participant.loginType", "configuration.participant.login_type");
+    convertManually(updateData, "configuration.participant.raiseHand", "configuration.participant.raise_hand");
+    convertManually(updateData, "configuration.moderator.loginType", "configuration.moderator.login_type");
+    convertManually(updateData, "configuration.presenter.loginType", "configuration.presenter.login_type");
+
+    // deleting non snake case manually
+    delete updateData.configuration?.participant?.loginType;
+    delete updateData.configuration?.participant?.raiseHand;
+    delete updateData.configuration?.moderator?.loginType;
+    delete updateData.configuration?.presenter?.loginType;
+
     const db = await MongoDBService.getInstance();
     await db.collection(Configuration._collectionName).updateOne(
       { tenant },

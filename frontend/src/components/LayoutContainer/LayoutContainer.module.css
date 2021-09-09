@@ -1,0 +1,20 @@
+.container {
+  flex-basis: 20%;
+  z-index: 0;
+}
+
+.black {
+  background-color: black;
+}
+
+.big {
+  flex-basis: 100%;
+}
+
+.screen {
+  flex-basis: 80%;
+}
+
+.hidden {
+  display: none;
+}

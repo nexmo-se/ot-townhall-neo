@@ -1,0 +1,8 @@
+.main {
+  position: relative;
+  flex-basis: 100%;
+}
+
+.main.dominant {
+  flex-basis: 10%
+}

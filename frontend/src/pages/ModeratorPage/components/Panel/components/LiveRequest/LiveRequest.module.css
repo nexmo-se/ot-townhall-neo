@@ -1,0 +1,9 @@
+.requestList {
+  overflow-y: auto;
+  height: calc(100% - 32px);
+}
+
+.requestList > div {
+  padding-bottom: 8px;
+  margin-top: 8px;
+}

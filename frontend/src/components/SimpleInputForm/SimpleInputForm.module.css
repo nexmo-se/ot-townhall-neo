@@ -1,0 +1,11 @@
+.inputContainer {
+  display: flex;
+}
+
+.inputContainer > button {
+  margin-left: 8px;
+}
+
+.inputContainer > .input {
+  flex: 1;
+}

@@ -1,6 +1,6 @@
 import express from "express";
 import ash from "express-async-handler";
-import validate from "express-validation";
+import { validate } from "express-validation";
 
 import RecordingListener from "../../listeners/recording";
 import Validator from "./validation";

@@ -1,0 +1,6 @@
+import { createContext } from "react"
+
+export const LayoutContext = createContext({
+  layout: "default",
+  participantGap: 8
+});

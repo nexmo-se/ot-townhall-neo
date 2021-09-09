@@ -1,34 +1,26 @@
-// @flow
 import React from "react";
 import clsx from "clsx";
+import lodash from "lodash";
 
-interface ITextInput {
-  text: string,
-  label?: string,
-  style?: any,
-  className?: any,
-  onChange?: (value:string) => void
-}
+function TextInput (props) {
+  const text = lodash(props).get("text");
+  const label = lodash(props).get("label");
+  const style = lodash(props).get("style");
+  const className = lodash(props).get("className");
+  const onChange = lodash(props).get("onChange");
 
-function TextInput({ 
-  text, 
-  label,
-  style, 
-  className, 
-  onChange, 
-  ...props 
-}: ITextInput) {
-
-  function handleChange({ target }){
+  function handleChange ({ target }){
     if(onChange) onChange(target.value);
   }
 
   return(
     <div 
-      className={clsx(
-        "Vlt-form__element",
-        className
-      )}
+      className={
+        clsx(
+          "Vlt-form__element",
+          className
+        )
+      }
       style={style}
     >
       { label && (

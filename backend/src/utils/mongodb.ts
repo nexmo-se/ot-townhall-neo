@@ -13,31 +13,21 @@ class MongoDBService{
     } else return {}
   }
 
-  static async init(): Promise<void>{
-    MongoDBService._instance = new MongoClient(
-      database.url,
-      {
-        useUnifiedTopology: true,
-        ...MongoDBService.TlsOptions()
-      }
-    );
+  static async init (): Promise<void>{
+    const instance = new MongoClient(database.url, MongoDBService.TlsOptions())
+    await instance.connect();
+    await instance.db("admin").command({ ping: 1 });
 
-    await MongoDBService._instance.connect();
-    await MongoDBService._instance.db("admin").command({ ping: 1 });
+    MongoDBService._instance = instance;
     console.log("Database is connected");
   }
 
-  static async getInstance(): Promise<Db>{
-    if (!MongoDBService._instance) {
-      await MongoDBService.init();
-    } else if (MongoDBService._instance && !MongoDBService._instance.isConnected()) {
-      await MongoDBService.init();
-    }
-
+  static async getInstance (): Promise<Db>{
+    if (!MongoDBService._instance) await MongoDBService.init()
     return MongoDBService._instance.db(database.name);
   }
 
-  static async close(): Promise<void>{
+  static async close (): Promise<void>{
     if(MongoDBService._instance) await MongoDBService._instance.close();
   }
 }

@@ -1,0 +1,191 @@
+import React from "react";
+import CredentialAPI from "api/credential";
+import clsx from "clsx";
+
+import useSession from "hooks/session";
+import useStyles from "./styles";
+import usePublisher from "hooks/publisher";
+import { useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useMe } from "components/MeProvider";
+
+import LiveParticipantList from "../LiveParticipantList";
+import ModeratorParticipantItem from "../ModeratorParticipantItem";
+import RaisedHandList from "../RaisedHandList";
+import ModeratorMessageTab from "../ModeratorMessageTab";
+import MainScreen from "../MainScreen";
+import ParticipantDownload from "../ParticipantDownload";
+import PublisherFailedDialog from "components/PublisherFailedDialog";
+import InfoDialog from "components/InfoDialog";
+import FullPageLoading from "components/FullPageLoading";
+import ParticipantList from "components/ParticipantList";
+
+function Main () {
+  const [publishFailed, setPublishFailed] = useState(false);
+  const [publishFailedOpen, setPublishFailedOpen] = useState(false);
+  const [rejectedOpen, setRejectedOpen] = useState(false);
+  const { me, loggedIn } = useMe();
+  const { session, connected, connections, connectWithCredential } = useSession();
+  const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
+  const { tenant } = useParams();
+  const mStyles = useStyles();
+
+  const publishErrorListener = useCallback(
+    (error) => {
+      setPublishFailed(true);
+    },
+    []
+  );
+
+  const remotePublishFailedListener = useCallback(
+    () => {
+      // Open a dialog mentioning that the remote publisher
+      // has failed to publish the stream
+      setPublishFailedOpen(true);
+    },
+    []
+  )
+
+  const rejectedRaiseHandListener = useCallback(
+    () => {
+      // When the participant reject the Go Live request,
+      // show the dialog
+      setRejectedOpen(true);
+    },
+    []
+  )
+
+  useEffect(
+    () => {
+      async function connect () {
+        if (loggedIn && me) {
+          const credential = await CredentialAPI.generateCredential({
+            role: "moderator",
+            data: me.toJSON(),
+            tenant
+          });
+          await connectWithCredential(credential);
+        }
+      }
+      connect();
+    }, 
+    [loggedIn, me, connectWithCredential, tenant]
+  );
+
+  useEffect(
+      () => {
+      if (connected && session && me) {
+        publishCamera({
+          session,
+          user: me,
+          onError: publishErrorListener
+        });
+        setPublishFailed(false);
+      }
+    },
+    [connected, session, me, publishCamera, publishErrorListener]
+  );
+
+  useEffect(
+    () => {
+      if (session) session.on("signal:publish-failed", remotePublishFailedListener);
+      if (session) session.on("signal:raisehand.rejected", rejectedRaiseHandListener);
+      return function cleanup () {
+        if (session) session.off("signal:publish-failed", remotePublishFailedListener);
+        if (session) session.off("signal:raisehand.rejected", rejectedRaiseHandListener);
+      }
+    },
+    [session, remotePublishFailedListener, rejectedRaiseHandListener]
+  )
+
+  return (
+    <>
+      {!connected && <FullPageLoading />}
+      <div className={mStyles.container}>
+        <div className={mStyles.leftSection}>
+          <div className={mStyles.item} style={{ 
+              borderBottom: "1px solid #e7ebee",
+              flexBasis: "30%"
+            }}
+          >
+            <h4 className="Vlt-center">REQUESTS TO GO LIVE</h4>
+            <RaisedHandList />
+          </div>
+          <div className={mStyles.item} style={{ 
+              flexBasis: "70%",
+              paddingLeft: 32, 
+              paddingRight: 32, 
+              paddingTop: 32 
+            }}
+          >
+            <ModeratorMessageTab />
+          </div>
+        </div>
+        <div className={mStyles.centerPanel}>
+          <div className={mStyles.item} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
+            <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
+            <LiveParticipantList>
+              {(me)? (
+                <>
+                  <ModeratorParticipantItem 
+                    user={me}
+                    publisher={cameraPublisher}
+                  />
+                </>
+              ): null}
+            </LiveParticipantList> 
+          </div>
+          <div
+            className={mStyles.item}
+            style={{ flexBasis: "50%", paddingTop: 32 }}
+          >
+            <div className={mStyles.titleContainer}>
+              <h4
+                className={mStyles.noMargin}
+              >
+                PARTICIPANTS ({connections.length})
+              </h4>
+              <ParticipantDownload />
+            </div>
+            <ParticipantList />
+          </div>
+        </div>
+        <div
+          className={
+            clsx(
+              mStyles.rightPanel,
+              mStyles.black
+            )
+          }
+        >
+          <MainScreen />        
+        </div>
+      </div>
+
+      <InfoDialog
+        id="remote-publish-failed"
+        title="Remote publish failed"
+        visible={publishFailedOpen}
+        setVisible={setPublishFailedOpen}
+      >
+        <p>Participant / presenter has failed to publish the stream. You can ask them to re-join the session</p>
+      </InfoDialog>
+
+      <PublisherFailedDialog
+        visible={publishFailed}
+        setVisible={setPublishFailed}
+      />
+
+      <InfoDialog
+        id="raisehand-rejected"
+        title={`"Invite Live" request has been declined`}
+        visible={rejectedOpen}
+        setVisible={setRejectedOpen}
+      >
+        <p>The participant has declined the "Invite Live" request. You may try again at a later time.</p>
+      </InfoDialog>
+    </>
+  )
+}
+
+export default Main;

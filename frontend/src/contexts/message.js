@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { createContext } from "react";
 
@@ -8,89 +7,37 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import User from "entities/user";
 import Message from "entities/message";
 
-interface ISend { message: Message; }
-interface IUserOnly { user: User; }
-interface MessageProviderProps { children: any }
-interface IForceVideo {
-  user: User;
-  hasVideo: boolean;
-}
-
-interface ISlidesAccess {
-  target: User;
-  pin: string;
-}
-
-interface IAck {
-  type: string;
-  data: any;
-}
-
-interface ISignalData {
-  type: string;
-  data?: string;
-}
-
-interface IForceAudio {
-  user: User;
-  hasAudio: boolean;
-}
-
-interface MessageContextProps {
-  raisedHands: Array<User>;
-  messages: Array<Message>;
-  modalContainer: any;
-  send: (args: ISend) => Promise<void>;
-  slidesAccess: (args: ISlidesAccess) => Promise<void>;
-  revokeSlidesAccess: (args: IUserOnly) => Promise<void>;
-  raiseHand: (args: IUserOnly) => Promise<void>;
-  removeRaisedHand: (user: User) => void;
-  forcePublish: (args: IUserOnly) => Promise<void>;
-  forceUnpublish: (args: IUserOnly) => Promise<void>;
-  forceVideo: (args: IForceVideo) => Promise<void>;
-  forceAudio: (args: IForceAudio) => Promise<void>;
-  startPolling: () => Promise<void>;
-  stopPolling: () => Promise<void>;
-  ack: (args: IAck) => Promise<void>;
-  publishFailed: () => Promise<void>;
-  approveGoLive: (args: IUserOnly) => Promise<void>;
-  declineGoLive: (args: IUserOnly) => Promise<void>;
-  rejectGoLive: (args: IUserOnly) => Promise<void>;
-  requestGoLive: (args: IUserOnly) => Promise<void>;
-  intendedForMe: ({ data: any }) => boolean;
-}
-
-export const MessageContext = createContext<MessageContextProps>({
+export const MessageContext = createContext({
   raisedHands: [],
   messages: [],
   modalContainer: null,
-  removeRaisedHand: (user: User) => {},
-  slidesAccess: (args: ISlidesAccess) => Promise.resolve(),
-  revokeSlidesAccess: (args: IUserOnly) => Promise.resolve(),
-  raiseHand: (args: IUserOnly) => Promise.resolve(),
-  forcePublish: (args: IUserOnly) => Promise.resolve(),
-  forceUnpublish: (args: IUserOnly) => Promise.resolve(),
-  forceVideo: (args: IForceVideo) => Promise.resolve(),
-  forceAudio: (args: IForceAudio) => Promise.resolve(),
+  removeRaisedHand: (user) => {},
+  slidesAccess: (args) => Promise.resolve(),
+  revokeSlidesAccess: (args) => Promise.resolve(),
+  raiseHand: (args) => Promise.resolve(),
+  forcePublish: (args) => Promise.resolve(),
+  forceUnpublish: (args) => Promise.resolve(),
+  forceVideo: (args) => Promise.resolve(),
+  forceAudio: (args) => Promise.resolve(),
   stopPolling: () => Promise.resolve(),
   startPolling: () => Promise.resolve(),
-  send: (args: ISend) => Promise.resolve(),
-  ack: (args: IAck) => Promise.resolve(),
+  send: (args) => Promise.resolve(),
+  ack: (args) => Promise.resolve(),
   publishFailed: () => Promise.resolve(),
   intendedForMe: ({ data: any }) => false,
-  approveGoLive: (args: IUserOnly) => Promise.resolve(),
-  declineGoLive: (args: IUserOnly) => Promise.resolve(),
-  rejectGoLive: (args: IUserOnly) => Promise.resolve(),
-  requestGoLive: (args: IUserOnly) => Promise.resolve()
+  approveGoLive: (args) => Promise.resolve(),
+  declineGoLive: (args) => Promise.resolve(),
+  rejectGoLive: (args) => Promise.resolve(),
+  requestGoLive: (args) => Promise.resolve()
 });
 
-export default function MessageProvider ({ children }: MessageProviderProps) {
-  const [raisedHands, setRaisedHands] = useState<Array<User>>([]);
-  const [messages, setMessages] = useState<Array<Message>>([]);
+export default function MessageProvider ({ children }) {
+  const [raisedHands, setRaisedHands] = useState([]);
+  const [messages, setMessages] = useState([]);
   const { session } = useSession();
   const modalContainer = useRef(null);
 
-  function removeRaisedHand (user: User) {
+  function removeRaisedHand (user) {
     setRaisedHands(
       (prevRaisedHands) => prevRaisedHands.filter(
         (prevRaisedHand) => {
@@ -100,7 +47,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     )
   }
 
-  async function signal ({ type, data }: ISignalData) {
+  async function signal ({ type, data }) {
     return new Promise(
       (resolve, reject) => {
         const payload = JSON.parse(JSON.stringify({ type, data }));
@@ -116,25 +63,25 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     )
   }
 
-  async function send ({ message }: ISend): Promise<void> {
+  async function send ({ message }) {
     await signal({ type: "message", data: JSON.stringify(message.toJSON()) });
   }
 
-  async function ack ({ type, data }: IAck): Promise<void> {
+  async function ack ({ type, data }) {
     await signal({
       type: `ack_${type}`,
       data: JSON.stringify(data)
     });
   }
 
-  async function slidesAccess ({ target, pin }: ISlidesAccess) {
+  async function slidesAccess ({ target, pin }) {
     await signal({
       type: "slides-access",
       data: JSON.stringify({ target, pin })
     });
   }
 
-  async function revokeSlidesAccess ({ user }: IUserOnly) {
+  async function revokeSlidesAccess ({ user }) {
     await signal({ type: "revoke-slides-access", data: JSON.stringify(user.toJSON()) });
   }
 
@@ -143,11 +90,11 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
   }
 
   // TODO: remove this because Moderator should not able to force publish
-  async function forcePublish ({ user }: IUserOnly) {
+  async function forcePublish ({ user }) {
     await signal({ type: "force-publish", data: JSON.stringify(user.toJSON()) });
   }
   
-  async function approveGoLive ({ user }: IUserOnly) {
+  async function approveGoLive ({ user }) {
     const payload = user.toJSON();
     await signal({
       type: "raisehand.approved",
@@ -155,7 +102,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     });
   }
 
-  async function declineGoLive ({ user }: IUserOnly) {
+  async function declineGoLive ({ user }) {
     const payload = user.toJSON();
     await signal({
       type: "raisehand.declined",
@@ -163,7 +110,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     })
   }
 
-  async function rejectGoLive ({ user }: IUserOnly) {
+  async function rejectGoLive ({ user }) {
     const payload = user.toJSON();
     await signal({
       type: "raisehand.rejected",
@@ -175,7 +122,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
    * This function should be called by Moderator only to request participant to go live
    * the participant should listen for it, and display PrecallDialog
    */
-  async function requestGoLive ({ user }: IUserOnly) {
+  async function requestGoLive ({ user }) {
     const payload = user.toJSON();
     await signal({
       type: "raisehand.request",
@@ -183,21 +130,21 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     })
   }
 
-  async function forceUnpublish ({ user }: IUserOnly) {
+  async function forceUnpublish ({ user }) {
     await signal({ type: "force-unpublish", data: JSON.stringify(user.toJSON()) });
   }
 
-  async function forceVideo ({ user, hasVideo }: IForceVideo) {
+  async function forceVideo ({ user, hasVideo }) {
     const payload = Object.assign({}, user.toJSON(), { hasVideo });
     await signal({ type: "force-video", data: JSON.stringify(payload) });
   }
 
-  async function forceAudio ({ user, hasAudio }: IForceAudio) {
+  async function forceAudio ({ user, hasAudio }) {
     const payload = Object.assign({}, user.toJSON(), { hasAudio });
     await signal({ type: "force-audio", data: JSON.stringify(payload) });
   }
 
-  async function raiseHand ({ user }: IUserOnly) {
+  async function raiseHand ({ user }) {
     await signal({
       type: "raisehand",
       data: JSON.stringify(user.toJSON())
@@ -213,7 +160,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
   }
 
   const intendedForMe = useCallback(
-    ({ data }): boolean => {
+    ({ data }) => {
     const user = User.fromJSON(JSON.parse(data));
       const { connection: localConnection } = session;
       if(localConnection.id === user.id) return true;

@@ -1,0 +1,24 @@
+.header {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.header > h4 {
+  flex: 1;
+  margin-bottom: 0px;
+}
+
+.header > .actions {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.header > .actions > div {
+  cursor: pointer;
+}
+
+.header > .actions > div:not(:last-child) {
+  margin-right: 16px;
+}

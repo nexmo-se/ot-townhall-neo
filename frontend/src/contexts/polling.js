@@ -1,38 +1,22 @@
-// @flow
+// TODO: The old Polling Provider is still being used here. Remove when no one is using
+
 import React from "react";
 import PollingAPI from "api/polling";
 import useSession from "hooks/session";
-import type { Node } from "react";
-import type { ICreate } from "api/polling";
-import type { IPoll } from "api/polling";
-import type { IRetrieveSelected } from "api/polling";
-
-import Polling from "entities/polling";
 import PollingItem from "entities/polling-item";
 
-interface IPollingProvider { children?: Node }
-interface IPollingContext { 
-  polling: Polling | void;
-  create: (args: ICreate) => Promise<void>;
-  retrieve: () => Promise<void>;
-  start: () => Promise<void>;
-  stop: () => Promise<void>;
-  poll: (args: IPoll) => Promise<void>;
-  retrieveSelected: (args: IRetrieveSelected) => Promise<PollingItem>
-}
-
-export const PollingContext = React.createContext<IPollingContext>({
+export const PollingContext = React.createContext({
   polling: undefined,
-  create: (args: ICreate) => Promise.resolve(),
+  create: (args) => Promise.resolve(),
   retrieve: () => Promise.resolve(),
   start: () => Promise.resolve(),
   stop: () => Promise.resolve(),
-  poll: (args: IPoll) => Promise.resolve(),
-  retrieveSelected: (args: IRetrieveSelected) => Promise.resolve(new PollingItem({ option: "", orderNumber: 0 }))
+  poll: (args) => Promise.resolve(),
+  retrieveSelected: (args) => Promise.resolve(new PollingItem({ option: "", orderNumber: 0 }))
 });
 
-export default function PollingProvider({ children }: IPollingProvider){
-  const [ polling, setPolling ] = React.useState<Polling | void>();
+export default function PollingProvider({ children }){
+  const [ polling, setPolling ] = React.useState();
   const { session } = useSession();
 
   const retrieve = React.useCallback(async () => {
@@ -44,7 +28,7 @@ export default function PollingProvider({ children }: IPollingProvider){
     }
   }, [ session ]);
 
-  async function create({ title, items }: ICreate){
+  async function create({ title, items }){
     await PollingAPI.create({ sessionID: session.id, title, items })
     await retrieve()
   }
@@ -63,12 +47,12 @@ export default function PollingProvider({ children }: IPollingProvider){
     }
   }
 
-  async function poll({ id, itemID, user }: IPoll){
+  async function poll({ id, itemID, user }){
     await PollingAPI.poll({ id, itemID, user });
     await retrieve();
   }
 
-  const retrieveSelected = React.useCallback(async ({ id, user }: IRetrieveSelected): Promise<PollingItem> => {
+  const retrieveSelected = React.useCallback(async ({ id, user }) => {
     const selected = await PollingAPI.retireveSelected({ id, user });
     return selected;
   }, [])

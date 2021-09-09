@@ -1,0 +1,47 @@
+.main {
+  flex: 1;
+  background-color: black;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.videoContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  flex-shrink: 1;
+  background-color: rgba(26, 26, 26, 1);
+
+  padding: 4px 16px;
+}
+
+.controls .margin {
+  margin-right: 8px;
+}
+
+.controls > .left {
+  display: flex;
+  flex: 1;
+}
+
+.controls > .middle {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls > .middle > div {
+  margin-right: 16px;
+}
+
+.controls > .right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}

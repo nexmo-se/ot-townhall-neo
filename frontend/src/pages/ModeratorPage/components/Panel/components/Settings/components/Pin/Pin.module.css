@@ -1,0 +1,8 @@
+.open {
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.open:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,12 @@
+.menu {
+  background-color: black;
+  min-width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu > .brand {
+  margin-top: 16px;
+  margin-bottom: 64px;
+}

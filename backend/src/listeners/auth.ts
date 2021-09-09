@@ -1,8 +1,7 @@
 import lodash from "lodash";
 import ConfigurationAPI from "../api/configuration";
 import { Request, Response } from "express";
-import type { AcceptedRole } from "../entities/configuration";
-
+import { AcceptedRole } from "../entities/configuration/types";
 
 class AuthListener {
   static async authenticate(req: Request, res: Response): Promise<void>{
@@ -12,11 +11,11 @@ class AuthListener {
       role
     } = req.body;
     
-    if (lodash.isString(tenant) && lodash.isString(role)){
+    if (lodash.isString(tenant) && lodash.isString(role)) {
       const tenantString = lodash.toString(tenant);
       const roleString = lodash.toString(role);
       const acceptedRoles = [ "participant", "moderator", "presenter" ];
-      if(acceptedRoles.includes(roleString)){
+      if (acceptedRoles.includes(roleString)) {
         const configuration = await ConfigurationAPI.retrieve({ tenant: tenantString });
         if (configuration){
           const pin = configuration.retrievePin(roleString as AcceptedRole);
@@ -27,4 +26,5 @@ class AuthListener {
     return res.status(403).end();
   }
 }
+
 export default AuthListener;

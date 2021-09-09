@@ -1,0 +1,8 @@
+.main {
+  overflow: hidden;
+  display: flex;
+}
+
+.dummy {
+  object-fit: contain;
+}

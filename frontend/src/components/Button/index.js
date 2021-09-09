@@ -1,29 +1,28 @@
-// @flow
 import React from "react";
 import clsx from "clsx";
+import lodash from "lodash";
 
-interface ButtonProps {
-  text: string;
-  onClick?: Function;
-  className?: any;
-}
-
-function Button ({ text, className, onClick, ...props }: ButtonProps) {
+function Button (props) {
+  const text = lodash(props).get("text");
+  const className = lodash(props).get("className");
+  const onClick = lodash(props).get("onClick");
 
   function handleClick (e) {
     e.preventDefault();
-    if(onClick) onClick();
+    if (onClick) onClick();
   }
 
   return (
     <button 
       {...props}
-      className={clsx(
-        "Vlt-btn",
-        "Vlt-btn--primary",
-        "Vlt-btn--app",
-        className
-      )}
+      className={
+        clsx(
+          "Vlt-btn",
+          "Vlt-btn--primary",
+          "Vlt-btn--app",
+          className
+        )
+      }
       onClick={handleClick} 
       type="submit"
     >
@@ -31,4 +30,5 @@ function Button ({ text, className, onClick, ...props }: ButtonProps) {
     </button>
   )
 }
+
 export default Button;

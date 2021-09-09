@@ -1,0 +1,11 @@
+.main {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  background-color: rgba(19, 20, 21, 1);
+  padding: 8px;
+}
+
+.main.dominant > section:not(:last-child) {
+  margin-right: 16px;
+}

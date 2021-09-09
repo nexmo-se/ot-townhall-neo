@@ -1,0 +1,35 @@
+.main {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.5s ease-out;
+}
+
+.main:hover {
+  cursor: pointer;
+}
+
+.main > svg {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.main.red {
+  background-color: rgba(232, 69, 69, 1);
+}
+
+.main.red:hover {
+  background-color: rgba(232, 69, 69, .5);
+}
+
+.main.green {
+  background-color: rgba(6, 186, 119, 1);
+}
+
+.main.green:hover {
+  background-color: rgba(6, 186, 119, .5);
+}

@@ -1,0 +1,33 @@
+.tabs {
+  display: flex;
+  margin-top: 16px;
+}
+
+.tabs div {
+  flex-basis: 50%;
+}
+
+.tabs div:not(:last-child) {
+  padding-right: 4px;
+}
+
+.save {
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+.save.changed {
+  font-weight: bold;
+}
+
+.save:hover {
+  text-decoration: underline;
+}
+
+.save.disabled:hover {
+  text-decoration: none;
+}
+
+.save.disabled {
+  cursor: not-allowed;
+}

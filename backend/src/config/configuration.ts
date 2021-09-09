@@ -20,6 +20,9 @@ const config = {
       chat: true,
       participants: true,
       polling: true
+    },
+    state: {
+      status: "locked"
     }
   },
   vidsDefault: {

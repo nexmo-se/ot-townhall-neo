@@ -1,56 +1,81 @@
-// @flow
-import React from "react";
-import LayoutManager from "utils/layout-manager";
+import styles from "./LayoutContainer.module.css";
+
+import LayoutManager from "./utils/layout-manager";
 import clsx from "clsx";
 import lodash from "lodash";
 
-import useStyles from "./styles";
 import useSession from "hooks/session";
+import { useRef, useEffect } from "react";
 
-interface ILayoutContainer { 
-  id: string; 
-  size: "big" | "small" | "screen";
-  hidden?: boolean;
-  children?: any;
-}
+function LayoutContainer (props) {
+  const id = lodash(props).get("id");
+  const size = lodash(props).get("size", "big");
+  const hidden = lodash(props).get("hidden", false);
+  const children = lodash(props).get("children");
 
-function LayoutContainer({ id, size = "big", hidden, children }: ILayoutContainer){
   const { streams, session } = useSession();
-  const mStyles = useStyles();
-  const containerRef = React.useRef();
-  const layoutRef = React.useRef<any>();
+  const containerRef = useRef();
+  const layoutRef = useRef();
 
-  React.useEffect(() => {
-    layoutRef.current = new LayoutManager(id);
-    const observer = new MutationObserver((mutationList => {
-      for(const mutation of mutationList){
-        if(mutation.type === "childList") layoutRef.current.layout(session, streams);
+  /**
+   * Listen for additional child added to the container
+   */
+  useEffect(
+    () => {
+      layoutRef.current = new LayoutManager(id);
+
+      const observer = new MutationObserver(
+        (mutationList) => {
+          for (const mutation of mutationList) {
+            if (mutation.type === "childList") {
+              layoutRef.current.layout(session, streams);
+            }
+          }
+        }
+      );
+
+      if (containerRef.current) {
+        observer.observe(containerRef.current, { childList: true });
       }
-    }));
-    if(containerRef.current) observer.observe(containerRef.current, { childList: true });
-  }, [id, session, streams]);
 
-  React.useEffect(() => {
-    if(layoutRef.current) layoutRef.current.layout(session, streams)
-  }, [session, streams, size]);
+    },
+    [id, session, streams]
+  );
 
-  React.useEffect(() => {
-    window.addEventListener("resize", lodash.debounce(() => {
-      if(layoutRef.current) layoutRef.current.layout(session, streams);
-    }, 150))
-  } , [session, streams])
+  useEffect(
+    () => {
+      if (layoutRef.current) layoutRef.current.layout(session, streams)
+    },
+    [session, streams, size]
+  );
+
+  /**
+   * A listener for resize. When resize, the layout container needs to adapt the layour
+   */
+  useEffect(
+    () => {
+      window.addEventListener("resize", lodash.debounce(
+        () => {
+          if (layoutRef.current) layoutRef.current.layout(session, streams);
+        }, 150)
+      )
+    },
+    [session, streams]
+  )
 
   return (
     <div 
       id={id} 
       ref={containerRef}
-      className={clsx({
-        [mStyles.container]: true,
-        [mStyles.black]: true,
-        [mStyles.big]: size === "big",
-        [mStyles.hidden]: hidden,
-        [mStyles.screen]: size === "screen"
-      })}
+      className={
+        clsx({
+          [styles.container]: true,
+          [styles.black]: true,
+          [styles.big]: size === "big",
+          [styles.hidden]: hidden,
+          [styles.screen]: size === "screen"
+        }
+      )}
     >
       {children}
     </div>

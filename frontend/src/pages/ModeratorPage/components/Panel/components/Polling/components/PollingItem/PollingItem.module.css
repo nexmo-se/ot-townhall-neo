@@ -1,0 +1,17 @@
+.main {
+  display: flex;
+  align-items: center;
+}
+
+.main > .left {
+  flex: 3;
+  margin-right: 8px;
+}
+
+.main > .right {
+  flex: 1;
+}
+
+.pointer {
+  cursor: pointer;
+}

@@ -1,0 +1,44 @@
+.main {
+  display: flex;
+  align-items: flex-start;
+  padding: 4px 0px;
+  border-bottom: 1px solid rgba(243, 243, 245, 1);
+}
+
+.avatar {
+  margin-right: 8px;
+  position: relative;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.detail .controller {
+  display: flex;
+  margin-top: 4px;
+}
+
+.detail .controller > div:not(:last-child) {
+  margin-right: 4px;
+}
+
+.nameContainer {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.nameContainer .nameLive {
+  font-weight: bolder;
+}
+
+.nameContainer > span {
+  margin-right: 4px;
+}
+
+.nameContainer > p {
+  margin-bottom: 0px;
+}

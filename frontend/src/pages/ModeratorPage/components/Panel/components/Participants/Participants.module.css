@@ -1,0 +1,9 @@
+.participantList {
+  overflow-y: auto;
+  height: calc(100% - 32px);
+}
+
+.participantList > div {
+  padding-bottom: 8px;
+  margin-top: 8px;
+}

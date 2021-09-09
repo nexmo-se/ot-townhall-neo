@@ -1,4 +1,3 @@
-// @flow
 // This will not create a new session.
 // However, a new publisher will be there
 import AvatarImage from "assets/img/avatar.png";
@@ -6,7 +5,6 @@ import AvatarImage from "assets/img/avatar.png";
 import React from "react";
 import OT from "@opentok/client";
 import clsx from "clsx";
-import { Publisher } from "@opentok/client";
 
 import useStyles from "./styles";
 import useMessage from "hooks/message";

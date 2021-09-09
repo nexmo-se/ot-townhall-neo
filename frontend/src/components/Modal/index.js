@@ -8,15 +8,7 @@ import Dismiss from "./components/Dismiss";
 import Content from "./components/Content";
 import Footer from "./components/Footer";
 
-interface ModalProps {
-  id: string;
-  children: any;
-  large?: boolean;
-  open: boolean;
-  onClose?: () => void;
-}
-
-function Modal ({ id, children, large, open, onClose }: ModalProps) {
+function Modal ({ id, children, large, open, onClose }) {
   const modalRef = useRef();
 
   useEffect(
@@ -38,10 +30,12 @@ function Modal ({ id, children, large, open, onClose }: ModalProps) {
   return (
     <div
       id={id}
-      className={clsx({
-        "Vlt-modal": true,
-        "Vlt-modal--large": large
-      })}
+      className={
+        clsx({
+          "Vlt-modal": true,
+          "Vlt-modal--large": large
+        })
+      }
       data-disable-esc
       data-disable-click
     >

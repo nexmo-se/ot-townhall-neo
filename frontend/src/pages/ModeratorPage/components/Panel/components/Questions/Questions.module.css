@@ -1,0 +1,16 @@
+.main {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.questionList {
+  overflow-y: auto;
+  height: calc(100% - 32px);
+}
+
+.questionList > div {
+  padding-bottom: 8px;
+  margin-top: 8px;
+}
