@@ -13,11 +13,9 @@ import { useParams } from "react-router-dom";
 import ShareScreen from "../ShareScreen";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import FullPageLoading from "components/FullPageLoading";
-import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
 import RightPanel from "components/RightPanel";
-import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
 
 interface URLParameters {
