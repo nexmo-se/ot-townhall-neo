@@ -13,11 +13,9 @@ import { useParams } from "react-router-dom";
 import ShareScreen from "../ShareScreen";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import FullPageLoading from "components/FullPageLoading";
-import WhiteLayer from "components/WhiteLayer"
 import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
 import RightPanel from "components/RightPanel";
-import VonageLogo from "components/VonageLogo"
 import MainScreen from "components/MainScreen";
 
 interface URLParameters {
@@ -76,7 +74,6 @@ function Main () {
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />
-          <WhiteLayer/>
           {
             (cameraPublisher)? (
               <VideoHoverContainer>
@@ -92,14 +89,6 @@ function Main () {
           <div className={mStyles.logoContainer}>
             {/* <LiveBadge/> */}
           </div>
-          <VonageLogo 
-            style={{ 
-              position: "absolute", 
-              bottom: 32, 
-              right: 32,
-              zIndex: 2 
-            }}
-          />
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
