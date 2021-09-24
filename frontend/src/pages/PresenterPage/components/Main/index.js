@@ -76,7 +76,6 @@ function Main () {
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />
-          <WhiteLayer/>
           {
             (cameraPublisher)? (
               <VideoHoverContainer>
@@ -92,14 +91,6 @@ function Main () {
           <div className={mStyles.logoContainer}>
             {/* <LiveBadge/> */}
           </div>
-          <VonageLogo 
-            style={{ 
-              position: "absolute", 
-              bottom: 32, 
-              right: 32,
-              zIndex: 2 
-            }}
-          />
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
