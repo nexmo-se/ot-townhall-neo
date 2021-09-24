@@ -17,12 +17,10 @@ import RaiseHandButton from "../RaiseHandButton";
 import PrecallDialog from "../PrecallDialog";
 import InfoDialog from "components/InfoDialog";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
-import WhiteLayer from "components/WhiteLayer";
 import RightPanel from "components/RightPanel";
 import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
-import VonageLogo from "components/VonageLogo";
 import MainScreen from "components/MainScreen";
 
 interface IParam { tenant: string }
@@ -135,8 +133,7 @@ function Main () {
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
-          <MainScreen />       
-          <WhiteLayer />
+          <MainScreen />
           {cameraPublisher? (
             <VideoHoverContainer>
               <VideoControl 
@@ -152,7 +149,6 @@ function Main () {
               onDeclined={handleDeclined}
             />
           </div>
-          <VonageLogo style={{ position: "absolute", bottom: 32, right: 32, zIndex: 2 }}/>
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>
