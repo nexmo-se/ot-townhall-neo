@@ -39,7 +39,8 @@ class LayoutManager implements ILayoutManager{
       const pubsub = this.getPubSub(session, stream);
       if(pubsub){
         const element = document.getElementById(pubsub.id);
-        if(element && (stream.videoType === "screen" || stream.videoType === "custom")) element.classList.add("OT_big");
+        // if(element && (stream.videoType === "screen" || stream.videoType === "custom")) element.classList.add("OT_big");
+        if(element && stream.videoType === "screen") element.classList.add("OT_big");
       }
     });
 
