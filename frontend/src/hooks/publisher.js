@@ -68,6 +68,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
         };
 
         if (videoSource) {
+          options['mirror'] = true;
           options['videoSource'] = videoSource;
         }
 
