@@ -19,6 +19,7 @@ interface PublishOptions extends BasePublishOptions {
   onAccessDenied?: (user: User) => void;
   onError?: ?(((error: any) => void) | ((error: any) => Promise<void>));
   attempt?: number;
+  videoSource?: String
 }
 
 interface IReturnValue {
@@ -52,7 +53,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
   )
 
   const publish = React.useCallback(
-    async ({ session, user, extraData, attempt = 1, onError }: PublishOptions): Promise<Publisher> => {
+    async ({ session, user, extraData, attempt = 1, videoSource, onError }: PublishOptions): Promise<Publisher> => {
       console.log(`Attempting to publish in ${attempt} try`)
 
       if (!publisherRef.current) {
@@ -65,6 +66,10 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
             backgroundImageURI: AvatarImage
           }
         };
+
+        if (videoSource) {
+          options['videoSource'] = videoSource;
+        }
 
         const finalOptions = Object.assign({}, options, extraData);
         if (finalOptions.insertDefaultUI === false) {
