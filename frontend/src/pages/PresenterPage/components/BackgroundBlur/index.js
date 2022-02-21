@@ -8,6 +8,7 @@ import useSession from "hooks/session";
 import BackgroundBlurButton from "components/BackgroundBlurButton";
 
 import * as VideoEffects from '@vonage/video-effects';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const { BackgroundBlurEffect } = VideoEffects;
 
@@ -23,15 +24,19 @@ function BackgroundBlur({publisher, unpublish, publish}: BackgroundBlurProps){
   const { me } = useMe();
 
   const [ hasBackgroundBlurEffect, setHasBackgroundBlurEffect ] = React.useState<boolean>(false);
+  const [ isBackgroundLoading, setIsBackgroundLoading ] = React.useState<boolean>(false);
+
 
   const backgroundBlur = React.useRef(null);
   const localMediaTrack = React.useRef(null);
+  const cameraDevideId = publisher.getVideoSource();
 
   const getUserMedia = async () => {
     try {
       const track = await navigator.mediaDevices.getUserMedia({
-        video: true
+        video: { deviceId: cameraDevideId }
       });
+ 
       localMediaTrack.current = track;
       // return track;
     } catch (e) {
@@ -41,16 +46,20 @@ function BackgroundBlur({publisher, unpublish, publish}: BackgroundBlurProps){
 
   async function handleBackgroundBlurEffectClick(){
     if (!hasBackgroundBlurEffect) {
+      setIsBackgroundLoading(true);
+      await unpublish({session});
+
       await getUserMedia();
+
       backgroundBlur.current = new BackgroundBlurEffect({
         assetsPath: process.env.REACT_APP_ASSETS_PATH
       });
+
       await backgroundBlur.current.loadModel();
+
       const outputStream = backgroundBlur.current.startEffect(
         localMediaTrack.current
       );
-
-      await unpublish({session});
       
       if(connected && session && me) {
         await publish({
@@ -61,8 +70,11 @@ function BackgroundBlur({publisher, unpublish, publish}: BackgroundBlurProps){
       }
 
       setHasBackgroundBlurEffect(true);
+      setIsBackgroundLoading(false);
     }
     else {
+      setIsBackgroundLoading(true);
+
       backgroundBlur.current.stopEffect();
       localMediaTrack.current.getTracks().forEach((t) => t.stop());
 
@@ -75,9 +87,20 @@ function BackgroundBlur({publisher, unpublish, publish}: BackgroundBlurProps){
         });
       }
       setHasBackgroundBlurEffect(false);
+      setIsBackgroundLoading(false);
     }
   }
 
+  if (isBackgroundLoading) {
+    return (
+       <CircularProgress
+       style={{
+        marginRight: 12,
+        marginLeft: 4
+        }}
+       />
+    )
+  }
 
   return (
     <BackgroundBlurButton 
