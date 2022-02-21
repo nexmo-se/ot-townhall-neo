@@ -66,7 +66,8 @@ function Main () {
         setPublishFailed(false);
       }
     },
-    [connected, session, me, publishCamera, publishErrorListener]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [connected, session, me, publishErrorListener]
   );
 
   return (
