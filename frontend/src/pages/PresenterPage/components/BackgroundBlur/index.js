@@ -70,7 +70,7 @@ function BackgroundBlur({
         await publish({
           session,
           user: me,
-          videoSource: currentDeviceId.current
+          videoSource: outputStream.getVideoTracks()[0]
         });
       }
 
