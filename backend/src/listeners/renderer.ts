@@ -6,10 +6,11 @@ export default class RendererListener {
     
   static async start(req: Request, res: Response): Promise<void> {
     try {
-        const { roomName } = req.body;
+        const { roomName, sessionId } = req.body;
+        console.log("start", roomName, sessionId);
         const data = await ExperienceRenderer.create(roomName, sessionId);
         console.log(data);
-        const { id, sessionId } = data;
+        /* const { id, sessionId } = data; */
         /* sessions[roomName].renderId = id;
         sessions[roomName].renderedSession = sessionId; */
         res.status(200).send(data);
@@ -33,7 +34,9 @@ export default class RendererListener {
   static async status(req: Request, res: Response): Promise<void> {
     // webhook status
     try {
+
         const { sessionId, status, id } = req.body;
+        console.log("status", status);
         if (status === "started") {
             const data = await ExperienceRenderer.handleStartedStatus(id); 
           /* for (const [key, value] of Object.entries(sessions)) {
@@ -57,9 +60,20 @@ export default class RendererListener {
         if (status === "stopped") {
           console.log("stopped render");
         }
-        res.status(200).send("okay");
+        res.status(200).send("OK");
       } catch (error) {
         console.log("Renderer Status", error);
+        res.status(500).send({ message: error });
       }
+    }
+
+    static async listRenderers(req: Request, res: Response): Promise<void> {
+        try {
+            const data = await ExperienceRenderer.listRenderers();
+            res.status(200).send(data);
+        } catch (error) {
+            console.log("List Renderer", error);
+            res.status(500).send({ message: error });
+          } 
     }
 }
