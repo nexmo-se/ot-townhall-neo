@@ -4,6 +4,7 @@ interface IExperienceRenderer {
     rendererSession: string;
     rendererId: string;
     currentSessionId: string;
+    moderatorConnectionId?: string;
   }
 
 
@@ -11,12 +12,14 @@ class ExperienceRenderer {
     rendererSession: string;
     rendererId: string;
     currentSessionId: string;
+    moderatorConnectionId: string;
     status: string | null;
   
     constructor(args: IExperienceRenderer){
       this.rendererSession = args.rendererSession;
       this.rendererId = args.rendererId;
       this.currentSessionId = args.currentSessionId;
+      this.moderatorConnectionId = args.moderatorConnectionId;
       this.status = null;
     }
 
@@ -41,11 +44,11 @@ class ExperienceRenderer {
 
     static fromDatabase(data: admin.firestore.DocumentData): ExperienceRenderer{
         const values = data.data();
-        console.log("ER - FromDatabase", values);
         const question = new ExperienceRenderer({
             rendererSession: values.rendererSession,
             currentSessionId: values.currentSessionId,
-            rendererId: values.rendererId
+            rendererId: values.rendererId,
+            moderatorConnectionId: values.moderatorConnectionId
         });
         return question;
       }

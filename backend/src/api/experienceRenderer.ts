@@ -8,20 +8,26 @@ const collectionRoomName = "renderer_room_name_";
 
 class ExperienceRendererAPI {
   static async create(roomName: string, sessionId: string): Promise<any>{
-    const result = await OT.createRender(roomName);
-    const { id: rendererId } = result;
-    const experienceRendererEntity = new ExperienceRenderer({
-        rendererSession: sessionId,
-        rendererId,
-        currentSessionId: sessionId
-    });
-    const db = Firestore.getInstance();
-    // todo add EXP REND 
-    // TODO add renderer_{id} and renderer_room_name_{roomName}
-    await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set(experienceRendererEntity.saveRendererToDatabase());
-    await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).set(experienceRendererEntity.saveRendererRoomNameToDatabase());
-    // save instance on Firestore
-    return result;
+      try {
+        const result = await OT.createRender(roomName);
+        const {sessionId: rendererSession, id: rendererId} = result;
+        const experienceRendererEntity = new ExperienceRenderer({
+            rendererSession,
+            rendererId,
+            currentSessionId: sessionId
+        });
+        console.log("experienceRendererEntity", experienceRendererEntity);
+        const db = Firestore.getInstance();
+        // todo add EXP REND 
+        // TODO add renderer_{id} and renderer_room_name_{roomName}
+        await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set(experienceRendererEntity.saveRendererToDatabase());
+        await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).set(experienceRendererEntity.saveRendererRoomNameToDatabase());
+        // save instance on Firestore
+        return result;
+      } catch (err){
+          return err;
+      }
+    
   }
 
   static async destroy(rendererId: string): Promise<any>{
@@ -33,16 +39,34 @@ class ExperienceRendererAPI {
   }
 
   static async handleStartedStatus(rendererId: string): Promise<any>{
-    // here I need to get sessionId from Firestore based on rendererId
     const db = Firestore.getInstance();
-    const doc = await db.collection(`${collectionName}${rendererId}`).doc(`${rendererId}`).get();
-    // I should get the sessionID fro here and send a signal +  I need to start the actual renderer
-    if(!doc.exists) {
-        return;
+    try {
+        const doc =  await db.collection(`${collectionName}${rendererId}`).doc(rendererId).get();
+        if (!doc.exists) {
+            console.log("handleStartedStatus - Doc not exists");
+            return;
+        }
+        const rendererInstance = ExperienceRenderer.fromDatabase(doc);
+        if (rendererInstance) {
+            const archive = await OT.startArchive(rendererInstance.rendererSession);
+            if (archive) {
+                await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set({archiveId: archive.id});
+                // TODO send signal, I need connectionId
+                OT.sendRendererStartStatuts(rendererInstance.currentSessionId, rendererInstance.moderatorConnectionId);
+            }
+     
+        }
+    } catch (err) {
+        console.log("handleStartedStatus", err);
+        return err;
     }
-    /* const foundQuestion = Question.fromDatabase(doc);
-    const foundVoter = foundQuestion.voters.find((v) => v.id === voter.id);
-    const {currentSessionId} = rendererData; */
+    
+
+  }
+
+  static async listRenderers(): Promise<any>{
+    const result = await OT.listRenderers();
+    return result;
   }
 
 }
