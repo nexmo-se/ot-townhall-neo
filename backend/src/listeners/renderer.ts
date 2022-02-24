@@ -34,36 +34,24 @@ export default class RendererListener {
   static async status(req: Request, res: Response): Promise<void> {
     // webhook status
     try {
-
-        const { sessionId, status, id } = req.body;
+        console.log("status", req.body);
+        const { sessionId: rendererSession, status, id } = req.body;
         console.log("status", status);
         if (status === "started") {
-            const data = await ExperienceRenderer.handleStartedStatus(id); 
-          /* for (const [key, value] of Object.entries(sessions)) {
-            for (const [key_e, value_e] of Object.entries(value)) {
-              if (value_e === id) {
-                sessionToSignal = sessions[key].sessionId;
-              }
-            }
-          }
-          const response = await opentok.initiateArchiving(sessionId);
-          console.log(response);
-          const archiveId = response.id;
-          const renderedSession = response.sessionId;
-          if (response.status === "started") {
-            const signalResponse = await opentok.signal(
-              sessionToSignal,
-              `${archiveId}:${renderedSession}`
-            );
-          } */
+            await ExperienceRenderer.handleStartedStatus(id, rendererSession); 
         }
         if (status === "stopped") {
           console.log("stopped render");
+          await ExperienceRenderer.handleStoppedStatus(id); 
         }
+        if (status === "failed") {
+            console.log("failed render");
+            await ExperienceRenderer.handleFailedStatus(id); 
+          }
         res.status(200).send("OK");
       } catch (error) {
         console.log("Renderer Status", error);
-        res.status(500).send({ message: error });
+        res.status(200).send("OK");
       }
     }
 

@@ -14,7 +14,8 @@ class ExperienceRendererAPI {
         const experienceRendererEntity = new ExperienceRenderer({
             rendererSession,
             rendererId,
-            currentSessionId: sessionId
+            currentSessionId: sessionId,
+            roomName
         });
         console.log("experienceRendererEntity", experienceRendererEntity);
         const db = Firestore.getInstance();
@@ -25,20 +26,26 @@ class ExperienceRendererAPI {
         // save instance on Firestore
         return result;
       } catch (err){
+        console.log("[experienceRenderer - create] - Err", err);
           return err;
       }
     
   }
 
   static async destroy(rendererId: string): Promise<any>{
-    const result = await OT.deleteRender(rendererId);
-    const db = Firestore.getInstance();
-    await db.collection(`${collectionName}${rendererId}`).doc(rendererId).delete();
-    // destroy instance? 
-    return result;
+      try {
+        console.log("[experienceRenderer] Destroy rendererId", rendererId);
+        const result = await OT.deleteRender(rendererId);
+        // destroy instance? 
+        return result;
+      } catch (err) {
+          console.log("[experienceRenderer - destroy] - Err", err);
+        return err;
+      }
+    
   }
 
-  static async handleStartedStatus(rendererId: string): Promise<any>{
+  static async handleStartedStatus(rendererId: string, rendererSessionId: string): Promise<any>{
     const db = Firestore.getInstance();
     try {
         const doc =  await db.collection(`${collectionName}${rendererId}`).doc(rendererId).get();
@@ -46,12 +53,14 @@ class ExperienceRendererAPI {
             console.log("handleStartedStatus - Doc not exists");
             return;
         }
+        console.log("handleStartedStatus", rendererId);
+        await db.collection(`${collectionName}${rendererId}`).doc(rendererId).update({status: "started"});
         const rendererInstance = ExperienceRenderer.fromDatabase(doc);
-        if (rendererInstance) {
-            const archive = await OT.startArchive(rendererInstance.rendererSession);
+        if (rendererInstance && rendererSessionId === rendererInstance.rendererSession) {
+            const archive = await OT.startArchive(rendererSessionId);
             if (archive) {
-                await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set({archiveId: archive.id});
-                // TODO send signal, I need connectionId
+                await db.collection(`${collectionName}${rendererId}`).doc(rendererId).update({archiveId: archive.id});
+                await db.collection(`${collectionRoomName}${rendererInstance.roomName}`).doc(rendererInstance.currentSessionId).update({archiveId: archive.id});
                 OT.sendRendererStartStatuts(rendererInstance.currentSessionId, rendererInstance.moderatorConnectionId);
             }
      
@@ -60,8 +69,36 @@ class ExperienceRendererAPI {
         console.log("handleStartedStatus", err);
         return err;
     }
-    
+  }
 
+  static async handleStoppedStatus(rendererId: string): Promise<any>{
+    const db = Firestore.getInstance();
+    try {
+        const doc =  await db.collection(`${collectionName}${rendererId}`).doc(rendererId).get();
+        if (!doc.exists) {
+            console.log("handleStartedStatus - Doc not exists");
+            return;
+        }
+        const rendererInstance = ExperienceRenderer.fromDatabase(doc);
+        console.log("rendererInstance", rendererInstance);
+        // todo this should update the room name collection and delete this
+        await db.collection(`${collectionRoomName}${rendererInstance.roomName}`).doc(rendererInstance.currentSessionId).update({status: "stopped"});
+        await db.collection(`${collectionName}${rendererId}`).doc(rendererId).delete();
+    } catch (err) {
+        console.log("handleStoppedStatus", err);
+        return err;
+    }
+  }
+
+  static async handleFailedStatus(rendererId: string): Promise<any>{
+    const db = Firestore.getInstance();
+    try {
+        // todo this should update the room name collection and delete this
+        await db.collection(`${collectionName}${rendererId}`).doc(rendererId).update({status: "failed"});
+    } catch (err) {
+        console.log("handleFailedStatus", err);
+        return err;
+    }
   }
 
   static async listRenderers(): Promise<any>{
