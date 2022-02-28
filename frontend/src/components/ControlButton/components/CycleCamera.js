@@ -14,6 +14,7 @@ interface CycleCameraProps extends BaseProps {
 
 function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
   const [countCamera, setCountCamera] = useState<number>(1);
+  const domCameraContainer = document.getElementById("cameraContainer");
 
   function handleClick () {
     try {
@@ -40,7 +41,7 @@ function CycleCameraButton ({ publisher, ...props }: CycleCameraProps) {
     []
   )
 
-  if (countCamera === 1) return null;
+  if (countCamera === 1 || (domCameraContainer && domCameraContainer.classList.contains("background-blur"))) return null
   else {
     return (
       <ControlButton

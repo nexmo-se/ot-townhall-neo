@@ -67,7 +67,7 @@ export default function SesisonProvider ({
       function getContainerID({ user, videoType }: IGetContainerID){
         if(user.role === "moderator" && videoType === "camera") return subscriberContainer.moderator ?? "moderatorContainer";
         else if(user.role === "moderator" && videoType === "screen") return subscriberContainer.screen ?? "cameraContainer";
-        else if(user.role === "moderator" && videoType === "custom") return subscriberContainer.screen ?? "cameraContainer";
+        else if(user.role === "moderator" && videoType === "custom") return subscriberContainer.moderator ?? "moderatorContainer";
         else if(videoType === "camera") return subscriberContainer.camera ?? "cameraContainer";
         else if(videoType === "screen") return subscriberContainer.screen ?? "cameraContainer";
         else return subscriberContainer.custom ?? "cameraContainer";

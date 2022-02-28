@@ -8,7 +8,6 @@ import useSession from 'hooks/session';
 import BackgroundBlurButton from 'components/BackgroundBlurButton';
 
 import * as VideoEffects from '@vonage/video-effects';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 const { BackgroundBlurEffect } = VideoEffects;
 
@@ -34,6 +33,7 @@ function BackgroundBlur({
   const backgroundBlur = React.useRef(null);
   const localMediaTrack = React.useRef(null);
   const currentDeviceId = React.useRef(null);
+  const domCameraContainer = document.getElementById("cameraContainer");
 
   const getUserMedia = async () => {
     try {
@@ -66,6 +66,8 @@ function BackgroundBlur({
         localMediaTrack.current
       );
 
+      domCameraContainer.classList.add("background-blur");
+
       if (connected && session && me) {
         await publish({
           session,
@@ -84,6 +86,8 @@ function BackgroundBlur({
 
       await unpublish({ session: session });
 
+      domCameraContainer.classList.remove("background-blur");
+
       if (connected && session && me) {
         await publish({
           session,
@@ -96,22 +100,12 @@ function BackgroundBlur({
     }
   }
 
-  if (isBackgroundLoading) {
-    return (
-      <CircularProgress
-        style={{
-          marginRight: 12,
-          marginLeft: 4
-        }}
-      />
-    );
-  }
-
   return (
     <BackgroundBlurButton
       style={{ marginRight: 8 }}
       onClick={handleBackgroundBlurEffectClick}
       hasBackgroundBlurEffect={hasBackgroundBlurEffect}
+      isBackgroundBlurLoading={isBackgroundLoading}
     />
   );
 }
