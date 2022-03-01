@@ -1,33 +1,41 @@
 // @flow
-import React from "react";
-import User from "entities/user";
-import { Publisher } from "@opentok/client";
+import React from 'react';
+import User from 'entities/user';
+import { Publisher } from '@opentok/client';
 
-import usePublisher from "hooks/publisher";
-import useSession from "hooks/session";
+import usePublisher from 'hooks/publisher';
+import useSession from 'hooks/session';
 
-import RecordButton from "../RecordButton";
-import LiveParticipantItem from "../LiveParticipantItem";
-import ShareScreenButton from "components/ShareScreenButton";
-import ControlButton from "components/ControlButton";
+import RecordButton from '../RecordButton';
+import ExperienceRendererButton from '../ExperienceRendererButton';
+import LiveParticipantItem from '../LiveParticipantItem';
+import ShareScreenButton from 'components/ShareScreenButton';
+import ControlButton from 'components/ControlButton';
 
 interface ModeratorParticipantItemProps {
-  user: User,
-  publisher: Publisher
+  user: User;
+  publisher: Publisher;
 }
 
-function ModeratorParticipantItem ({ user, publisher }: ModeratorParticipantItemProps) {
+function ModeratorParticipantItem({
+  user,
+  publisher
+}: ModeratorParticipantItemProps) {
   const [sharing, setSharing] = React.useState<boolean>(false);
-  const { publisher: screenPublisher, publish, unpublish } = usePublisher({ containerID: "cameraContainer" });
+  const {
+    publisher: screenPublisher,
+    publish,
+    unpublish
+  } = usePublisher({ containerID: 'cameraContainer' });
   const { session } = useSession();
 
-  async function handleShareScreenClick () {
+  async function handleShareScreenClick() {
     if (session && !sharing) {
-      const screenUser = new User({ name: "sharescreen", role: "sharescreen" });
-      await publish({ 
-        session: session, 
+      const screenUser = new User({ name: 'sharescreen', role: 'sharescreen' });
+      await publish({
+        session: session,
         user: screenUser,
-        extraData: { videoSource: "screen" }
+        extraData: { videoSource: 'screen' }
       });
       setSharing(true);
     } else if (session && sharing) {
@@ -36,45 +44,41 @@ function ModeratorParticipantItem ({ user, publisher }: ModeratorParticipantItem
     }
   }
 
-  const streamCreatedListener = React.useCallback(
-    () => setSharing(true),
-    []
-  );
+  const streamCreatedListener = React.useCallback(() => setSharing(true), []);
 
-  const streamDestroyedListener = React.useCallback(
-    async () => {
-      await unpublish({ session: session });
-      setSharing(false)
-    },
-    [session, unpublish]
-  );
+  const streamDestroyedListener = React.useCallback(async () => {
+    await unpublish({ session: session });
+    setSharing(false);
+  }, [session, unpublish]);
 
-  React.useEffect(
-    () => {
-      if (screenPublisher) screenPublisher.on("streamCreated", streamCreatedListener);
-      if (screenPublisher) screenPublisher.on("streamDestroyed", streamDestroyedListener);
+  React.useEffect(() => {
+    if (screenPublisher)
+      screenPublisher.on('streamCreated', streamCreatedListener);
+    if (screenPublisher)
+      screenPublisher.on('streamDestroyed', streamDestroyedListener);
 
-      return function cleanup () {
-        if (screenPublisher) screenPublisher.off("streamCreated", streamCreatedListener);
-        if (screenPublisher) screenPublisher.off("streamDestroyed", streamDestroyedListener);
-      }
-    },
-    [screenPublisher, streamCreatedListener, streamDestroyedListener]
-  )
+    return function cleanup() {
+      if (screenPublisher)
+        screenPublisher.off('streamCreated', streamCreatedListener);
+      if (screenPublisher)
+        screenPublisher.off('streamDestroyed', streamDestroyedListener);
+    };
+  }, [screenPublisher, streamCreatedListener, streamDestroyedListener]);
 
   return (
-    <LiveParticipantItem 
+    <LiveParticipantItem
       user={user}
       publisher={publisher}
       withAvatar={false}
-      additionalControls={(
+      additionalControls={
         <>
-          <RecordButton 
+          <RecordButton size={32} fontSize={16} style={{ marginRight: 8 }} />
+          <ExperienceRendererButton
             size={32}
             fontSize={16}
             style={{ marginRight: 8 }}
           />
-          <ShareScreenButton 
+          <ShareScreenButton
             size={32}
             fontSize={16}
             style={{ marginRight: 8 }}
@@ -88,8 +92,8 @@ function ModeratorParticipantItem ({ user, publisher }: ModeratorParticipantItem
             style={{ marginRight: 8, marginBottom: 8 }}
           />
         </>
-      )}
+      }
     />
-  )
+  );
 }
-export default ModeratorParticipantItem
+export default ModeratorParticipantItem;

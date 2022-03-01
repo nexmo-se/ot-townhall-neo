@@ -64,4 +64,19 @@ export default class RendererListener {
             res.status(500).send({ message: error });
           } 
     }
+
+    static async retrieveArchive(req: Request, res: Response): Promise<void> {
+        try {
+            const { roomname } = req.params;
+            const { sessionId } = req.query;
+            if (roomname && sessionId) {
+                const data = await ExperienceRenderer.retrieveArchive(roomname, sessionId.toString());
+                res.status(200).send(data);
+            }
+            
+        } catch (error) {
+            console.log("Retrieve Archive", error);
+            res.status(500).send({ message: error });
+          } 
+    }
 }
