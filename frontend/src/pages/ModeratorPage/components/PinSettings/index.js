@@ -1,10 +1,10 @@
 // @flow
-import React from "react";
-import { useSettings } from "../SettingsProvider";
+import React from 'react';
+import { useSettings } from '../SettingsProvider';
 
-import LoginTypeDropdown from "../LoginTypeDropdown";
-import TextInput from "components/TextInput";
-import { Grid } from "@material-ui/core";
+import LoginTypeDropdown from '../LoginTypeDropdown';
+import TextInput from 'components/TextInput';
+import { Grid } from '@material-ui/core';
 
 function PinSettings() {
   const {
@@ -24,13 +24,16 @@ function PinSettings() {
     setModeratorPin
   } = useSettings();
 
-  function handleAllowRaiseHandChange (e: any) {
+  function handleAllowRaiseHandChange(e: any) {
     setAllowRaiseHand(e.target.checked);
   }
 
   return (
     <>
-      <p>System will set default PIN for everyone. You can make it yours by setting it up here</p>
+      <p>
+        System will set default PIN for everyone. You can make it yours by
+        setting it up here
+      </p>
       <p>
         <strong>Note: </strong>
         Leave it blank if you don't wish to change PIN.
@@ -43,7 +46,7 @@ function PinSettings() {
           />
         </Grid>
         <Grid xs item>
-          <TextInput 
+          <TextInput
             label="Presenter PIN"
             text={presenterPin}
             onChange={setPresenterPin}
@@ -53,7 +56,7 @@ function PinSettings() {
           />
         </Grid>
       </Grid>
-      
+
       <Grid spacing={2} container>
         <Grid xs={4} item>
           <LoginTypeDropdown
@@ -62,7 +65,7 @@ function PinSettings() {
           />
         </Grid>
         <Grid xs item>
-          <TextInput 
+          <TextInput
             label="Moderator PIN"
             text={moderatorPin}
             onChange={setModeratorPin}
@@ -81,7 +84,7 @@ function PinSettings() {
           />
         </Grid>
         <Grid xs item>
-          <TextInput 
+          <TextInput
             label="Participant PIN"
             text={participantPin}
             onChange={setParticipantPin}
@@ -90,15 +93,15 @@ function PinSettings() {
             autoComplete="off"
           />
           <div className="Vlt-checkbox">
-            <label for="allow-raise-hand">
-              <span class="Vlt-checkbox__button">
+            <label htmlFor="allow-raise-hand">
+              <span className="Vlt-checkbox__button">
                 <input
                   type="checkbox"
                   id="allow-raise-hand"
                   onChange={handleAllowRaiseHandChange}
                   checked={allowRaiseHand}
                 />
-                <span class="Vlt-checkbox__icon"></span>
+                <span className="Vlt-checkbox__icon"></span>
               </span>
               Allow participants to raise hand
             </label>
@@ -106,7 +109,7 @@ function PinSettings() {
         </Grid>
       </Grid>
     </>
-  )
+  );
 }
 
 export default PinSettings;

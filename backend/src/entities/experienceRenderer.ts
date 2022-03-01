@@ -6,7 +6,8 @@ interface IExperienceRenderer {
     currentSessionId: string;
     roomName: string;
     moderatorConnectionId?: string;
-    
+    archiveId?: string;
+    status?: string;
   }
 
 
@@ -17,6 +18,7 @@ class ExperienceRenderer {
     moderatorConnectionId: string;
     roomName: string;
     status: string | null;
+    archiveId: string;
   
     constructor(args: IExperienceRenderer){
       this.rendererSession = args.rendererSession;
@@ -24,7 +26,8 @@ class ExperienceRenderer {
       this.currentSessionId = args.currentSessionId;
       this.moderatorConnectionId = args.moderatorConnectionId;
       this.roomName = args.roomName;
-      this.status = null;
+      this.status = args.status;
+      this.archiveId = args.archiveId;
     }
 
     saveRendererToDatabase(): any {
@@ -39,25 +42,25 @@ class ExperienceRenderer {
 
     saveRendererRoomNameToDatabase(): any {
         return {
-            /* rendererId: this.rendererId,
-            status: this.status, */
             rendererSession: this.rendererSession,
             currentSessionId: this.currentSessionId,
             rendererId: this.rendererId,
-            roomName: this.roomName
+            roomName: this.roomName,
         };
     }
 
     static fromDatabase(data: admin.firestore.DocumentData): ExperienceRenderer{
         const values = data.data();
-        const question = new ExperienceRenderer({
+        console.log("[retrieveArchive] - fromDatabase", values);
+        const renderer = new ExperienceRenderer({
             rendererSession: values.rendererSession,
             currentSessionId: values.currentSessionId,
             rendererId: values.rendererId,
             moderatorConnectionId: values.moderatorConnectionId,
-            roomName: values.roomName
+            roomName: values.roomName,
+            archiveId: values.archiveId,
         });
-        return question;
+        return renderer;
       }
   }
 

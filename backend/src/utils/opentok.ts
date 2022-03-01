@@ -84,6 +84,18 @@ class OT{
     });
   }
 
+  static async getArchive(sessionId: string): Promise<Archive[]> {
+    return new Promise((resolve, reject) => {
+        //todo need to use listArchive by sessionId
+        OT.getInstance().listArchives({ sessionId }, (err: any, archives: Archive[]) => {
+            if (err) {
+              console.log(err);
+              resolve([]);
+            } else resolve(archives);
+          });
+    });
+  }
+
   static createSessionandToken(): Promise<any> {
     return new Promise((resolve, reject) => {
       OT.getInstance().createSession({ mediaMode: "routed" }, function (error, session) {
@@ -177,6 +189,8 @@ class OT{
           return e;
         }
   }
+
+  
 
   static async sendSignal(type: string, data: any, sessionId: string, connectionId?: string): Promise<any> {
       const toSend = {type,data};

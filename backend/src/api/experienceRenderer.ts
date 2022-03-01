@@ -9,22 +9,30 @@ const collectionRoomName = "renderer_room_name_";
 class ExperienceRendererAPI {
   static async create(roomName: string, sessionId: string): Promise<any>{
       try {
-        const result = await OT.createRender(roomName);
-        const {sessionId: rendererSession, id: rendererId} = result;
-        const experienceRendererEntity = new ExperienceRenderer({
-            rendererSession,
-            rendererId,
-            currentSessionId: sessionId,
-            roomName
-        });
-        console.log("experienceRendererEntity", experienceRendererEntity);
-        const db = Firestore.getInstance();
-        // todo add EXP REND 
-        // TODO add renderer_{id} and renderer_room_name_{roomName}
-        await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set(experienceRendererEntity.saveRendererToDatabase());
-        await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).set(experienceRendererEntity.saveRendererRoomNameToDatabase());
-        // save instance on Firestore
-        return result;
+          // todo here I should check if a renderer exists
+          const db = Firestore.getInstance();
+          const doc =  await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).get();
+          if (!doc.exists) {
+            const result = await OT.createRender(roomName);
+            const {sessionId: rendererSession, id: rendererId} = result;
+            const experienceRendererEntity = new ExperienceRenderer({
+                rendererSession,
+                rendererId,
+                currentSessionId: sessionId,
+                roomName,
+            });
+            console.log("experienceRendererEntity", experienceRendererEntity);
+            
+            // TODO add moderator connectionId
+            await db.collection(`${collectionName}${rendererId}`).doc(rendererId).set(experienceRendererEntity.saveRendererToDatabase());
+            await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).set(experienceRendererEntity.saveRendererRoomNameToDatabase());
+            // save instance on Firestore
+            return result;
+          }
+          return null;
+          /* const rendererInstance = ExperienceRenderer.fromDatabase(doc);
+          const archive = await OT.startArchive(rendererInstance.rendererSession);
+          return rendererInstance; */
       } catch (err){
         console.log("[experienceRenderer - create] - Err", err);
           return err;
@@ -35,8 +43,10 @@ class ExperienceRendererAPI {
   static async destroy(rendererId: string): Promise<any>{
       try {
         console.log("[experienceRenderer] Destroy rendererId", rendererId);
+        const db = Firestore.getInstance();
         const result = await OT.deleteRender(rendererId);
-        // destroy instance? 
+        // todo destroy instance and delete 
+        /* await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).delete(); */
         return result;
       } catch (err) {
           console.log("[experienceRenderer - destroy] - Err", err);
@@ -51,7 +61,7 @@ class ExperienceRendererAPI {
         const doc =  await db.collection(`${collectionName}${rendererId}`).doc(rendererId).get();
         if (!doc.exists) {
             console.log("handleStartedStatus - Doc not exists");
-            return;
+            return {};
         }
         console.log("handleStartedStatus", rendererId);
         await db.collection(`${collectionName}${rendererId}`).doc(rendererId).update({status: "started"});
@@ -77,7 +87,7 @@ class ExperienceRendererAPI {
         const doc =  await db.collection(`${collectionName}${rendererId}`).doc(rendererId).get();
         if (!doc.exists) {
             console.log("handleStartedStatus - Doc not exists");
-            return;
+            return {};
         }
         const rendererInstance = ExperienceRenderer.fromDatabase(doc);
         console.log("rendererInstance", rendererInstance);
@@ -105,6 +115,28 @@ class ExperienceRendererAPI {
     const result = await OT.listRenderers();
     return result;
   }
+
+  static async retrieveArchive(roomName: string, sessionId: string): Promise<any>{
+      try {
+        const db = Firestore.getInstance();
+        console.log("[retrieveArchive] - params", roomName, sessionId);
+        const doc =  await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).get();
+        if (!doc.exists) {
+            console.log("retrieveArchive - Doc not exists");
+            return {};
+        }
+        const rendererInstance = ExperienceRenderer.fromDatabase(doc);
+        const archives = await OT.getArchive(rendererInstance.rendererSession);
+        console.log("[retrieveArchive] - archives", archives);
+        const filteredArchives = archives.filter((archive) => archive.status === "started" || archive.status === "paused");
+        return filteredArchives;
+      } catch (error) {
+        console.log("retrieveArchive", error);
+        return error;
+      }
+  }
+
+  // todo difference between retrieveArchive and retrieveActiveArchive
 
 }
 export default ExperienceRendererAPI;
