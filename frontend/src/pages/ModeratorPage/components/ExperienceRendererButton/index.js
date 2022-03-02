@@ -32,6 +32,7 @@ function ExperienceRenderer({ ...props }: IExperienceRenderer) {
   async function handleClick() {
     setDisabled(true);
     if (isRecording && recording) {
+      console.log('Stop Recording', recording);
       await ExperienceRendererAPI.stopRecording(recording.id);
       setIsRecording(false);
       setRecording(undefined);
@@ -40,6 +41,7 @@ function ExperienceRenderer({ ...props }: IExperienceRenderer) {
         mSession.session,
         tenant
       );
+      console.log('start experience', recording);
       setIsRecording(true);
       setRecording(recording);
     }
