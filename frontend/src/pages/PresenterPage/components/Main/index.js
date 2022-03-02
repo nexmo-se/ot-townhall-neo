@@ -11,6 +11,7 @@ import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
 import ShareScreen from "../ShareScreen";
+import BackgroundBlur from "../BackgroundBlur";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import FullPageLoading from "components/FullPageLoading";
 import VideoHoverContainer from "components/VideoHoverContainer"
@@ -65,7 +66,8 @@ function Main () {
         setPublishFailed(false);
       }
     },
-    [connected, session, me, publishCamera, publishErrorListener]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [connected, session, me, publishErrorListener]
   );
 
   return (
@@ -82,6 +84,11 @@ function Main () {
                   unpublish={unpublish}
                 >
                   <ShareScreen />
+                  <BackgroundBlur
+                    publisher={cameraPublisher}
+                    unpublish={unpublish}
+                    publish={publishCamera}
+                  />
                 </VideoControl>
               </VideoHoverContainer>
             ): null
