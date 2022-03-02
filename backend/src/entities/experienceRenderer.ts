@@ -5,7 +5,6 @@ interface IExperienceRenderer {
     rendererId: string;
     currentSessionId: string;
     roomName: string;
-    moderatorConnectionId?: string;
     archiveId?: string;
     status?: string;
   }
@@ -15,7 +14,6 @@ class ExperienceRenderer {
     rendererSession: string;
     rendererId: string;
     currentSessionId: string;
-    moderatorConnectionId: string;
     roomName: string;
     status: string | null;
     archiveId: string;
@@ -24,10 +22,8 @@ class ExperienceRenderer {
       this.rendererSession = args.rendererSession;
       this.rendererId = args.rendererId;
       this.currentSessionId = args.currentSessionId;
-      this.moderatorConnectionId = args.moderatorConnectionId;
       this.roomName = args.roomName;
       this.status = args.status;
-      this.archiveId = args.archiveId;
     }
 
     saveRendererToDatabase(): any {
@@ -56,7 +52,6 @@ class ExperienceRenderer {
             rendererSession: values.rendererSession,
             currentSessionId: values.currentSessionId,
             rendererId: values.rendererId,
-            moderatorConnectionId: values.moderatorConnectionId,
             roomName: values.roomName,
             archiveId: values.archiveId,
         });

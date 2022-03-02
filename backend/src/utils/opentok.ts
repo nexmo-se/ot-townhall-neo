@@ -172,6 +172,7 @@ class OT{
 
   static async listRenderers(): Promise<any> {
     try {
+        console.log("[listRenderers]", config.apiKey);
         const axiosConfig = {
             method: "get",
             url: `https://api.opentok.com/v2/project/${config.apiKey}/render`,

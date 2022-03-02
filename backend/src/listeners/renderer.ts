@@ -58,9 +58,10 @@ export default class RendererListener {
     static async listRenderers(req: Request, res: Response): Promise<void> {
         try {
             const data = await ExperienceRenderer.listRenderers();
+            console.log("List Renderer Data", data);
             res.status(200).send(data);
         } catch (error) {
-            console.log("List Renderer", error);
+            console.log("List Renderer Err", error);
             res.status(500).send({ message: error });
           } 
     }
