@@ -29,7 +29,7 @@ function Main () {
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
-  const { publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
+  const { publish: publishCamera, unpublish: unpublishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<URLParamters>();
   const mStyles = useStyles();
 
@@ -86,7 +86,8 @@ function Main () {
         setPublishFailed(false);
       }
     },
-    [connected, session, me, publishCamera, publishErrorListener]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [connected, session, me, publishErrorListener]
   );
 
   useEffect(
@@ -133,6 +134,8 @@ function Main () {
                   <ModeratorParticipantItem 
                     user={me}
                     publisher={cameraPublisher}
+                    unpublish={unpublishCamera}
+                    publish={publishCamera}
                   />
                 </>
               ): null}
