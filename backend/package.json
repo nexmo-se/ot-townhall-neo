@@ -8,8 +8,8 @@
     "lint": "eslint .",
     "copy-certs": "mkdir ./build/certs && cp -a ./src/certs/. ./build/certs/",
     "debug": "nodemon --inspect src/index.ts",
-    "start:dev": "nodemon",
-    "start:prod": "node -r dotenv/config build/index.js",
+    "start:dev": "NODE_ENV=development nodemon",
+    "start:prod": "NODE_ENV=production node -r dotenv/config build/index.js",
     "build": "rimraf ./build && tsc && yarn run copy-certs"
   },
   "devDependencies": {
