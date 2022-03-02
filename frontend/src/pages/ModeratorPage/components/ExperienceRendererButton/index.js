@@ -10,6 +10,7 @@ import useSession from 'hooks/session';
 import Dvr from '@material-ui/icons/Dvr';
 import StopIcon from '@material-ui/icons/Stop';
 import ControlButton from 'components/ControlButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 interface IExperienceRenderer {
   size: number;
@@ -22,6 +23,7 @@ interface IParam {
 
 function ExperienceRenderer({ ...props }: IExperienceRenderer) {
   const [isRecording, setIsRecording] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [recording, setRecording] =
     React.useState<ExperienceRendererEntity | void>();
   const [refreshStatus, setRefreshStatus] = React.useState<string>(uuid());
@@ -33,10 +35,13 @@ function ExperienceRenderer({ ...props }: IExperienceRenderer) {
     setDisabled(true);
     if (isRecording && recording) {
       console.log('Stop Recording', recording);
+      setIsLoading(true);
       await ExperienceRendererAPI.stopRecording(recording.id);
       setIsRecording(false);
       setRecording(undefined);
+      setIsLoading(false);
     } else {
+      setIsLoading(true);
       const recording = await ExperienceRendererAPI.startExperienceRenderer(
         mSession.session,
         tenant
@@ -44,6 +49,7 @@ function ExperienceRenderer({ ...props }: IExperienceRenderer) {
       console.log('start experience', recording);
       setIsRecording(true);
       setRecording(recording);
+      setIsLoading(false);
     }
     setRefreshStatus(uuid());
   }
@@ -76,12 +82,15 @@ function ExperienceRenderer({ ...props }: IExperienceRenderer) {
     fetchSatus();
   }, [mSession.session, refreshStatus, tenant]);
 
+  if (isLoading) {
+    return <CircularProgress {...props} />;
+  }
   return (
     <ControlButton
       {...props}
       disabled={disabled}
       active={isRecording}
-      tooltip={isRecording ? 'Stop Renderer' : 'Start Experience Renderer'}
+      tooltip={isRecording ? 'Stop Renderer' : 'Start Renderer'}
       onClick={handleClick}
     >
       {isRecording ? (
