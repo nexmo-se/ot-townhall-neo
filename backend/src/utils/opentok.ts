@@ -120,14 +120,20 @@ class OT{
   static async createRender(roomName: string): Promise<any> {
     try {
       const { sessionId, token, apiKey } = await this.getCredentials();
-  
+        
+      let rendererURL = "https://www.youtube.com/watch?v=h-ce3gPMsGc";
+      let statusURL = process.env.RENDERER_URL_DEVELOPMENT;
+      if (process.env.NODE_ENV !== "development") {
+        rendererURL = process.env.RENDERER_URL_PRODUCTION;
+        statusURL = `${process.env.RENDERER_URL_PRODUCTION}/api/v1/`;
+      }
+      console.log("[Create Renderer] - URLs", rendererURL, statusURL);
       const data = JSON.stringify({
-       //  url: `${process.env.RENDERER_URL_PRODUCTION}/${roomName}/ghostrider`,
-        url:"https://www.youtube.com/watch?v=h-ce3gPMsGc",
+        url: `${rendererURL}/${roomName}/ghostrider`,
         sessionId: sessionId,
         token: token,
         projectId: apiKey,
-        statusCallbackUrl: `${process.env.RENDERER_URL_PRODUCTION}/renderer/status`,
+        statusCallbackUrl: `${statusURL}renderer/status`,
       });
   
       const axiosConfig = {

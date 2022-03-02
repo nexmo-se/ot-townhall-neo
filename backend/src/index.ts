@@ -47,6 +47,7 @@ import AuthRouter from "./router/auth";
   
   app.listen(process.env.PORT, () => {
     console.log(`Express is listening on port: ${config.port || 2000}`);
+    console.log("NODE_ENV:", process.env.NODE_ENV);
   });
   
   app.use(ErrorHandler.handle);
