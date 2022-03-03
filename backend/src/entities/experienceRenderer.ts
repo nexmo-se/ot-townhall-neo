@@ -24,6 +24,7 @@ class ExperienceRenderer {
       this.currentSessionId = args.currentSessionId;
       this.roomName = args.roomName;
       this.status = args.status;
+      this.archiveId = args.archiveId;
     }
 
     saveRendererToDatabase(): any {
