@@ -22,7 +22,7 @@ function PresenterPage() {
 
   const handleLoggedIn = React.useCallback(async (): Promise<void> => {
     login(new User({ name: 'Ghost Rider', role: 'participant' }));
-    push(`/${tenant}/ghostrider`);
+    // push(`/${tenant}/ghostrider`);
   }, [login, push, tenant]);
 
   React.useEffect(() => {
