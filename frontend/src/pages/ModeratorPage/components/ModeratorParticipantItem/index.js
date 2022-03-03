@@ -1,50 +1,62 @@
 // @flow
-import React from "react";
-import User from "entities/user";
-import { Publisher } from "@opentok/client";
+import React from 'react';
+import User from 'entities/user';
+import { Publisher } from '@opentok/client';
 
-import usePublisher from "hooks/publisher";
-import useSession from "hooks/session";
+import usePublisher from 'hooks/publisher';
+import useSession from 'hooks/session';
 
-import RecordButton from "../RecordButton";
-import LiveParticipantItem from "../LiveParticipantItem";
-import ShareScreenButton from "components/ShareScreenButton";
-import ControlButton from "components/ControlButton";
-import BackgroundBlurButton from "components/BackgroundBlurButton";
+import RecordButton from '../RecordButton';
+import LiveParticipantItem from '../LiveParticipantItem';
+import ShareScreenButton from 'components/ShareScreenButton';
+import ControlButton from 'components/ControlButton';
+import BackgroundBlurButton from 'components/BackgroundBlurButton';
+import ExperienceRendererButton from '../ExperienceRendererButton';
 
 import * as VideoEffects from '@vonage/video-effects';
 
 const { BackgroundBlurEffect } = VideoEffects;
 
 interface ModeratorParticipantItemProps {
-  user: User,
-  publisher: Publisher,
-  unpublish: any,
-  publish: any
+  user: User;
+  publisher: Publisher;
+  unpublish: any;
+  publish: any;
 }
 
-function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: ModeratorParticipantItemProps) {
+function ModeratorParticipantItem({
+  user,
+  publisher,
+  unpublish,
+  publish
+}: ModeratorParticipantItemProps) {
   const [sharing, setSharing] = React.useState<boolean>(false);
-  const [hasbackgroundBlur, setHasBackgroundBlur] = React.useState<boolean>(false);
-  const [isBackgroundBlurLoading, setIsBackgroundBlurLoading] = React.useState<boolean>(false);
+  const [hasbackgroundBlur, setHasBackgroundBlur] =
+    React.useState<boolean>(false);
+  const [isBackgroundBlurLoading, setIsBackgroundBlurLoading] =
+    React.useState<boolean>(false);
 
-  const { publisher: screenPublisher, publish: screenPublish, unpublish: screenUnpublish } = usePublisher({ containerID: "cameraContainer" });
+  const {
+    publisher: screenPublisher,
+    publish: screenPublish,
+    unpublish: screenUnpublish
+  } = usePublisher({ containerID: 'cameraContainer' });
   const { connected, session } = useSession();
 
   const backgroundBlur = React.useRef(null);
   const localMediaTrack = React.useRef(null);
   const currentDeviceId = React.useRef(null);
 
-  const domCameraContainer = document.getElementById("cameraContainer");
+  const domCameraContainer = document.getElementById('cameraContainer');
 
   // Screen Sharing
-  async function handleShareScreenClick () {
+  async function handleShareScreenClick() {
     if (session && !sharing) {
-      const screenUser = new User({ name: "sharescreen", role: "sharescreen" });
+      const screenUser = new User({ name: 'sharescreen', role: 'sharescreen' });
       await screenPublish({
-        session: session, 
+        session: session,
         user: screenUser,
-        extraData: { videoSource: "screen" }
+        extraData: { videoSource: 'screen' }
       });
       setSharing(true);
     } else if (session && sharing) {
@@ -53,34 +65,29 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
     }
   }
 
-  const streamCreatedListener = React.useCallback(
-    () => setSharing(true),
-    []
-  );
+  const streamCreatedListener = React.useCallback(() => setSharing(true), []);
 
-  const streamDestroyedListener = React.useCallback(
-    async () => {
-      await screenUnpublish({ session: session });
-      setSharing(false)
-    },
-    [session, screenUnpublish]
-  );
+  const streamDestroyedListener = React.useCallback(async () => {
+    await screenUnpublish({ session: session });
+    setSharing(false);
+  }, [session, screenUnpublish]);
 
-  React.useEffect(
-    () => {
-      if (screenPublisher) screenPublisher.on("streamCreated", streamCreatedListener);
-      if (screenPublisher) screenPublisher.on("streamDestroyed", streamDestroyedListener);
+  React.useEffect(() => {
+    if (screenPublisher)
+      screenPublisher.on('streamCreated', streamCreatedListener);
+    if (screenPublisher)
+      screenPublisher.on('streamDestroyed', streamDestroyedListener);
 
-      return function cleanup () {
-        if (screenPublisher) screenPublisher.off("streamCreated", streamCreatedListener);
-        if (screenPublisher) screenPublisher.off("streamDestroyed", streamDestroyedListener);
-      }
-    },
-    [screenPublisher, streamCreatedListener, streamDestroyedListener]
-  )
+    return function cleanup() {
+      if (screenPublisher)
+        screenPublisher.off('streamCreated', streamCreatedListener);
+      if (screenPublisher)
+        screenPublisher.off('streamDestroyed', streamDestroyedListener);
+    };
+  }, [screenPublisher, streamCreatedListener, streamDestroyedListener]);
 
   // Background Blur
-  async function handleBackgroundBlurEffectClick () {
+  async function handleBackgroundBlurEffectClick() {
     if (!hasbackgroundBlur) {
       setIsBackgroundBlurLoading(true);
       await unpublish({ session });
@@ -99,7 +106,7 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
         localMediaTrack.current
       );
 
-      domCameraContainer.classList.add("background-blur");
+      domCameraContainer.classList.add('background-blur');
 
       if (connected && session && user) {
         await publish({
@@ -111,8 +118,7 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
 
       setHasBackgroundBlur(true);
       setIsBackgroundBlurLoading(false);
-    }
-    else {
+    } else {
       setIsBackgroundBlurLoading(true);
 
       backgroundBlur.current.stopEffect();
@@ -120,7 +126,7 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
 
       await unpublish({ session: session });
 
-      domCameraContainer.classList.remove("background-blur")
+      domCameraContainer.classList.remove('background-blur');
 
       if (connected && session && user) {
         await publish({
@@ -136,13 +142,14 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
   }
 
   return (
-    <LiveParticipantItem 
+    <LiveParticipantItem
       user={user}
       publisher={publisher}
       withAvatar={false}
-      additionalControls={(
+      additionalControls={
         <>
-          <RecordButton 
+          <RecordButton size={32} fontSize={16} style={{ marginRight: 8 }} />
+          <ExperienceRendererButton
             size={32}
             fontSize={16}
             style={{ marginRight: 8 }}
@@ -155,7 +162,7 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
             hasBackgroundBlurEffect={hasbackgroundBlur}
             isBackgroundBlurLoading={isBackgroundBlurLoading}
           />
-          <ShareScreenButton 
+          <ShareScreenButton
             size={32}
             fontSize={16}
             style={{ marginRight: 8 }}
@@ -169,8 +176,8 @@ function ModeratorParticipantItem ({ user, publisher, unpublish, publish }: Mode
             style={{ marginRight: 8, marginBottom: 8 }}
           />
         </>
-      )}
+      }
     />
-  )
+  );
 }
-export default ModeratorParticipantItem
+export default ModeratorParticipantItem;

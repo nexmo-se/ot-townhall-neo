@@ -14,6 +14,7 @@ import MongoDBService from "./utils/mongodb";
 
 import QuestionRouter from "./router/question";
 import RecordingRouter from "./router/recording";
+import RendererRouter from "./router/renderer";
 import RoomRouter from "./router/room";
 import AMARouter from "./router/ama";
 import PollRouter from "./router/poll";
@@ -37,6 +38,7 @@ import AuthRouter from "./router/auth";
   
   app.use("/questions", QuestionRouter);
   app.use("/recordings", RecordingRouter);
+  app.use("/renderer", RendererRouter);
   app.use("/rooms", RoomRouter);
   app.use("/ama", AMARouter);
   app.use("/pollings", PollRouter);
@@ -45,6 +47,7 @@ import AuthRouter from "./router/auth";
   
   app.listen(process.env.PORT, () => {
     console.log(`Express is listening on port: ${config.port || 2000}`);
+    console.log("NODE_ENV:", process.env.NODE_ENV);
   });
   
   app.use(ErrorHandler.handle);
