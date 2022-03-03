@@ -37,7 +37,7 @@ function RecordButton({ ...props }: IRecordButton){
   }
   
   React.useEffect(() => {
-    async function fetchSatus(){
+    async function fetchStatus(){
       setDisabled(true);
       if(mSession.session){
         const { sessionId: sessionID } = mSession.session;
@@ -56,7 +56,7 @@ function RecordButton({ ...props }: IRecordButton){
       setDisabled(false);
     }
     
-    fetchSatus();
+    fetchStatus();
   }, [ mSession.session, refreshStatus ]);
   
   React.useEffect(() => {

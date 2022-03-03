@@ -7,8 +7,9 @@
   "scripts": {
     "lint": "eslint .",
     "copy-certs": "mkdir ./build/certs && cp -a ./src/certs/. ./build/certs/",
-    "start:dev": "nodemon",
-    "start:prod": "node -r dotenv/config build/index.js",
+    "debug": "nodemon --inspect src/index.ts",
+    "start:dev": "NODE_ENV=development nodemon",
+    "start:prod": "NODE_ENV=production node -r dotenv/config build/index.js",
     "build": "rimraf ./build && tsc && yarn run copy-certs"
   },
   "devDependencies": {
@@ -21,6 +22,7 @@
     "@babel/preset-flow": "7.8.3",
     "@types/cors": "2.8.8",
     "@types/express": "4.17.8",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/lodash": "^4.14.164",
     "@types/mongodb": "^3.5.32",
     "@types/morgan": "1.9.2",
@@ -46,6 +48,7 @@
     "@babel/register": "7.8.3",
     "@hapi/joi": "17.1.0",
     "@types/luxon": "^1.25.0",
+    "axios": "^0.26.0",
     "core-js": "3.6.5",
     "cors": "2.8.5",
     "crypto": "1.0.1",
@@ -55,6 +58,7 @@
     "express-validation": "1.0.3",
     "firebase-admin": "9.1.0",
     "joi": "14.3.1",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "luxon": "^1.25.0",
     "moment": "2.27.0",
