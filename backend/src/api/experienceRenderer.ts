@@ -45,8 +45,18 @@ class ExperienceRendererAPI {
     try {
       console.log("[experienceRenderer] Destroy rendererId", rendererId);
       const db = Firestore.getInstance();
+      const doc = await db
+        .collection(`${collectionName}${rendererId}`)
+        .doc(rendererId)
+        .get();
+      if (!doc.exists) {
+        console.log("destroy - Doc not exists");
+        return null;
+      }
+      const rendererInstance = ExperienceRenderer.fromDatabase(doc);
+      console.log("[destroy] - rendererInstance", rendererInstance);
+      await OT.stopArchive(rendererInstance.archiveId);
       const result = await OT.deleteRender(rendererId);
-      // todo destroy instance and delete
       /* await db.collection(`${collectionRoomName}${roomName}`).doc(sessionId).delete(); */
       return result;
     } catch (err) {
