@@ -72,10 +72,11 @@ class OT{
               reject(err);
             } else {
                 // @ts-ignore
-                archive.stop(archiveId, function (error, archiveStopped) {
+                archive.stop(function (error, archiveStopped) {
                     if (error) {
                       reject(error);
                     } else {
+                        console.log("[stopArchive] - Archive Stopped", archiveStopped);
                       resolve(archiveStopped);
                     }
                   });
@@ -125,11 +126,11 @@ class OT{
       let statusURL = process.env.RENDERER_URL_DEVELOPMENT;
       if (process.env.NODE_ENV !== "development") {
         rendererURL = process.env.RENDERER_URL_PRODUCTION;
-        statusURL = `${process.env.RENDERER_URL_PRODUCTION}/api/v1/`;
+        statusURL = `${process.env.RENDERER_URL_PRODUCTION}api/v1/`;
       }
       console.log("[Create Renderer] - URLs", rendererURL, statusURL);
       const data = JSON.stringify({
-        url: `${rendererURL}/${roomName}/ghostrider`,
+        url: `${rendererURL}${roomName}/ghostrider`,
         sessionId: sessionId,
         token: token,
         projectId: apiKey,
