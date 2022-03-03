@@ -134,9 +134,9 @@ export default function SesisonProvider ({
 
   const streamCreatedListener = React.useCallback(
     ({ stream }) => {
-      if (stream.videoType === "custom") {
+      /* if (stream.videoType === "custom") {
         alert("You might not able to see the video due to browser limitation.");
-      }
+      } */
 
       subscribe(stream);
       setStreams((prev) => [ ...prev, stream ]);
