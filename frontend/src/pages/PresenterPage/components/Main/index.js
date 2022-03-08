@@ -93,6 +93,7 @@ function Main () {
               </VideoHoverContainer>
             ): null
           }
+          <div id="emojiContainer"></div>
           <div className={mStyles.logoContainer}>
             {/* <LiveBadge/> */}
           </div>

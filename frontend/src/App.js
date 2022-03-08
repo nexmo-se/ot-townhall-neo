@@ -13,6 +13,8 @@ import ExperienceComposer from 'pages/ExperienceComposerPage';
 import LoginPage from 'pages/LoginPage';
 import ThankYouPage from 'pages/ThankYouPage';
 
+import './App.css';
+
 function App() {
   return (
     <ThemeProvider theme={createMuiTheme()}>
