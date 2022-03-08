@@ -12,6 +12,8 @@ import GhostRiderPage from "pages/GhostRiderPage";
 import LoginPage from "pages/LoginPage";
 import ThankYouPage from "pages/ThankYouPage";
 
+import './App.css';
+
 function App() {
   return (
     <ThemeProvider theme={createMuiTheme()}>
