@@ -8,7 +8,7 @@ import useSession from 'hooks/session';
 import { useParams } from 'react-router-dom';
 
 import LiveBadge from 'components/LiveBadge';
-import VonageLogo from 'components/VonageLogo';
+import VonageLogoSpinning from 'components/VonageLogoSpinning';
 import BlackLayer from 'components/BlackLayer';
 import WhiteLayer from 'components/WhiteLayer';
 import Chat from 'components/Chat';
@@ -45,12 +45,12 @@ function GhostRiderPage() {
       <div className={mStyles.container}>
         <div className={mStyles.leftContainer}>
           <MainScreenComposer />
-
+          <div id="emojiContainer"></div>
           <WhiteLayer />
           <div className={mStyles.logoContainer}>
             <LiveBadge />
           </div>
-          <VonageLogo
+          <VonageLogoSpinning
             style={{ position: 'absolute', bottom: 32, right: 32, zIndex: 2 }}
           />
         </div>
