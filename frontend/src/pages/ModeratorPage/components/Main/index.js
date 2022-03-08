@@ -164,7 +164,8 @@ function Main () {
             )
           }
         >
-          <MainScreen />        
+          <MainScreen />
+          <div id="emojiContainer"></div>
         </div>
       </div>
 

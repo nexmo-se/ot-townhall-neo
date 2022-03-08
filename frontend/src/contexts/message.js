@@ -8,6 +8,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import User from "entities/user";
 import Message from "entities/message";
 
+const EMOJIS = {
+  thumbsup: '👍',
+  thumbsdown: '👎',
+  love: '😻',
+};
+
 interface ISend { message: Message; }
 interface IUserOnly { user: User; }
 interface MessageProviderProps { children: any }
@@ -41,6 +47,7 @@ interface MessageContextProps {
   messages: Array<Message>;
   modalContainer: any;
   send: (args: ISend) => Promise<void>;
+  sendEmoji: (args: String) => Promise<void>;
   slidesAccess: (args: ISlidesAccess) => Promise<void>;
   revokeSlidesAccess: (args: IUserOnly) => Promise<void>;
   raiseHand: (args: IUserOnly) => Promise<void>;
@@ -75,6 +82,7 @@ export const MessageContext = createContext<MessageContextProps>({
   stopPolling: () => Promise.resolve(),
   startPolling: () => Promise.resolve(),
   send: (args: ISend) => Promise.resolve(),
+  sendEmoji: (args: String) => Promise.resolve(),
   ack: (args: IAck) => Promise.resolve(),
   publishFailed: () => Promise.resolve(),
   intendedForMe: ({ data: any }) => false,
@@ -204,6 +212,13 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     });
   }
 
+  async function sendEmoji (data) {
+    await signal({
+      type: "emoji",
+      data: data
+    });
+  }
+
   async function startPolling () {
     await signal({ type: "start-polling" });
   }
@@ -246,6 +261,25 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
     []
   )
 
+  const removeEmoji = (node, element) => {
+    document.getElementById(element).removeChild(node);
+  };
+
+  const emojiListener = useCallback(
+    (emoji) => {
+        const elementToInsertEmoji = 'emojiContainer'
+        const node = document.createElement('div');
+
+        node.appendChild(document.createTextNode(EMOJIS[emoji.data]));
+        node.classList.add('emoji');
+        document.getElementById(elementToInsertEmoji).appendChild(node);
+        node.addEventListener('animationend', (e) => {
+          removeEmoji(e.target, elementToInsertEmoji);
+        });
+    },
+    []
+  )
+
   useEffect(
     () => {
       if (session) session.on("signal:message", messageListener)
@@ -254,6 +288,16 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
       }
     },
     [session, messageListener]
+  );
+
+  useEffect(
+    () => {
+      if (session) session.on("signal:emoji", emojiListener)
+      return function cleanup(){
+        if (session) session.off("signal:emoji", emojiListener)
+      }
+    },
+    [session, emojiListener]
   );
 
   useEffect(
@@ -276,6 +320,7 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
         startPolling, 
         stopPolling,
         send,
+        sendEmoji,
         intendedForMe,
         raiseHand,
         raisedHands,
