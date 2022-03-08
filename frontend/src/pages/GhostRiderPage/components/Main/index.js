@@ -45,6 +45,7 @@ function GhostRiderPage() {
       <div className={mStyles.container}>
         <div className={mStyles.leftContainer}>
           <MainScreen />
+          <div id="emojiContainer"></div>
           <BlackLayer />
           <WhiteLayer />
           <div className={mStyles.logoContainer}>
