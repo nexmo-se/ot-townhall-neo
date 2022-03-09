@@ -8,7 +8,7 @@ import useSession from 'hooks/session';
 import { useParams } from 'react-router-dom';
 
 import LiveBadge from 'components/LiveBadge';
-import VonageLogoSpinning from 'components/VonageLogoSpinning';
+import VonageLogo from 'components/VonageLogo';
 import BlackLayer from 'components/BlackLayer';
 import WhiteLayer from 'components/WhiteLayer';
 import Chat from 'components/Chat';
@@ -19,7 +19,7 @@ import ModeratorStream from 'components/ModeratorStream';
 interface IParam {
   tenant: string;
 }
-function GhostRiderPage() {
+function ExperienceComposerPage() {
   const mStyles = useStyles();
   const { me, loggedIn } = useMe();
   const { connected, connectWithCredential } = useSession();
@@ -46,11 +46,11 @@ function GhostRiderPage() {
         <div className={mStyles.leftContainer}>
           <MainScreenComposer />
           <div id="emojiContainer"></div>
-          <WhiteLayer />
+          {/* <WhiteLayer /> */}
           <div className={mStyles.logoContainer}>
             <LiveBadge />
           </div>
-          <VonageLogoSpinning
+          <VonageLogo
             style={{ position: 'absolute', bottom: 32, right: 32, zIndex: 2 }}
           />
         </div>
@@ -64,4 +64,4 @@ function GhostRiderPage() {
     </>
   );
 }
-export default GhostRiderPage;
+export default ExperienceComposerPage;
