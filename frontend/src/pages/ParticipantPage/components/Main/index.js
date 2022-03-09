@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
 import PrecallDialog from "../PrecallDialog";
+import ReactionButton from "components/ReactionButton";
 import InfoDialog from "components/InfoDialog";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import RightPanel from "components/RightPanel";
@@ -149,6 +150,13 @@ function Main () {
               onDeclined={handleDeclined}
             />
           </div>
+          <div id="emojiContainer"></div>
+          <div>
+            <ReactionButton
+                room={session}
+            ></ReactionButton>
+          </div>
+
         </div>
         <RightPanel user={me ?? new User({ name: "System", role: "system" })} />
       </div>

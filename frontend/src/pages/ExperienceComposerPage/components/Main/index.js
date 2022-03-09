@@ -13,13 +13,13 @@ import BlackLayer from 'components/BlackLayer';
 import WhiteLayer from 'components/WhiteLayer';
 import Chat from 'components/Chat';
 import FullPageLoading from 'components/FullPageLoading';
-import MainScreen from 'components/MainScreen';
+import MainScreenComposer from 'components/MainScreenComposer';
 import ModeratorStream from 'components/ModeratorStream';
 
 interface IParam {
   tenant: string;
 }
-function GhostRiderPage() {
+function ExperienceComposerPage() {
   const mStyles = useStyles();
   const { me, loggedIn } = useMe();
   const { connected, connectWithCredential } = useSession();
@@ -44,10 +44,9 @@ function GhostRiderPage() {
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <div className={mStyles.leftContainer}>
-          <MainScreen />
+          <MainScreenComposer />
           <div id="emojiContainer"></div>
-          <BlackLayer />
-          <WhiteLayer />
+          {/* <WhiteLayer /> */}
           <div className={mStyles.logoContainer}>
             <LiveBadge />
           </div>
@@ -65,4 +64,4 @@ function GhostRiderPage() {
     </>
   );
 }
-export default GhostRiderPage;
+export default ExperienceComposerPage;
