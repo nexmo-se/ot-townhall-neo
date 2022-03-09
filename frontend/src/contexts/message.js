@@ -1,22 +1,28 @@
 // @flow
-import React from "react";
-import { createContext } from "react";
+import React from 'react';
+import { createContext } from 'react';
 
-import useSession from "hooks/session";
-import { useState, useEffect, useRef, useCallback } from "react";
+import useSession from 'hooks/session';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-import User from "entities/user";
-import Message from "entities/message";
+import User from 'entities/user';
+import Message from 'entities/message';
 
 const EMOJIS = {
   thumbsup: '👍',
   thumbsdown: '👎',
-  love: '😻',
+  heart: '❤️'
 };
 
-interface ISend { message: Message; }
-interface IUserOnly { user: User; }
-interface MessageProviderProps { children: any }
+interface ISend {
+  message: Message;
+}
+interface IUserOnly {
+  user: User;
+}
+interface MessageProviderProps {
+  children: any;
+}
 interface IForceVideo {
   user: User;
   hasVideo: boolean;
@@ -92,89 +98,88 @@ export const MessageContext = createContext<MessageContextProps>({
   requestGoLive: (args: IUserOnly) => Promise.resolve()
 });
 
-export default function MessageProvider ({ children }: MessageProviderProps) {
+export default function MessageProvider({ children }: MessageProviderProps) {
   const [raisedHands, setRaisedHands] = useState<Array<User>>([]);
   const [messages, setMessages] = useState<Array<Message>>([]);
   const { session } = useSession();
   const modalContainer = useRef(null);
 
-  function removeRaisedHand (user: User) {
-    setRaisedHands(
-      (prevRaisedHands) => prevRaisedHands.filter(
-        (prevRaisedHand) => {
-          return prevRaisedHand.id !== user.id
-        }
-      )
-    )
+  function removeRaisedHand(user: User) {
+    setRaisedHands((prevRaisedHands) =>
+      prevRaisedHands.filter((prevRaisedHand) => {
+        return prevRaisedHand.id !== user.id;
+      })
+    );
   }
 
-  async function signal ({ type, data }: ISignalData) {
-    return new Promise(
-      (resolve, reject) => {
-        const payload = JSON.parse(JSON.stringify({ type, data }));
-      
-        session.signal(
-          payload,
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          }
-        )
-      }
-    )
+  async function signal({ type, data }: ISignalData) {
+    return new Promise((resolve, reject) => {
+      const payload = JSON.parse(JSON.stringify({ type, data }));
+
+      session.signal(payload, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
   }
 
-  async function send ({ message }: ISend): Promise<void> {
-    await signal({ type: "message", data: JSON.stringify(message.toJSON()) });
+  async function send({ message }: ISend): Promise<void> {
+    await signal({ type: 'message', data: JSON.stringify(message.toJSON()) });
   }
 
-  async function ack ({ type, data }: IAck): Promise<void> {
+  async function ack({ type, data }: IAck): Promise<void> {
     await signal({
       type: `ack_${type}`,
       data: JSON.stringify(data)
     });
   }
 
-  async function slidesAccess ({ target, pin }: ISlidesAccess) {
+  async function slidesAccess({ target, pin }: ISlidesAccess) {
     await signal({
-      type: "slides-access",
+      type: 'slides-access',
       data: JSON.stringify({ target, pin })
     });
   }
 
-  async function revokeSlidesAccess ({ user }: IUserOnly) {
-    await signal({ type: "revoke-slides-access", data: JSON.stringify(user.toJSON()) });
+  async function revokeSlidesAccess({ user }: IUserOnly) {
+    await signal({
+      type: 'revoke-slides-access',
+      data: JSON.stringify(user.toJSON())
+    });
   }
 
-  async function publishFailed () {
-    await signal({ type: "publish-failed" });
+  async function publishFailed() {
+    await signal({ type: 'publish-failed' });
   }
 
   // TODO: remove this because Moderator should not able to force publish
-  async function forcePublish ({ user }: IUserOnly) {
-    await signal({ type: "force-publish", data: JSON.stringify(user.toJSON()) });
+  async function forcePublish({ user }: IUserOnly) {
+    await signal({
+      type: 'force-publish',
+      data: JSON.stringify(user.toJSON())
+    });
   }
-  
-  async function approveGoLive ({ user }: IUserOnly) {
+
+  async function approveGoLive({ user }: IUserOnly) {
     const payload = user.toJSON();
     await signal({
-      type: "raisehand.approved",
+      type: 'raisehand.approved',
       data: JSON.stringify(payload)
     });
   }
 
-  async function declineGoLive ({ user }: IUserOnly) {
+  async function declineGoLive({ user }: IUserOnly) {
     const payload = user.toJSON();
     await signal({
-      type: "raisehand.declined",
+      type: 'raisehand.declined',
       data: JSON.stringify(payload)
-    })
+    });
   }
 
-  async function rejectGoLive ({ user }: IUserOnly) {
+  async function rejectGoLive({ user }: IUserOnly) {
     const payload = user.toJSON();
     await signal({
-      type: "raisehand.rejected",
+      type: 'raisehand.rejected',
       data: JSON.stringify(payload)
     });
   }
@@ -183,141 +188,138 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
    * This function should be called by Moderator only to request participant to go live
    * the participant should listen for it, and display PrecallDialog
    */
-  async function requestGoLive ({ user }: IUserOnly) {
+  async function requestGoLive({ user }: IUserOnly) {
     const payload = user.toJSON();
     await signal({
-      type: "raisehand.request",
+      type: 'raisehand.request',
       data: JSON.stringify(payload)
-    })
+    });
   }
 
-  async function forceUnpublish ({ user }: IUserOnly) {
-    await signal({ type: "force-unpublish", data: JSON.stringify(user.toJSON()) });
-  }
-
-  async function forceVideo ({ user, hasVideo }: IForceVideo) {
-    const payload = Object.assign({}, user.toJSON(), { hasVideo });
-    await signal({ type: "force-video", data: JSON.stringify(payload) });
-  }
-
-  async function forceAudio ({ user, hasAudio }: IForceAudio) {
-    const payload = Object.assign({}, user.toJSON(), { hasAudio });
-    await signal({ type: "force-audio", data: JSON.stringify(payload) });
-  }
-
-  async function raiseHand ({ user }: IUserOnly) {
+  async function forceUnpublish({ user }: IUserOnly) {
     await signal({
-      type: "raisehand",
+      type: 'force-unpublish',
       data: JSON.stringify(user.toJSON())
     });
   }
 
-  async function sendEmoji (data) {
+  async function forceVideo({ user, hasVideo }: IForceVideo) {
+    const payload = Object.assign({}, user.toJSON(), { hasVideo });
+    await signal({ type: 'force-video', data: JSON.stringify(payload) });
+  }
+
+  async function forceAudio({ user, hasAudio }: IForceAudio) {
+    const payload = Object.assign({}, user.toJSON(), { hasAudio });
+    await signal({ type: 'force-audio', data: JSON.stringify(payload) });
+  }
+
+  async function raiseHand({ user }: IUserOnly) {
     await signal({
-      type: "emoji",
+      type: 'raisehand',
+      data: JSON.stringify(user.toJSON())
+    });
+  }
+
+  async function sendEmoji(data) {
+    await signal({
+      type: 'emoji',
       data: data
     });
   }
 
-  async function startPolling () {
-    await signal({ type: "start-polling" });
+  async function startPolling() {
+    await signal({ type: 'start-polling' });
   }
 
-  async function stopPolling () {
-    await signal({ type: "stop-polling" });
+  async function stopPolling() {
+    await signal({ type: 'stop-polling' });
   }
 
   const intendedForMe = useCallback(
     ({ data }): boolean => {
-    const user = User.fromJSON(JSON.parse(data));
+      const user = User.fromJSON(JSON.parse(data));
       const { connection: localConnection } = session;
-      if(localConnection.id === user.id) return true;
+      if (localConnection.id === user.id) return true;
       else return false;
     },
     [session]
-  )
-
-  const messageListener = useCallback(
-    ({ data }) => {
-      setMessages((prevMessage) => {
-        const jsonData = JSON.parse(data);
-        const message = Message.fromJSON(jsonData);
-        return [ ...prevMessage, message ];
-      })
-    },
-    []
   );
 
-  const raiseHandListener = useCallback(
-    ({ data }) => {
-      setRaisedHands((prev) => {
-        const jsonData = JSON.parse(data);
-        const user = User.fromJSON(jsonData);
-        const isNewUser = prev.filter((raisedHand) => raisedHand.id === user.id).length === 0;
-        if(isNewUser) return [ ...prev, user ];
-        else return prev;
-      })
-    },
-    []
-  )
+  const messageListener = useCallback(({ data }) => {
+    setMessages((prevMessage) => {
+      const jsonData = JSON.parse(data);
+      const message = Message.fromJSON(jsonData);
+      return [...prevMessage, message];
+    });
+  }, []);
+
+  const raiseHandListener = useCallback(({ data }) => {
+    setRaisedHands((prev) => {
+      const jsonData = JSON.parse(data);
+      const user = User.fromJSON(jsonData);
+      const isNewUser =
+        prev.filter((raisedHand) => raisedHand.id === user.id).length === 0;
+      if (isNewUser) return [...prev, user];
+      else return prev;
+    });
+  }, []);
 
   const removeEmoji = (node, element) => {
     document.getElementById(element).removeChild(node);
   };
 
-  const emojiListener = useCallback(
-    (emoji) => {
-        const elementToInsertEmoji = 'emojiContainer'
-        const node = document.createElement('div');
+  const emojiListener = useCallback((emoji) => {
+    const elementToInsertEmoji = 'emojiContainer';
+    const node = document.createElement('div');
+    const img = document.createElement('img');
+    const data = emoji.data;
+    if (data === 'thumbsup')
+      img.src = `${process.env.PUBLIC_URL}/emoji/thumbsup.png`;
+    if (data === 'thumbsdown')
+      img.src = `${process.env.PUBLIC_URL}/emoji/thumbsdown.png`;
+    if (data === 'heart')
+      img.src = `${process.env.PUBLIC_URL}/emoji/heart.png`;
 
-        node.appendChild(document.createTextNode(EMOJIS[emoji.data]));
-        node.classList.add('emoji');
-        document.getElementById(elementToInsertEmoji).appendChild(node);
-        node.addEventListener('animationend', (e) => {
-          removeEmoji(e.target, elementToInsertEmoji);
-        });
-    },
-    []
-  )
+    img.width = '100';
+    node.appendChild(img);
+    node.classList.add('emoji');
 
-  useEffect(
-    () => {
-      if (session) session.on("signal:message", messageListener)
-      return function cleanup(){
-        if (session) session.off("signal:message", messageListener)
-      }
-    },
-    [session, messageListener]
-  );
+    document.getElementById(elementToInsertEmoji).appendChild(node);
 
-  useEffect(
-    () => {
-      if (session) session.on("signal:emoji", emojiListener)
-      return function cleanup(){
-        if (session) session.off("signal:emoji", emojiListener)
-      }
-    },
-    [session, emojiListener]
-  );
+    node.addEventListener('animationend', (e) => {
+      removeEmoji(e.target, elementToInsertEmoji);
+    });
+  }, []);
 
-  useEffect(
-    () => {
-      if (session) session.on("signal:raisehand", raiseHandListener);
+  useEffect(() => {
+    if (session) session.on('signal:message', messageListener);
+    return function cleanup() {
+      if (session) session.off('signal:message', messageListener);
+    };
+  }, [session, messageListener]);
 
-      return function cleanup(){
-        if (session) session.off("signal:raisehand", raiseHandListener);
-      }
-    },
-    [session, raiseHandListener]
-  )
+  useEffect(() => {
+    if (session) session.on('signal:emoji', emojiListener);
+    return function cleanup() {
+      if (session) session.off('signal:emoji', emojiListener);
+    };
+  }, [session, emojiListener]);
+
+  useEffect(() => {
+    if (session) session.on('signal:raisehand', raiseHandListener);
+
+    return function cleanup() {
+      if (session) session.off('signal:raisehand', raiseHandListener);
+    };
+  }, [session, raiseHandListener]);
 
   return (
     <MessageContext.Provider
-      value={{ 
+      value={{
         modalContainer,
         forceVideo,
         forceAudio,
-        startPolling, 
+        startPolling,
         stopPolling,
         send,
         sendEmoji,
@@ -341,5 +343,5 @@ export default function MessageProvider ({ children }: MessageProviderProps) {
       <div ref={modalContainer} />
       {children}
     </MessageContext.Provider>
-  )
+  );
 }
