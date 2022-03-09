@@ -19,10 +19,8 @@ function VonageLogoSpinning(props) {
 
   return (
     <div style={{ ...styles.default, ...style }}>
-      <video
-        src={`${process.env.PUBLIC_URL}/assets/02b_Symbol_loop_w.mp4`}
-        autoPlay={true}
-        loop={true}
+      <img
+        src={`${process.env.PUBLIC_URL}/assets/02a_Symbol_hold_w.gif`}
         width={128}
         height={128}
       />
