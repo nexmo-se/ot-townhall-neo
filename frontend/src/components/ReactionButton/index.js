@@ -10,7 +10,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import useStyles from "./styles";
+import useStyles from './styles';
 
 function ReactionsButton({ room, ...props }) {
   const ITEM_HEIGHT = 48;
@@ -30,7 +30,13 @@ function ReactionsButton({ room, ...props }) {
 
   return (
     <div>
-      <Tooltip title={<p style={{ fontSize: 16, color: 'white', margin: 0 }}>Add reaction</p>}>
+      <Tooltip
+        title={
+          <p style={{ fontSize: 16, color: 'white', margin: 0 }}>
+            Add reaction
+          </p>
+        }
+      >
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -38,9 +44,7 @@ function ReactionsButton({ room, ...props }) {
           className={mStyles.toolbarButtons}
           onClick={handleClick}
         >
-        <EmojiEmotions
-          style={{ fontSize: 32 }} 
-        />
+          <EmojiEmotions style={{ fontSize: 32 }} />
         </IconButton>
       </Tooltip>
       <Menu
@@ -53,46 +57,38 @@ function ReactionsButton({ room, ...props }) {
           style: {
             maxHeight: ITEM_HEIGHT * 4.5,
             width: '10ch',
-            marginLeft: '52px',
-          },
+            marginLeft: '52px'
+          }
         }}
       >
         <MenuItem
           // className={layOut === 'grid' ? localClasses.choosen : null}
           onClick={() => {
             sendEmoji('thumbsup');
-
           }}
         >
           <Typography variant="inherit">
-            <ThumbUpAltIcon
-            style={props} 
-            />
+            <ThumbUpAltIcon style={props} />
           </Typography>
         </MenuItem>
         <MenuItem
           // className={layOut === 'active-speaker' ? localClasses.choosen : null}
           onClick={() => {
             sendEmoji('thumbsdown');
-
           }}
         >
           <Typography variant="inherit">
-            <ThumbDownAltIcon
-            style={props} 
-            />
+            <ThumbDownAltIcon style={props} />
           </Typography>
         </MenuItem>
         <MenuItem
           // className={layOut === 'active-speaker' ? localClasses.choosen : null}
           onClick={() => {
-            sendEmoji('love');
+            sendEmoji('heart');
           }}
         >
           <Typography variant="inherit">
-            <FavoriteIcon
-            style={props} 
-            />
+            <FavoriteIcon style={props} />
           </Typography>
         </MenuItem>
       </Menu>
@@ -100,5 +96,5 @@ function ReactionsButton({ room, ...props }) {
   );
 }
 
-ReactionsButton.defaultProps = { fontSize: 20 }
+ReactionsButton.defaultProps = { fontSize: 20 };
 export default ReactionsButton;
