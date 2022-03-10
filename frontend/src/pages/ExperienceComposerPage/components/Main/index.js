@@ -44,7 +44,6 @@ function ExperienceComposerPage() {
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
         <MainScreenComposer />
-        <div id="emojiContainer"></div>
         {/* <WhiteLayer /> */}
         <div className={mStyles.logoContainer}>
           <LiveBadge />
@@ -56,6 +55,7 @@ function ExperienceComposerPage() {
           <ChatExperienceComposer withInput={false} />
         </div>
       </div>
+      <div id="emojiContainer"></div>
     </>
   );
 }
