@@ -20,7 +20,6 @@ function ChatBubble({ name, message }: ChatBubbleProps) {
       className={clsx(
         'Vlt-card',
         'Vlt-card--plain',
-        "Vlt-bg-orange-lighter",
         'Vlt-card--lespadding',
         mStyles.root
       )}
@@ -29,12 +28,14 @@ function ChatBubble({ name, message }: ChatBubbleProps) {
         className="Vlt-card__content"
         style={{ display: 'flex', flexDirection: 'row' }}
       >
-        <Avatar user={user} size={50} className={mStyles.avatar} />
+        {/* <Avatar user={user} size={50} className={mStyles.avatar} /> */}
         <div className={mStyles.chat}>
-          <p>
+          <p style={{ color: '#fff' }}>
             <b>{name}</b>
           </p>
-          <p className={mStyles.message}>{message}</p>
+          <p className={mStyles.message} style={{ color: '#fff' }}>
+            {message}
+          </p>
         </div>
       </div>
     </div>
