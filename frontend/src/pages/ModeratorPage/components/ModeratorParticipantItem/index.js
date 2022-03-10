@@ -52,7 +52,7 @@ function ModeratorParticipantItem({
   // Screen Sharing
   async function handleShareScreenClick() {
     if (session && !sharing) {
-      const screenUser = new User({ name: 'sharescreen', role: 'sharescreen' });
+      const screenUser = new User({ name: '', role: 'sharescreen' });
       await screenPublish({
         session: session,
         user: screenUser,

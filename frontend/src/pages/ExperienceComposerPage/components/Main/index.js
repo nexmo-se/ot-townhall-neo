@@ -11,7 +11,7 @@ import LiveBadge from 'components/LiveBadge';
 import VonageLogo from 'components/VonageLogo';
 import BlackLayer from 'components/BlackLayer';
 import WhiteLayer from 'components/WhiteLayer';
-import Chat from 'components/Chat';
+import ChatExperienceComposer from 'components/ChatExperienceComposer';
 import FullPageLoading from 'components/FullPageLoading';
 import MainScreenComposer from 'components/MainScreenComposer';
 import ModeratorStream from 'components/ModeratorStream';
@@ -43,22 +43,17 @@ function ExperienceComposerPage() {
     <>
       {!connected && <FullPageLoading />}
       <div className={mStyles.container}>
-        <div className={mStyles.leftContainer}>
-          <MainScreenComposer />
-          <div id="emojiContainer"></div>
-          {/* <WhiteLayer /> */}
-          <div className={mStyles.logoContainer}>
-            <LiveBadge />
-          </div>
-          <VonageLogo
-            style={{ position: 'absolute', bottom: 100, right: 32, zIndex: 2 }}
-          />
+        <MainScreenComposer />
+        <div id="emojiContainer"></div>
+        {/* <WhiteLayer /> */}
+        <div className={mStyles.logoContainer}>
+          <LiveBadge />
         </div>
-        <div className={mStyles.rightContainer}>
-          <ModeratorStream />
-          <div className={mStyles.chatContainer}>
-            <Chat withInput={false} />
-          </div>
+        <VonageLogo
+          style={{ position: 'absolute', bottom: 32, right: 32, zIndex: 2 }}
+        />
+        <div className={mStyles.chatContainer}>
+          <ChatExperienceComposer withInput={false} />
         </div>
       </div>
     </>
