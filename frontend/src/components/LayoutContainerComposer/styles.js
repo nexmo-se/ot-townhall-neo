@@ -24,7 +24,7 @@ export default makeStyles(
         width: '128px !important',
         height: '128px !important',
         borderRadius: '50%',
-        margin: '15px 0',
+        margin: '15px',
         border: '4px solid #d6219c'
       }
     },
