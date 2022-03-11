@@ -7,21 +7,6 @@ import ChatBubble from '../ChatBubble';
 type IChatList = { autoScroll?: boolean };
 function ChatList({ autoScroll = true }: IChatList) {
   const mMessage = useMessage();
-  // todo to remove
-  /* const mMessage = {
-    messages: [
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true },
-      { id: 1, sender: { name: 'enrico' }, text: 'suka', isApproved: true }
-    ]
-  }; */
   const mStyles = useStyles();
   const list = React.useRef<any>(null);
 

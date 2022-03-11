@@ -30,10 +30,10 @@ function ChatBubble({ name, message }: ChatBubbleProps) {
       >
         {/* <Avatar user={user} size={50} className={mStyles.avatar} /> */}
         <div className={mStyles.chat}>
-          <p style={{ color: '#fff' }}>
+          <p style={{ color: '#FFD700' }}>
             <b>{name}</b>
           </p>
-          <p className={mStyles.message} style={{ color: '#fff' }}>
+          <p className={mStyles.message} style={{ color: '#91ffff' }}>
             {message}
           </p>
         </div>

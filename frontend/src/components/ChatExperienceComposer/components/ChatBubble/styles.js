@@ -5,7 +5,7 @@ export default makeStyles(
     root: {
       marginTop: 8,
       marginBottom: 4,
-      backgroundColor: 'rgba(0,0,0,0.7)',
+      backgroundColor: 'rgba(0,0,0,0.4)',
       width: 250
     },
     avatar: { marginRight: 16 },
@@ -17,8 +17,7 @@ export default makeStyles(
     },
     message: {
       wordBreak: 'break-word',
-      whiteSpace: 'normal',
-      color: '#fff !important'
+      whiteSpace: 'normal'
     }
   }),
   { index: 1 }

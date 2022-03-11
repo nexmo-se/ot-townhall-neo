@@ -16,7 +16,7 @@ export default makeStyles(
       flexDirection: 'column',
       position: 'absolute',
       top: 32,
-      right: 32,
+      right: 50,
       zIndex: 2,
       justifyContent: 'center',
       alignItems: 'flex-end'
@@ -39,7 +39,7 @@ export default makeStyles(
     },
     chatContainer: {
       position: 'absolute',
-      right: 15,
+      right: 50,
       top: 50,
       bottom: 100,
       padding: 16,
