@@ -49,7 +49,7 @@ function ExperienceComposerPage() {
           <LiveBadge />
         </div>
         <VonageLogo
-          style={{ position: 'absolute', bottom: 32, right: 32, zIndex: 2 }}
+          style={{ position: 'absolute', bottom: 50, right: 100, zIndex: 2 }}
         />
         <div className={mStyles.chatContainer}>
           <ChatExperienceComposer withInput={false} />
