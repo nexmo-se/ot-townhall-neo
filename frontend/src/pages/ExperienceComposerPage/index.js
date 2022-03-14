@@ -36,7 +36,7 @@ function PresenterPage() {
     <SessionProvider
       subscriberContainer={{
         camera: 'cameraContainer',
-        moderator: 'moderatorContainer',
+        moderator: 'cameraContainer',
         screen: 'screenContainer',
         custom: 'cameraContainer'
       }}

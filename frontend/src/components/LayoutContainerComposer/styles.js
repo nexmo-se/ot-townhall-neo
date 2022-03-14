@@ -9,7 +9,10 @@ export default makeStyles(
     screenContainer: {
       '& > .OT_subscriber': {
         width: '100% !important',
-        height: '100% !important'
+        height: '100% !important',
+        '& .OT_video-element': {
+          height: 'auto !important'
+        }
       }
     },
     cameraContainer: {
@@ -24,7 +27,7 @@ export default makeStyles(
         width: '128px !important',
         height: '128px !important',
         borderRadius: '50%',
-        margin: '15px 0',
+        margin: '30px',
         border: '4px solid #d6219c'
       }
     },
