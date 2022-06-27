@@ -9,9 +9,6 @@ class ExperienceRendererAPI {
     roomName: string
   ): Promise<ExperienceRendererEntity> {
     let apiURL = config.apiURL;
-    if (process.env.NODE_ENV === 'development') {
-      apiURL = 'https://c3cc-90-209-142-216.ngrok.io';
-    }
     const response = await fetch(`${apiURL}/renderer/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -38,9 +35,6 @@ class ExperienceRendererAPI {
 
   static async stopRecording(rendererId: string) {
     let apiURL = config.apiURL;
-    if (process.env.NODE_ENV === 'development') {
-      apiURL = 'https://c3cc-90-209-142-216.ngrok.io';
-    }
     const response = await fetch(`${apiURL}/renderer/stop/${rendererId}`, {
       method: 'POST'
     });
@@ -51,9 +45,6 @@ class ExperienceRendererAPI {
 
   static async retrieveActive(roomName: string, sessionID: string) {
     let apiURL = config.apiURL;
-    if (process.env.NODE_ENV === 'development') {
-      apiURL = 'https://c3cc-90-209-142-216.ngrok.io';
-    }
     if (!roomName || !sessionID) {
       throw new Error('[retrieveActive] - Missing params');
     }

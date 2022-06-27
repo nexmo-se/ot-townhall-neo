@@ -11,6 +11,7 @@ import ModeratorPage from "pages/ModeratorPage";
 import GhostRiderPage from "pages/GhostRiderPage";
 import LoginPage from "pages/LoginPage";
 import ThankYouPage from "pages/ThankYouPage";
+import LobbyPage from "pages/LobbyPage";
 
 import './App.css';
 
@@ -22,6 +23,7 @@ function App() {
           <Switch>
             <Route exact path="/:tenant/presenter" component={PresenterPage} />
             <Route exact path="/:tenant/participant" component={ParticipantPage} />
+            <Route exact path="/:tenant/participant/lobby" component={LobbyPage} />
             <Route exact path="/:tenant/moderator" component={ModeratorPage} />
             <Route exact path="/:tenant/ghostrider" component={GhostRiderPage} />
             <Route exact path="/:tenant/:role/login" component={LoginPage} />

@@ -26,7 +26,7 @@ function ParticipantDownload () {
     try {
       setIsRequesting(true);
       
-      const url = `${Config.apiURL}/ama?tenant=${tenant}`;
+      const url = `${Config.apiURL}/ama?tenant=${encodeURIComponent(tenant)}`;
       const response = await fetch(url);
 
       if (response.ok) {

@@ -12,15 +12,32 @@ import Main from "./components/Main";
 import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
+import ConfigurationService from "services/configuration";
+
 interface IParam { tenant: string }
 function ParticipantPage () {
+  const [isChecking, setIsChecking] = React.useState(true);
   const { loggedIn } = useMe();
   const { push } = useHistory();
   const { tenant } = useParams<IParam>();
 
+  /**
+   * This function will check the current room configuration
+   * if the room is open, it will not navigate to the lobby
+   */
+    const checkRoom = React.useCallback(
+    async () => {
+      const configuration = await ConfigurationService.retrieve({ tenant });
+      if (configuration.status === "open") setIsChecking(false);
+      else push(`/${tenant}/participant/lobby`)
+    },
+    [tenant, push]
+  )
+
   React.useEffect(() => {
     if(!loggedIn) push(`/${tenant}/participant/login`);
-  }, [ loggedIn, push, tenant ]);
+    else if (loggedIn) checkRoom();
+  }, [ loggedIn, push, tenant, checkRoom ]);
 
   return (
     <SessionProvider>
