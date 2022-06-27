@@ -24,9 +24,6 @@ function useExperienceComposer() {
   const fetch = React.useCallback(
     async ({ sessionID }: IFetch) => {
       let apiURL = config.apiURL;
-      if (process.env.NODE_ENV === 'development') {
-        apiURL = 'https://c3cc-90-209-142-216.ngrok.io';
-      }
       const url = `${apiURL}/renderer/${tenant}?sessionId=${sessionID}`;
       const response = await FetchService.get(url);
       const recordings = response.map((res) =>
@@ -43,9 +40,6 @@ function useExperienceComposer() {
   const retrieve = React.useCallback(async ({ id }: IRetrieve) => {
     throw new Error('NOT IMPLEMENTED');
     let apiURL = config.apiURL;
-    if (process.env.NODE_ENV === 'development') {
-      apiURL = 'https://c3cc-90-209-142-216.ngrok.io';
-    }
     const url = `${apiURL}/renderer/${id}`;
     const response = await FetchService.get(url);
     return experienceComposerEntity.fromResponse(response);

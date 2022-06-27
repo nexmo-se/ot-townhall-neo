@@ -16,11 +16,16 @@ interface Tabs {
   chat: boolean;
 }
 
+interface State {
+  status: "open" | "locked"
+}
+
 interface Constructor {
   tabs: Tabs;
   participant: Role;
   presenter: Role;
   moderator: Role;
+  state: State;
 }
 
 class Configuration {
@@ -30,12 +35,14 @@ class Configuration {
   participant: Role;
   presenter: Role;
   moderator: Role;
+  state: State;
 
   constructor (args: Constructor) {
     this.tabs = args.tabs;
     this.participant = args.participant;
     this.presenter = args.presenter;
     this.moderator = args.moderator;
+    this.state = args.state;
   }
 
   retrievePin (role: AcceptedRole): string {
@@ -59,7 +66,8 @@ class Configuration {
       participant: lodash.mapKeys(participant, (_value, key) => lodash.snakeCase(key)),
       presenter: lodash.mapKeys(presenter, (_value, key) => lodash.snakeCase(key)),
       moderator: lodash.mapKeys(moderator, (_value, key) => lodash.snakeCase(key)),
-      tabs: this.tabs
+      tabs: this.tabs,
+      state: this.state
     };
     return JSON.parse(JSON.stringify(jsonData));
   }
@@ -84,6 +92,9 @@ class Configuration {
       moderator: {
         loginType: args.configuration.moderator.login_type,
         pin: args.configuration.moderator.pin
+      },
+      state: {
+        status: args.configuration.state?.status ?? "locked" // default configuration for the status
       }
     })
   }
