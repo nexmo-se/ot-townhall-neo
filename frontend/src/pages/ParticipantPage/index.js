@@ -17,6 +17,7 @@ import ConfigurationService from "services/configuration";
 interface IParam { tenant: string }
 function ParticipantPage () {
   const [isChecking, setIsChecking] = React.useState(true);
+  const [roomState, setRoomState] = React.useState('locked');
   const { loggedIn } = useMe();
   const { push } = useHistory();
   const { tenant } = useParams<IParam>();
@@ -28,7 +29,10 @@ function ParticipantPage () {
     const checkRoom = React.useCallback(
     async () => {
       const configuration = await ConfigurationService.retrieve({ tenant });
-      if (configuration.status === "open") setIsChecking(false);
+      if (configuration.state.status === "open") {
+        setIsChecking(false);
+        setRoomState(configuration.state.status)
+      }
       else push(`/${tenant}/participant/lobby`)
     },
     [tenant, push]
@@ -45,7 +49,7 @@ function ParticipantPage () {
         <PollingProvider>
           <PageWrapper>
             <SelectedQuestion />
-            < Main />
+            {roomState === 'open' ? < Main /> : ''}
           </PageWrapper>
         </PollingProvider>
       </MessageProvider>

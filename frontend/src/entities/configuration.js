@@ -6,6 +6,14 @@ type Role = {
   raiseHand?: boolean;
 }
 
+type State = {
+  status: "open" | "locked";
+}
+
+type LobbySource = {
+  link: string;
+}
+
 type Tabs = {
   questions: boolean;
   participants: boolean;
@@ -25,12 +33,16 @@ class Configuration {
   participant: Role;
   presenter: Role;
   moderator: Role;
+  state: State;
+  LobbySource: LobbySource
 
   constructor (args: Constructor) {
     this.tabs = args.tabs;
     this.participant = args.participant;
     this.presenter = args.presenter;
     this.moderator = args.moderator;
+    this.state = args.state;
+    this.lobbySource = args.lobbySource;
   }
 
   static fromResponse (response: any): Configuration {
@@ -50,6 +62,12 @@ class Configuration {
       },
       presenter: {
         loginType: response.presenter.login_type
+      },
+      lobbySource: {
+        link: response.lobbySource.link
+      },
+      state: {
+        status: response.state.status
       }
     })
   }

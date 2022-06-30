@@ -17,14 +17,9 @@ function ChatWidget () {
 
   const handleSignal = useCallback(
     (event) => {
-      console.log("event", event)
-      console.log("session", session)
-
       if (!session) return;
 
       // Do not process my own data
-      console.log("c1", event.from.connectionId);
-      console.log("c2", session.connection.connectionId)
       if (event.from.connectionId === session.connection.connectionId) return;
 
       const acceptedSignal = ["signal:message"];
@@ -68,7 +63,6 @@ function ChatWidget () {
   const connect = useCallback(
     async () => {
       // Get the credential
-      console.log("tenane", tenant)
       const lobbyName = `${tenant}::lobby`
       const credential = await CredentialService.generateCredential({ tenant: lobbyName });
 
@@ -81,9 +75,12 @@ function ChatWidget () {
 
   useEffect(() => {
     if (session) session.on("signal", handleSignal);
+    return function cleanup() {
+      if (session) session.off("signal", handleSignal);
+    }
   }, [session, handleSignal])
 
-  
+
   useEffect(
     () => {
       connect();

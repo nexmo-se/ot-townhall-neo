@@ -12,6 +12,7 @@ type SettingsContextType = {
   participantLoginType: string;
   presenterLoginType: string;
   moderatorLoginType: string;
+  roomState: String;
   setParticipantLoginType: Function;
   setPresenterLoginType: Function;
   setModeratorLoginType: Function;
@@ -22,6 +23,7 @@ type SettingsContextType = {
   setParticipantPin: Function;
   setPresenterPin: Function;
   setModeratorPin: Function;
+  setRoomState:Function;
   saveSettings: Function;
   fetchConfiguration: Function;
 }
