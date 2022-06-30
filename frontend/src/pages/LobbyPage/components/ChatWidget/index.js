@@ -1,7 +1,5 @@
 import React from "react";
 
-import CredentialService from "api/credential";
-import OT from "@opentok/client";
 import { addResponseMessage } from "react-chat-widget";
 
 import useMe from "hooks/me";
@@ -10,8 +8,8 @@ import { useParams } from "react-router-dom";
 
 import { Widget } from "react-chat-widget";
 
-function ChatWidget () {
-  const [session, setSession] = useState();
+function ChatWidget (props) {
+  const {session} = props;
   const { me } = useMe();
   const { tenant } = useParams();
 
@@ -41,8 +39,6 @@ function ChatWidget () {
       content: newMessage
     }
 
-    console.log("session", session);
-    console.log("data", body)
     session.signal({
       type: "message",
       data: JSON.stringify(body)
@@ -57,36 +53,14 @@ function ChatWidget () {
     });
   }
 
-  /**
-   * Connect to lobby session, so everyone can have a chat
-   */
-  const connect = useCallback(
-    async () => {
-      // Get the credential
-      const lobbyName = `${tenant}::lobby`
-      const credential = await CredentialService.generateCredential({ tenant: lobbyName });
-
-      const session = OT.initSession(credential.apiKey, credential.sessionId);
-      session.connect(credential.token);
-      setSession(session);
-    },
-    [tenant]
-  )
-
   useEffect(() => {
     if (session) session.on("signal", handleSignal);
+    if (session) session.on("sessionDisconnect", () => console.log('disconnect'));
+
     return function cleanup() {
       if (session) session.off("signal", handleSignal);
     }
   }, [session, handleSignal])
-
-
-  useEffect(
-    () => {
-      connect();
-    },[connect]
-  )
-
 
   return (
     <Widget

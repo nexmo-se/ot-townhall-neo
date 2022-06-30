@@ -1,11 +1,13 @@
 import React from 'react'
 import { useParams, useHistory } from "react-router";
 
-function OpenedRoom () {
+function OpenedRoom (props) {
+  const { onEnter } = props;
   const { tenant } = useParams();
   const { push } = useHistory();
 
   function handleClick () {
+    if (onEnter) onEnter();
     push(`/${tenant}/participant`)
   }
 

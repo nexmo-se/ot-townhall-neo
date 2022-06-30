@@ -12,7 +12,7 @@ function Banner(props){
 
 
   return (
-    <div style={{backgroundColor: "orange", padding: "0px 8px"}}>
+    <div style={{backgroundColor: "orange", padding: "0px 8px", zIndex: "10"}}>
       <p className="Vlt-white" style={{ display: "inline-block", paddingRight: "8px", margin: 0 }}>{text}</p>
       {hasButton?   <button 
         className="Vlt-btn Vlt-btn--app Vlt-btn--link"
