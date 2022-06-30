@@ -104,7 +104,6 @@ function Main () {
             data: me.toJSON(),
             tenant
           });
-          console.log("cre", credential)
           await connectWithCredential(credential);
         }
       }

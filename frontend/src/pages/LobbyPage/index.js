@@ -1,7 +1,9 @@
 import React from 'react';
 // However for Moderator and Presenter, you cannot go in this Lobby
-import 'react-chat-widget/lib/styles.css';
+import OT from "@opentok/client";
+import CredentialService from "api/credential";
 
+import 'react-chat-widget/lib/styles.css';
 import Logo from "@vonagevolta/volta2/images/logos/Vonage-lettermark.svg"
 import styles from "./LobbyPage.module.css";
 
@@ -19,6 +21,7 @@ import FullPageLoading from 'components/FullPageLoading';
 import config from 'config';
 
 function LobbyPage () {
+  const [session, setSession] = useState();
   const [isChecking, setIsChecking] = useState(true);
   const [roomIsOpen, setRoomIsOpen] = useState(false);
   const [lobbySource, setLobbySource] = useState();
@@ -35,12 +38,27 @@ function LobbyPage () {
       if (isChecking) return;
       const configuration = await ConfigurationService.retrieve({ tenant });
       setRoomIsOpen(configuration.state.status === "open");
-      console.log("link", configuration.lobbySource.link)
       if (!lobbySource) {
         setLobbySource(configuration.lobbySource.link);
       }
     },
     [tenant, isChecking, roomIsOpen]
+  )
+
+  /**
+   * Connect to lobby session, so everyone can have a chat
+   */
+    const connect = useCallback(
+    async () => {
+      // Get the credential
+      const lobbyName = `${tenant}::lobby`
+      const credential = await CredentialService.generateCredential({ tenant: lobbyName });
+
+      const session = OT.initSession(credential.apiKey, credential.sessionId);
+      session.connect(credential.token);
+      setSession(session);
+    },
+    [tenant]
   )
 
   useEffect(
@@ -54,13 +72,20 @@ function LobbyPage () {
   useEffect(() => {
     checkRoom();
     const intervalID = setInterval(checkRoom, 5000);
-    console.log("start interval", intervalID)
-
     return function cleanup(){
-      console.log("clean up", intervalID)
       clearInterval(intervalID);
     }
   }, [checkRoom])
+
+  useEffect(
+    () => {
+      connect();
+    },[connect]
+  )
+
+  function disconnectLobby() {
+    if (session) session.disconnect();
+  }
 
   if (isChecking) {
     return <FullPageLoading />
@@ -75,7 +100,10 @@ function LobbyPage () {
         <section className={styles.mainContent}>
           <div className={styles.left}>
             {
-              roomIsOpen? <OpenedRoom />: <ClosedRoom />
+              roomIsOpen? 
+              <OpenedRoom 
+                onEnter={disconnectLobby}
+              />: <ClosedRoom />
             }
           </div>
           <div className={styles.right}>
@@ -88,7 +116,9 @@ function LobbyPage () {
    
           </div>
         </section>
-        <ChatWidget />
+        <ChatWidget 
+          session={session}
+        />
       </main>
     );
   }
