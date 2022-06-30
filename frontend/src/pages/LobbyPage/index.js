@@ -7,7 +7,6 @@ import styles from "./LobbyPage.module.css";
 
 import ConfigurationService from "services/configuration";
 
-import useInterval from 'use-interval';
 import { useEffect, useState, useCallback } from 'react';
 import useMe from "hooks/me";
 import { useHistory, useParams } from 'react-router';
@@ -17,10 +16,12 @@ import ChatWidget from "./components/ChatWidget";
 import ClosedRoom from './components/ClosedRoom';
 import OpenedRoom from "./components/OpenedRoom";
 import FullPageLoading from 'components/FullPageLoading';
+import config from 'config';
 
 function LobbyPage () {
   const [isChecking, setIsChecking] = useState(true);
   const [roomIsOpen, setRoomIsOpen] = useState(false);
+  const [lobbySource, setLobbySource] = useState();
   const { loggedIn } = useMe();
   const { tenant } = useParams();
   const { push } = useHistory();
@@ -31,28 +32,35 @@ function LobbyPage () {
    */
    const checkRoom = useCallback(
     async () => {
+      if (isChecking) return;
       const configuration = await ConfigurationService.retrieve({ tenant });
-      setRoomIsOpen(configuration.status === "open");
+      setRoomIsOpen(configuration.state.status === "open");
+      console.log("link", configuration.lobbySource.link)
+      if (!lobbySource) {
+        setLobbySource(configuration.lobbySource.link);
+      }
     },
-    [tenant]
+    [tenant, isChecking, roomIsOpen]
   )
 
   useEffect(
     () => {
       if (!loggedIn) push(`/${tenant}/participant/login`)
-      else setIsChecking(false);
+      else {setIsChecking(false); console.log("set checking false")};
     },
     [loggedIn, push, tenant]
   )
 
-  useInterval(
-    () => {
-      if (isChecking) return;
-      if (roomIsOpen) return;
-      checkRoom();
-    },
-    5000
-  )
+  useEffect(() => {
+    checkRoom();
+    const intervalID = setInterval(checkRoom, 5000);
+    console.log("start interval", intervalID)
+
+    return function cleanup(){
+      console.log("clean up", intervalID)
+      clearInterval(intervalID);
+    }
+  }, [checkRoom])
 
   if (isChecking) {
     return <FullPageLoading />
@@ -71,7 +79,13 @@ function LobbyPage () {
             }
           </div>
           <div className={styles.right}>
-            <VideoMarketing />
+            {
+              lobbySource ?
+                <VideoMarketing 
+                lobbySource = {lobbySource}
+              /> : ''
+            }
+   
           </div>
         </section>
         <ChatWidget />

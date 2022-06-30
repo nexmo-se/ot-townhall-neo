@@ -10,6 +10,7 @@ import MessageProvider from "contexts/message";
 import PollingProvider from "contexts/polling";
 
 import Main from "./components/Main";
+import SettingsProvider from "./components/SettingsProvider";
 import SelectedQuestion from "components/SelectedQuestion";
 import PageWrapper from "components/PageWrapper";
 
@@ -37,7 +38,9 @@ function ModeratorPage(){
           <VODProvider>
             <PageWrapper>
               <SelectedQuestion />
-              <Main />
+              <SettingsProvider tenant={tenant}>
+                <Main />
+              </SettingsProvider>
             </PageWrapper>
           </VODProvider>
         </PollingProvider>

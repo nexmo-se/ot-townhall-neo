@@ -102,7 +102,6 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
 
   useEffect(
     () => {
-      console.log("UseEffect:", publisherStream, subscriberStream)
       if (publisherStream) {
         setHasAudio(publisherStream.hasAudio);
         setHasVideo(publisherStream.hasVideo);

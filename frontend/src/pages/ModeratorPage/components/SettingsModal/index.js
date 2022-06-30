@@ -4,6 +4,7 @@ import { useSettings } from "../SettingsProvider";
 
 import ResetSettings from "../ResetSettings";
 import PinSettings from "../PinSettings";
+import LobbySettings from "../LobbySettings";
 import TabsSettings from "../TabsSettings";
 import Modal from "components/Modal";
 
@@ -44,6 +45,8 @@ function SettingsModal({ open, onClose }: ISettingsModal){
         <PinSettings />
         <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
         <TabsSettings />
+        <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
+        <LobbySettings />
         <hr className="hr--tall Vlt-gradient--blue-to-pink"></hr>
         <ResetSettings clear={open} />
       </Modal.Content>

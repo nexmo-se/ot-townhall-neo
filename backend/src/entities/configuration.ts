@@ -20,12 +20,17 @@ interface State {
   status: "open" | "locked"
 }
 
+interface LobbySource {
+  link: string
+}
+
 interface Constructor {
   tabs: Tabs;
   participant: Role;
   presenter: Role;
   moderator: Role;
   state: State;
+  lobbySource: LobbySource;
 }
 
 class Configuration {
@@ -36,6 +41,7 @@ class Configuration {
   presenter: Role;
   moderator: Role;
   state: State;
+  lobbySource: LobbySource;
 
   constructor (args: Constructor) {
     this.tabs = args.tabs;
@@ -43,6 +49,7 @@ class Configuration {
     this.presenter = args.presenter;
     this.moderator = args.moderator;
     this.state = args.state;
+    this.lobbySource = args.lobbySource;
   }
 
   retrievePin (role: AcceptedRole): string {
@@ -67,7 +74,8 @@ class Configuration {
       presenter: lodash.mapKeys(presenter, (_value, key) => lodash.snakeCase(key)),
       moderator: lodash.mapKeys(moderator, (_value, key) => lodash.snakeCase(key)),
       tabs: this.tabs,
-      state: this.state
+      state: this.state,
+      lobbySource: this.lobbySource
     };
     return JSON.parse(JSON.stringify(jsonData));
   }
@@ -93,8 +101,11 @@ class Configuration {
         loginType: args.configuration.moderator.login_type,
         pin: args.configuration.moderator.pin
       },
+      lobbySource: {
+        link: args.configuration.lobbySource.link
+      },
       state: {
-        status: args.configuration.state?.status ?? "locked" // default configuration for the status
+        status: args.configuration.state.status ?? "locked" // default configuration for the status
       }
     })
   }

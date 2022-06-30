@@ -41,7 +41,8 @@
   justify-content: center;
 }
 
-.right > video {
+.right > video,
+.right > figure {
   height: calc(50vw * 0.5625);
   border: 1px solid transparent;
   border-radius: 8px;

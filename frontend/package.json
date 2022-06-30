@@ -9,6 +9,7 @@
     "@opentok/client": "^2.21.8",
     "@vonage/video-effects": "^0.2.0",
     "@vonagevolta/volta2": "0.0.53",
+    "axios": "^0.27.2",
     "delay": "^5.0.0",
     "detect-browser": "5.1.1",
     "firebase": "7.18.0",
