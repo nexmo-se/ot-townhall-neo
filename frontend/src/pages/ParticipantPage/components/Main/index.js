@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
-import PrecallDialog from "../PrecallDialog";
+import PrecallDialog from "components/PrecallDialog";
 import ReactionButton from "components/ReactionButton";
 import InfoDialog from "components/InfoDialog";
 import PublisherFailedDialog from "components/PublisherFailedDialog";

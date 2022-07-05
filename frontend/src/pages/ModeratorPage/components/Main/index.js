@@ -20,10 +20,12 @@ import PublisherFailedDialog from "components/PublisherFailedDialog";
 import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
 import ParticipantList from "components/ParticipantList";
+import PrecallDialog from "components/PrecallDialog";
 
 interface URLParamters { tenant: string }
 
 function Main () {
+  const [precallOpen, setPrecallOpen] = useState<boolean>(true);
   const [publishFailed, setPublishFailed] = useState<boolean>(false);
   const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
@@ -58,6 +60,21 @@ function Main () {
     []
   )
 
+  function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
+    if (!me || !session || !connected) return alert("No user or session found");
+    publishCamera({
+      session,
+      user: me,
+      onError: publishErrorListener,
+      extraData: {
+        videoSource: publisher.getVideoSource(),
+        publishAudio: hasAudio,
+        publishVideo: hasVideo
+      }
+    });
+    setPublishFailed(false);
+  }
+
   useEffect(
     () => {
       async function connect () {
@@ -76,21 +93,6 @@ function Main () {
   );
 
   useEffect(
-      () => {
-      if (connected && session && me) {
-        publishCamera({
-          session,
-          user: me,
-          onError: publishErrorListener
-        });
-        setPublishFailed(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [connected, session, me, publishErrorListener]
-  );
-
-  useEffect(
     () => {
       if (session) session.on("signal:publish-failed", remotePublishFailedListener);
       if (session) session.on("signal:raisehand.rejected", rejectedRaiseHandListener);
@@ -104,7 +106,12 @@ function Main () {
 
   return (
     <>
-      {!connected && <FullPageLoading />}
+      <PrecallDialog
+        visible={precallOpen}
+        setVisible={setPrecallOpen}
+        onApprove={handleApproveClick}
+      />
+      {(!connected || !cameraPublisher) ? <FullPageLoading /> : null}
       <div className={mStyles.container}>
         <div className={mStyles.leftSection}>
           <div className={mStyles.item} style={{ 
