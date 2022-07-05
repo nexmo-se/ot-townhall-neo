@@ -55,8 +55,6 @@ function ChatWidget (props) {
 
   useEffect(() => {
     if (session) session.on("signal", handleSignal);
-    if (session) session.on("sessionDisconnect", () => console.log('disconnect'));
-
     return function cleanup() {
       if (session) session.off("signal", handleSignal);
     }

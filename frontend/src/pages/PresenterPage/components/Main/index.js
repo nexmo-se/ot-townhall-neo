@@ -18,12 +18,15 @@ import VideoHoverContainer from "components/VideoHoverContainer"
 import VideoControl from "components/VideoControl";
 import RightPanel from "components/RightPanel";
 import MainScreen from "components/MainScreen";
+import PrecallDialog from "components/PrecallDialog";
+
 
 interface URLParameters {
   tenant: string;
 }
 
 function Main () {
+  const [precallOpen, setPrecallOpen] = React.useState<boolean>(true);
   const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -37,6 +40,21 @@ function Main () {
     },
     []
   );
+
+  function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
+    if (!me || !session || !connected) return alert("No user or session found");
+      publishCamera({
+      session,
+      user: me,
+      onError: publishErrorListener,
+      extraData: {
+        videoSource: publisher.getVideoSource(),
+        publishAudio: hasAudio,
+        publishVideo: hasVideo
+      }
+    });
+    setPublishFailed(false);
+   }
 
   React.useEffect(
     () => {
@@ -55,24 +73,14 @@ function Main () {
     [loggedIn, me, connectWithCredential, tenant]
   );
 
-  React.useEffect(
-    () => {
-      if(connected && session && me) {
-        publishCamera({
-          session,
-          user: me,
-          onError: publishErrorListener
-        });
-        setPublishFailed(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [connected, session, me, publishErrorListener]
-  );
-
   return (
     <>
-      {!connected && <FullPageLoading />}
+      <PrecallDialog
+        visible={precallOpen}
+        setVisible={setPrecallOpen}
+        onApprove={handleApproveClick}
+      />
+      {(!connected || !cameraPublisher) ? <FullPageLoading /> : null}
       <div className={mStyles.container}>
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />

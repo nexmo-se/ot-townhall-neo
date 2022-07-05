@@ -169,13 +169,14 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         </div>
       </Modal.Content>
       <Modal.Footer>
+        {(me && me.role === "participant") ?
         <Button
           text="Decline"
           className="Vlt-btn--tertiary"
           onClick={handleRejectClick}
-        />
+        /> : null}
         <Button
-          text="Join Live"
+          text={(me && me.role === "participant") ? "Join Live" : "Join"}
           onClick={handleApproveClick}
         />
       </Modal.Footer>
