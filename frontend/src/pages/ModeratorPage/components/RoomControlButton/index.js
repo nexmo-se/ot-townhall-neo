@@ -18,8 +18,8 @@ interface IRoomControlButton {
 
 function RoomControlButton({ ...props }: IRoomControlButton){
   const [ isLocked, setIsLocked ] = useState<boolean>(true);
-  const [openRoomModal, setOpenRoomModal] = useState(false);
-  const [lockRoomModal, setLockRoomModal] = useState(false);
+  const [openRoomModal, setOpenRoomModal] = useState<boolean>(false);
+  const [lockRoomModal, setLockRoomModal] = useState<boolean>(false);
   const { roomState } = useSettings();
 
   async function handleClick(){

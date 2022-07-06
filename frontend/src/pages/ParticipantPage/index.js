@@ -16,8 +16,8 @@ import ConfigurationService from "services/configuration";
 
 interface IParam { tenant: string }
 function ParticipantPage () {
-  const [isChecking, setIsChecking] = React.useState(true);
-  const [roomState, setRoomState] = React.useState('locked');
+  const [isChecking, setIsChecking] = React.useState<Boolean>(true);
+  const [roomState, setRoomState] = React.useState<Boolean>('locked');
   const { loggedIn } = useMe();
   const { push } = useHistory();
   const { tenant } = useParams<IParam>();

@@ -7,7 +7,6 @@ import { useSettings } from '../SettingsProvider';
 import LoginTypeDropdown from '../LoginTypeDropdown';
 import TextInput from 'components/TextInput';
 import { Grid } from '@material-ui/core';
-import { database } from 'firebase';
 
 function LobbySettings() {
   const { lobbySource, setLobbySourceForm } = useSettings();
@@ -35,7 +34,7 @@ function LobbySettings() {
           name="lobbysource" 
           multiple={false}
           id="lobbysource"
-          accept=".jpg, .jpeg, png, .mp4"
+          accept=".jpg, .jpeg, .png, .mp4"
           onChange = {onFileChange}
         />
       </form>
