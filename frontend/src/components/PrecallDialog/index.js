@@ -11,6 +11,7 @@ import { Publisher } from "@opentok/client";
 import useStyles from "./styles";
 import useUser from "hooks/me";
 import useMessage from "hooks/message";
+import useSession from "hooks/session";
 import { useEffect, useState } from "react";
 
 import Modal from "components/Modal";
@@ -25,11 +26,14 @@ interface PrecallDialogProps {
 }
 
 function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) {
+  const [disableJoinButton, setDisableJoinButton] = useState<boolean>(true);
   const [hasCamera, setHasCamera] = useState<boolean>(true);
   const [hasMic, setHasMic] = useState<boolean>(true);
   const [publisher, setPublisher] = useState<Publisher | void>();
   const { me } = useUser();
   const { rejectGoLive } = useMessage();
+  const { session, connected } = useSession();
+
   const mStyles = useStyles();
 
   function handleRejectClick () {
@@ -60,9 +64,8 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
 
   useEffect(
     () => {
-      if (!visible) return;
-      
-      const publisher = OT.initPublisher("precall-publisher", {
+      if (!visible || publisher) return;
+      const publishObj = OT.initPublisher("precall-publisher", {
         insertMode: "append",
         name: "Precall",
         style: {
@@ -71,9 +74,9 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
           backgroundImageURI: AvatarImage
         }
       });
-      setPublisher(publisher);
+      setPublisher(publishObj);
     },
-    [visible]
+    [visible, publisher]
   );
 
   useEffect(
@@ -106,7 +109,18 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
     [publisher, visible]
   )
 
+  useEffect(
+    () => {
+      if (publisher) {
+        setDisableJoinButton(false)
+      }
+    },
+    [publisher]
+  )
 
+  useEffect(() => {
+    console.log("publisher", publisher)
+  }, [publisher])
   return (
     <Modal
       id="precall-dialog"
@@ -178,7 +192,9 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         <Button
           text={(me && me.role === "participant") ? "Join Live" : "Join"}
           onClick={handleApproveClick}
+          disabled={disableJoinButton}
         />
+        {disableJoinButton ? <p>Connecting...</p> : null}
       </Modal.Footer>
     </Modal>
   );

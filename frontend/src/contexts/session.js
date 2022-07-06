@@ -127,6 +127,7 @@ export default function SesisonProvider ({
 
   const connectionDestroyedListener = React.useCallback(
     ({ connection }) => {
+      console.log("connection destryo", connection);
       setConnections((prev) => prev.filter((prevConnection) => prevConnection.id !== connection.id));
     },
     []
