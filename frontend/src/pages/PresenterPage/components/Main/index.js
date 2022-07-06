@@ -26,7 +26,7 @@ interface URLParameters {
 }
 
 function Main () {
-  const [precallOpen, setPrecallOpen] = React.useState<boolean>(true);
+  const [precallOpen, setPrecallOpen] = React.useState<boolean>(false);
   const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { connected, session, connectWithCredential } = useSession();
@@ -42,7 +42,7 @@ function Main () {
   );
 
   function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
-    if (!me || !session || !connected) return alert("No user or session found");
+    if (!me) return;
       publishCamera({
       session,
       user: me,
@@ -55,6 +55,12 @@ function Main () {
     });
     setPublishFailed(false);
    }
+
+   React.useEffect(() => {
+    if (me && session && connected) {
+      setPrecallOpen(true);
+    }
+  }, [me, session, connected])
 
   React.useEffect(
     () => {

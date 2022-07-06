@@ -25,7 +25,7 @@ import PrecallDialog from "components/PrecallDialog";
 interface URLParamters { tenant: string }
 
 function Main () {
-  const [precallOpen, setPrecallOpen] = useState<boolean>(true);
+  const [precallOpen, setPrecallOpen] = useState<boolean>(false);
   const [publishFailed, setPublishFailed] = useState<boolean>(false);
   const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
@@ -61,7 +61,7 @@ function Main () {
   )
 
   function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
-    if (!me || !session || !connected) return alert("No user or session found");
+    if (!me) return;
     publishCamera({
       session,
       user: me,
@@ -74,6 +74,12 @@ function Main () {
     });
     setPublishFailed(false);
   }
+
+  useEffect(() => {
+    if (me && session && connected) {
+      setPrecallOpen(true);
+    }
+  }, [me, session, connected])
 
   useEffect(
     () => {
