@@ -7,10 +7,11 @@ import 'react-chat-widget/lib/styles.css';
 import Logo from "@vonagevolta/volta2/images/logos/Vonage-lettermark.svg"
 import styles from "./LobbyPage.module.css";
 
+import config from 'config';
 import ConfigurationService from "services/configuration";
 
-import { useEffect, useState, useCallback } from 'react';
 import useMe from "hooks/me";
+import { useEffect, useState, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router';
 
 import VideoMarketing from "./components/VideoMarketing";
@@ -18,7 +19,6 @@ import ChatWidget from "./components/ChatWidget";
 import ClosedRoom from './components/ClosedRoom';
 import OpenedRoom from "./components/OpenedRoom";
 import FullPageLoading from 'components/FullPageLoading';
-import config from 'config';
 
 function LobbyPage () {
   const [session, setSession] = useState();
@@ -83,7 +83,7 @@ function LobbyPage () {
     },[connect]
   )
 
-  function disconnectLobby() {
+  function enterRoom() {
     if (session) session.disconnect();
   }
 
@@ -102,7 +102,7 @@ function LobbyPage () {
             {
               roomIsOpen? 
               <OpenedRoom 
-                onEnter={disconnectLobby}
+                onEnter={enterRoom}
               />: <ClosedRoom />
             }
           </div>

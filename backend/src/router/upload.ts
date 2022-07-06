@@ -16,7 +16,6 @@ const storage = multer.diskStorage({
         const { originalname } = file;
         const extension = originalname.split('.').pop();
         const { room_name: roomName } = req.params;
-        console.log("hi", originalname)
         cb(null, `${roomName}-lobbysource.${extension}`)
     }
 })

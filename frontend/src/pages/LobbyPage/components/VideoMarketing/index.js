@@ -9,7 +9,7 @@ function VideoMarketing (props) {
       <video autoPlay loop>
         <source
           src={lobbySource}
-          type={`video/${lobbySource.split('.').pop()}`}
+          type="video/mp4"
         />
       </video>
     )

@@ -1,6 +1,5 @@
 // @flow
 import FetchService from "services/fetch";
-import Axios from "axios"
 import config from "config";
 
 interface IUpload {

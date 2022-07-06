@@ -118,9 +118,6 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
     [publisher]
   )
 
-  useEffect(() => {
-    console.log("publisher", publisher)
-  }, [publisher])
   return (
     <Modal
       id="precall-dialog"
