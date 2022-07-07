@@ -65,6 +65,7 @@ function ChatWidget (props) {
       handleNewUserMessage={handleNewUserMessage}
       title="Waiting Room Chats"
       subtitle={`Room name: ${tenant}`}
+      emojis={true}
     />
   )
 }

@@ -2,6 +2,7 @@
 import React from "react";
 import CredentialAPI from "api/credential";
 import clsx from "clsx";
+import config from "config";
 
 import useSession from "hooks/session";
 import useStyles from "./styles";
@@ -21,6 +22,7 @@ import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
 import ParticipantList from "components/ParticipantList";
 import PrecallDialog from "components/PrecallDialog";
+import { useSettings } from "../SettingsProvider";
 
 interface URLParamters { tenant: string }
 
@@ -31,6 +33,7 @@ function Main () {
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
   const { me, loggedIn } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
+  const { lobbySource, fetchConfiguration } = useSettings()
   const { publish: publishCamera, unpublish: unpublishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<URLParamters>();
   const mStyles = useStyles();
@@ -60,6 +63,15 @@ function Main () {
     []
   )
 
+  const checkLobbySrc = useCallback(async () => {
+    const domain = (new URL(lobbySource));
+    if (domain.origin !== config.apiURL) return;
+    const response = await fetch(lobbySource);
+    if (!response.ok) {
+      alert("Lobby Marketing Link is invalid, upload a new video/image to Setting -> Lobby Marketing.")
+    }
+  }, [lobbySource])
+
   function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
     if (!me) return;
     publishCamera({
@@ -77,6 +89,7 @@ function Main () {
 
   useEffect(() => {
     if (me && session && connected) {
+      fetchConfiguration()
       setPrecallOpen(true);
     }
   }, [me, session, connected])
@@ -97,6 +110,11 @@ function Main () {
     }, 
     [loggedIn, me, connectWithCredential, tenant]
   );
+
+  useEffect(() => {
+      // check if source link is valid
+      if (lobbySource && connected && cameraPublisher) checkLobbySrc();
+  }, [lobbySource, connected, cameraPublisher])
 
   useEffect(
     () => {

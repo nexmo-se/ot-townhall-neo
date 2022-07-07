@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import React, { useEffect } from "react";
 import User from "entities/user";
 
 import useMe from "hooks/me";
@@ -11,14 +11,22 @@ interface IParam { role: string, tenant: string }
 function LoginPage(){
   const [ loading, setLoading ] = React.useState<boolean>(false);
   const { tenant, role } = useParams<IParam>();
-  const { login } = useMe();
-  const { push } = useHistory();
+  const { login, loggedIn } = useMe();
+  const history = useHistory();
 
   const handleLoggedIn = React.useCallback(async (user: User): Promise<void> => {
     setLoading(true);
     login(user);
-    push(`/${tenant}/${role}`);
-  }, [ login, push, role, tenant ]);
+    history.push(`/${tenant}/${role}`);
+  }, [ login, history.push, role, tenant ]);
+
+  useEffect(() => {
+    // Window back button clicked
+    if (history.action === "POP" && loggedIn) {
+      history.push(`/thank-you`);
+      window.location.reload();
+    }
+  }, [history.action, loggedIn])
 
   /**
    * By pass login here

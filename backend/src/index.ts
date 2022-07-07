@@ -4,6 +4,7 @@ import "regenerator-runtime/runtime";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import * as fsx from "fs-extra"; 
 
 import config from "./config";
 import DatabaseAPI from "./api/database";
@@ -31,6 +32,9 @@ import UploadRouter from "./router/upload";
   console.log("Firebase initialised");
   console.log("Database initialised");
   console.log("Database migrated");
+
+  let createDir = __dirname + '/uploads/lobby';
+  fsx.ensureDir(createDir);
   
   const app = express();
   

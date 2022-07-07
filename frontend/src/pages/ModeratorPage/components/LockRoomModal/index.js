@@ -17,7 +17,7 @@ function LockRoomModal (props) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [updateSetting, setUpdateSetting] = useState(false);
-  const { saveSettings, setRoomState, roomState, participantLoginType } = useSettings();
+  const { saveSettings, setRoomState, roomState } = useSettings();
   const { tenant } = useParams();
 
   async function handleSubmit () {
