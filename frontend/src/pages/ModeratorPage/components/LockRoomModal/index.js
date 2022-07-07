@@ -4,7 +4,6 @@ import lodash from "lodash";
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import useDownload from "hooks/download";
 
 import Modal from "components/Modal";
 import Button from "components/Button";
@@ -20,14 +19,12 @@ function LockRoomModal (props) {
   const [updateSetting, setUpdateSetting] = useState(false);
   const { saveSettings, setRoomState, roomState, participantLoginType } = useSettings();
   const { tenant } = useParams();
-  const { downloadParticipantList } = useDownload({ tenant });
 
   async function handleSubmit () {
     try {
       setIsLoading(true);
       setRoomState('locked');
       setUpdateSetting(true);
-      if (participantLoginType === "ama") downloadParticipantList();
     } catch (err) {
       console.log(err);
     } finally {
