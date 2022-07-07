@@ -1,14 +1,18 @@
 // @flow
 import React from "react";
+import Papa from "papaparse";
+import Config from "config";
 
+import DownloadService from "services/download";
 import ConfigurationService from "services/configuration";
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useDownload from "hooks/download";
 
 import Icon from "components/Icon";
 import Tooltip from "components/Tooltip";
+
+import { useSettings } from "../SettingsProvider";
 
 interface URLParameters {
   tenant: string;
@@ -16,31 +20,36 @@ interface URLParameters {
 
 function ParticipantDownload () {
   // Indicate participant login type only
-  const [loginType, setLoginType] = useState<string>("default");
   const [isRequesting, setIsRequesting] = useState<boolean>(false);
   const { tenant } = useParams<URLParameters>();
-  const { downloadParticipantList } = useDownload({ tenant });
+  const { participantLoginType } = useSettings();
 
   async function handleDownloadClick () {
-    setIsRequesting(true);
-    await downloadParticipantList();
-    setIsRequesting(false);
-  }
+    try {
+      setIsRequesting(true);
 
-  useEffect(
-    () => {
-      async function fetchConfiguration () {
-        const configuration = await ConfigurationService.retrieve({ tenant });
-        setLoginType(configuration.participant.loginType);
+      const url = `${Config.apiURL}/ama?tenant=${tenant}`;
+      const response = await fetch(url);
+
+      if (response.ok) {
+        const jsonResponse = await response.json();
+        const csvData = Papa.unparse(jsonResponse);
+        const csvContent = `data:text/csv;charset=utf-8,${csvData}`;
+        const downloadUrl = encodeURI(csvContent);
+        const fileName = `participant_list_${tenant}`;
+        DownloadService.download({
+          url: downloadUrl,
+          name: fileName
+        });
       }
+    } catch (err) {
 
-      if (!tenant) return;
-      fetchConfiguration();
-    },
-    [tenant]
-  )
+    } finally {
+      setIsRequesting(false);
+    }
+  }
   
-  if (loginType !== "ama") return null;
+  if (participantLoginType !== "ama") return null;
   else {
     return (
       <Tooltip title="Download List">
