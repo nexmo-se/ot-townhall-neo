@@ -16,9 +16,7 @@ function VideoMarketing (props) {
   }
   else {
     return (
-      <figure>
-        <img src={lobbySource}></img>
-      </figure>
+      <img src={lobbySource}></img>
     )
   }
 }

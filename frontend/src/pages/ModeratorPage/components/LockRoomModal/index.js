@@ -69,6 +69,7 @@ function LockRoomModal (props) {
           onClick={handleSubmit}
           disabled={isLoading}
         />
+        {isLoading ? <div className="Vlt-spinner Vlt-spinner--smaller" style={{verticalAlign: "middle"}}/> : null}
       </Modal.Footer>
     </Modal>
   )
