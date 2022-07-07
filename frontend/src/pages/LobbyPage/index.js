@@ -64,7 +64,7 @@ function LobbyPage () {
   useEffect(
     () => {
       if (!loggedIn) push(`/${tenant}/participant/login`)
-      else {setIsChecking(false); console.log("set checking false")};
+      else setIsChecking(false);
     },
     [loggedIn, push, tenant]
   )

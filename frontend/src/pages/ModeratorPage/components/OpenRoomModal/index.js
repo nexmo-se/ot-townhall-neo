@@ -18,7 +18,7 @@ function OpenRoomModal (props) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [updateSetting, setUpdateSetting] = useState(false);
-  const { saveSettings, setRoomState, roomState, fetchConfiguration } = useSettings();
+  const { saveSettings, setRoomState, roomState } = useSettings();
 
   async function handleSubmit () {
     try {
@@ -31,10 +31,6 @@ function OpenRoomModal (props) {
       setIsLoading(false);
     }
   }
-
-  useEffect(() => {
-    fetchConfiguration()
-  }, [fetchConfiguration])
 
   const saveConfig = useCallback(
     async () => {

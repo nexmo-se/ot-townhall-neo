@@ -1,3 +1,3 @@
 export default {
-    lobbySource: process.env.DEFAULT_LOBBY_MARKETING_SRC
+    lobbySource: "https://d3ftwi7xooeeyo.cloudfront.net/vonage_20th_anniversary.mp4"
   };
