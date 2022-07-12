@@ -2,6 +2,7 @@
 import React from "react";
 import User from "entities/user";
 import CredentialAPI from "api/credential";
+import AMAAPI from "api/ama";
 import clsx from "clsx";
 
 import useStyles from "./styles";
@@ -28,7 +29,7 @@ interface URLParameters {
 function Main () {
   const [precallOpen, setPrecallOpen] = React.useState<boolean>(false);
   const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
-  const { me, loggedIn } = useMe();
+  const { me, loggedIn, customerDetails } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<URLParameters>();
@@ -78,6 +79,12 @@ function Main () {
     },
     [loggedIn, me, connectWithCredential, tenant]
   );
+
+  React.useEffect(() => {
+    if (tenant && customerDetails) {
+      AMAAPI.create({ tenant, participant: customerDetails });
+    }
+  }, [tenant, customerDetails])
 
   return (
     <>

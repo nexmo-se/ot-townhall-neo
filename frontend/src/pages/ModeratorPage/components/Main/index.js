@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import CredentialAPI from "api/credential";
+import AMAAPI from "api/ama";
 import clsx from "clsx";
 import config from "config";
 
@@ -31,7 +32,7 @@ function Main () {
   const [publishFailed, setPublishFailed] = useState<boolean>(false);
   const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
-  const { me, loggedIn } = useMe();
+  const { me, loggedIn, customerDetails } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
   const { lobbySource, fetchConfiguration } = useSettings()
   const { publish: publishCamera, unpublish: unpublishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
@@ -110,6 +111,12 @@ function Main () {
     }, 
     [loggedIn, me, connectWithCredential, tenant]
   );
+
+  useEffect(() => {
+    if (tenant && customerDetails) {
+      AMAAPI.create({ tenant, participant: customerDetails });
+    }
+  }, [tenant, customerDetails])
 
   useEffect(() => {
       // check if source link is valid
