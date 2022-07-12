@@ -130,7 +130,7 @@ class OT{
       }
       console.log("[Create Renderer] - URLs", rendererURL, statusURL);
       const data = JSON.stringify({
-        url: `${rendererURL}${roomName}/ghostrider`,
+        url: `${rendererURL}${roomName}/experience-composer`,
         sessionId: sessionId,
         token: token,
         projectId: apiKey,
