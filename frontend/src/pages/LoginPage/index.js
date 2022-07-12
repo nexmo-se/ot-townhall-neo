@@ -1,6 +1,7 @@
 // @flow
 import React, { useEffect } from "react";
 import User from "entities/user";
+import Participant from "entities/participant";
 
 import useMe from "hooks/me";
 import { useParams, useHistory } from "react-router-dom";
@@ -14,9 +15,9 @@ function LoginPage(){
   const { login, loggedIn } = useMe();
   const history = useHistory();
 
-  const handleLoggedIn = React.useCallback(async (user: User): Promise<void> => {
+  const handleLoggedIn = React.useCallback(async (user: User, participant: Participant): Promise<void> => {
     setLoading(true);
-    login(user);
+    login(user, participant);
     history.push(`/${tenant}/${role}`);
   }, [ login, history.push, role, tenant ]);
 
