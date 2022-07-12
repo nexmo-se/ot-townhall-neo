@@ -1,6 +1,6 @@
 // @flow
 
-import React, { useEffect } from "react";
+import React from "react";
 import ConfigurationService from "services/configuration";
 import UploadService from "services/upload";
 import config from "config";
