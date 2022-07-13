@@ -26,8 +26,8 @@ function SettingsProvider({ children, tenant }: ISettingsProvider) {
   const [pollingTab, setPollingTab] = React.useState<boolean>(false);
   const [allowRaiseHand, setAllowRaiseHand] = React.useState<boolean>(false);
   const [roomState, setRoomState] = React.useState<string>('locked');
-  const [lobbySource, setLobbySource] = React.useState<FormData>();
-  const [lobbySourceform, setLobbySourceForm] = React.useState<FormData>();
+  const [lobbySource, setLobbySource] = React.useState<string>();
+  const [lobbySourceform, setLobbySourceForm] = React.useState<FormData | void>();
 
   async function saveSettings() {
     let lobbySourceFileName;
