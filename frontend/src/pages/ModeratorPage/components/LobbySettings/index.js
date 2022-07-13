@@ -13,9 +13,14 @@ function LobbySettings() {
 
   function onFileChange(e) {
     const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("lobbysource", file);
-    setLobbySourceForm(formData);
+    if (file) {
+      const formData = new FormData();
+      formData.append("lobbysource", file);
+      setLobbySourceForm(formData);
+    }
+    else {
+      setLobbySourceForm(null);
+    }
   }
 
   return (

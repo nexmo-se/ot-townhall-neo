@@ -11,7 +11,6 @@ import { Publisher } from "@opentok/client";
 import useStyles from "./styles";
 import useUser from "hooks/me";
 import useMessage from "hooks/message";
-import useSession from "hooks/session";
 import { useEffect, useState } from "react";
 
 import Modal from "components/Modal";
@@ -32,7 +31,6 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
   const [publisher, setPublisher] = useState<Publisher | void>();
   const { me } = useUser();
   const { rejectGoLive } = useMessage();
-  const { session, connected } = useSession();
 
   const mStyles = useStyles();
 
