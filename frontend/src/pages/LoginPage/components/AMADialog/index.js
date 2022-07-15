@@ -2,7 +2,6 @@
 import React from "react";
 import clsx from "clsx";
 import validator from "validator";
-import AMAAPI from "api/ama";
 
 import useStyles from "./styles";
 import { useParams } from "react-router-dom";
@@ -30,7 +29,7 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
   const { tenant } = useParams<IParams>();
   const mStyles = useStyles();
 
-  async function handleSubmit(e){
+  function handleSubmit(e){
     e.preventDefault();
     const checker = {
       fistName: !validator.isEmpty(firstName),
@@ -44,9 +43,8 @@ function AMADialog({ onLoggedIn, role }: AMADialogProps){
       const participant = new Participant({
         firstName, lastName, email, companyName
       })
-      await AMAAPI.create({ tenant, participant });
       const user = new User({ name: `${firstName} ${lastName}`, role })
-      onLoggedIn(user);
+      onLoggedIn(user, participant);
     }else alert("Please fill all details");
   }
 

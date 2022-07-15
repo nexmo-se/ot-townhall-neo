@@ -12,21 +12,23 @@ import { useParams } from "react-router-dom";
 import Icon from "components/Icon";
 import Tooltip from "components/Tooltip";
 
+import { useSettings } from "../SettingsProvider";
+
 interface URLParameters {
   tenant: string;
 }
 
 function ParticipantDownload () {
   // Indicate participant login type only
-  const [loginType, setLoginType] = useState<string>("default");
   const [isRequesting, setIsRequesting] = useState<boolean>(false);
   const { tenant } = useParams<URLParameters>();
+  const { participantLoginType } = useSettings();
 
   async function handleDownloadClick () {
     try {
       setIsRequesting(true);
-      
-      const url = `${Config.apiURL}/ama?tenant=${tenant}`;
+
+      const url = `${Config.apiURL}/ama?tenant=${encodeURIComponent(tenant)}`;
       const response = await fetch(url);
 
       if (response.ok) {
@@ -41,26 +43,13 @@ function ParticipantDownload () {
         });
       }
     } catch (err) {
-      
+
     } finally {
       setIsRequesting(false);
     }
   }
-
-  useEffect(
-    () => {
-      async function fetchConfiguration () {
-        const configuration = await ConfigurationService.retrieve({ tenant });
-        setLoginType(configuration.participant.loginType);
-      }
-
-      if (!tenant) return;
-      fetchConfiguration();
-    },
-    [tenant]
-  )
   
-  if (loginType !== "ama") return null;
+  if (participantLoginType !== "ama") return null;
   else {
     return (
       <Tooltip title="Download List">

@@ -1,6 +1,7 @@
 // @flow
-import React from "react";
+import React, { useEffect } from "react";
 import User from "entities/user";
+import Participant from "entities/participant";
 
 import useMe from "hooks/me";
 import { useParams, useHistory } from "react-router-dom";
@@ -11,14 +12,22 @@ interface IParam { role: string, tenant: string }
 function LoginPage(){
   const [ loading, setLoading ] = React.useState<boolean>(false);
   const { tenant, role } = useParams<IParam>();
-  const { login } = useMe();
-  const { push } = useHistory();
+  const { login, loggedIn } = useMe();
+  const history = useHistory();
 
-  const handleLoggedIn = React.useCallback(async (user: User): Promise<void> => {
+  const handleLoggedIn = React.useCallback(async (user: User, participant: Participant): Promise<void> => {
     setLoading(true);
-    login(user);
-    push(`/${tenant}/${role}`);
-  }, [ login, push, role, tenant ]);
+    login(user, participant);
+    history.push(`/${tenant}/${role}`);
+  }, [ login, history.push, role, tenant ]);
+
+  useEffect(() => {
+    // Window back button clicked
+    if (history.action === "POP" && loggedIn) {
+      history.push(`/thank-you`);
+      window.location.reload();
+    }
+  }, [history.action, loggedIn])
 
   /**
    * By pass login here

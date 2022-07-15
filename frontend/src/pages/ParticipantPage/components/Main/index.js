@@ -1,6 +1,8 @@
 // @flow
 import React from "react";
 import CredentialAPI from "api/credential";
+import AMAAPI from "api/ama";
+
 import User from "entities/user";
 import clsx from "clsx";
 import { v4 as uuid } from "uuid";
@@ -14,7 +16,7 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 
 import RaiseHandButton from "../RaiseHandButton";
-import PrecallDialog from "../PrecallDialog";
+import PrecallDialog from "components/PrecallDialog";
 import ReactionButton from "components/ReactionButton";
 import InfoDialog from "components/InfoDialog";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
@@ -32,7 +34,7 @@ function Main () {
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
   const [publisherFailedOpen, setPublisherFailedOpen] = useState<boolean>(false);
   
-  const { me, loggedIn } = useMe();
+  const { me, loggedIn, customerDetails } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { intendedForMe, publishFailed } = useMessage();
@@ -116,6 +118,12 @@ function Main () {
       tenant
     ]
   );
+
+  useEffect(() => {
+    if (tenant && customerDetails) {
+      AMAAPI.create({ tenant, participant: customerDetails });
+    }
+  }, [tenant, customerDetails])
 
   useEffect(
     () => {

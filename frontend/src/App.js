@@ -5,12 +5,14 @@ import MeProvider from 'contexts/me';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+
 import PresenterPage from 'pages/PresenterPage';
 import ParticipantPage from 'pages/ParticipantPage';
 import ModeratorPage from 'pages/ModeratorPage';
 import GhostRiderPage from 'pages/GhostRiderPage';
 import ExperienceComposer from 'pages/ExperienceComposerPage';
 import LoginPage from 'pages/LoginPage';
+import LobbyPage from "pages/LobbyPage";
 import ThankYouPage from 'pages/ThankYouPage';
 
 import './App.css';
@@ -27,6 +29,7 @@ function App() {
               path="/:tenant/participant"
               component={ParticipantPage}
             />
+            <Route exact path="/:tenant/participant/lobby" component={LobbyPage} />
             <Route exact path="/:tenant/moderator" component={ModeratorPage} />
             <Route
               exact
