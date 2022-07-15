@@ -1,4 +1,5 @@
 import PinConfiguration from "./pin";
+import LobbyConfiguration from "./lobby";
 
 const config = {
   default: {
@@ -20,6 +21,12 @@ const config = {
       chat: true,
       participants: true,
       polling: true
+    },
+    lobbySource: {
+      link: LobbyConfiguration.lobbySource
+    },
+    state: {
+      status: "locked"
     }
   },
   vidsDefault: {
@@ -41,6 +48,12 @@ const config = {
       chat: true,
       participants: true,
       polling: true
+    },
+    lobbySource: {
+      link: LobbyConfiguration.lobbySource
+    },
+    state: {
+      status: "locked"
     }
   }
 }

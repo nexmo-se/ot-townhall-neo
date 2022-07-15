@@ -25,11 +25,13 @@ interface PrecallDialogProps {
 }
 
 function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) {
+  const [disableJoinButton, setDisableJoinButton] = useState<boolean>(true);
   const [hasCamera, setHasCamera] = useState<boolean>(true);
   const [hasMic, setHasMic] = useState<boolean>(true);
   const [publisher, setPublisher] = useState<Publisher | void>();
   const { me } = useUser();
   const { rejectGoLive } = useMessage();
+
   const mStyles = useStyles();
 
   function handleRejectClick () {
@@ -60,9 +62,8 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
 
   useEffect(
     () => {
-      if (!visible) return;
-      
-      const publisher = OT.initPublisher("precall-publisher", {
+      if (!visible || publisher) return;
+      const publishObj = OT.initPublisher("precall-publisher", {
         insertMode: "append",
         name: "Precall",
         style: {
@@ -71,9 +72,9 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
           backgroundImageURI: AvatarImage
         }
       });
-      setPublisher(publisher);
+      setPublisher(publishObj);
     },
-    [visible]
+    [visible, publisher]
   );
 
   useEffect(
@@ -106,6 +107,14 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
     [publisher, visible]
   )
 
+  useEffect(
+    () => {
+      if (publisher) {
+        setDisableJoinButton(false)
+      }
+    },
+    [publisher]
+  )
 
   return (
     <Modal
@@ -169,15 +178,18 @@ function PrecallDialog ({ visible, setVisible, onApprove }: PrecallDialogProps) 
         </div>
       </Modal.Content>
       <Modal.Footer>
+        {(me && me.role === "participant") ?
         <Button
           text="Decline"
           className="Vlt-btn--tertiary"
           onClick={handleRejectClick}
-        />
+        /> : null}
         <Button
-          text="Join Live"
+          text={(me && me.role === "participant") ? "Join Live" : "Join"}
           onClick={handleApproveClick}
+          disabled={disableJoinButton}
         />
+        {disableJoinButton ? <p>Connecting...</p> : null}
       </Modal.Footer>
     </Modal>
   );

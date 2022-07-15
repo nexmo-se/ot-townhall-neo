@@ -1,7 +1,9 @@
 // @flow
 import React from "react";
 import CredentialAPI from "api/credential";
+import AMAAPI from "api/ama";
 import clsx from "clsx";
+import config from "config";
 
 import useSession from "hooks/session";
 import useStyles from "./styles";
@@ -20,15 +22,19 @@ import PublisherFailedDialog from "components/PublisherFailedDialog";
 import InfoDialog from "components/InfoDialog";
 import FullPageLoading from "components/FullPageLoading";
 import ParticipantList from "components/ParticipantList";
+import PrecallDialog from "components/PrecallDialog";
+import { useSettings } from "../SettingsProvider";
 
 interface URLParamters { tenant: string }
 
 function Main () {
+  const [precallOpen, setPrecallOpen] = useState<boolean>(false);
   const [publishFailed, setPublishFailed] = useState<boolean>(false);
   const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
   const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
-  const { me, loggedIn } = useMe();
+  const { me, loggedIn, customerDetails } = useMe();
   const { session, connected, connections, connectWithCredential } = useSession();
+  const { lobbySource, fetchConfiguration } = useSettings()
   const { publish: publishCamera, unpublish: unpublishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
   const { tenant } = useParams<URLParamters>();
   const mStyles = useStyles();
@@ -58,6 +64,37 @@ function Main () {
     []
   )
 
+  const checkLobbySrc = useCallback(async () => {
+    const domain = (new URL(lobbySource));
+    if (domain.origin !== config.apiURL) return;
+    const response = await fetch(lobbySource);
+    if (!response.ok) {
+      alert("Lobby Marketing Link is invalid, upload a new video/image to Setting -> Lobby Marketing.")
+    }
+  }, [lobbySource])
+
+  function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
+    if (!me) return;
+    publishCamera({
+      session,
+      user: me,
+      onError: publishErrorListener,
+      extraData: {
+        videoSource: publisher.getVideoSource(),
+        publishAudio: hasAudio,
+        publishVideo: hasVideo
+      }
+    });
+    setPublishFailed(false);
+  }
+
+  useEffect(() => {
+    if (me && session && connected) {
+      fetchConfiguration()
+      setPrecallOpen(true);
+    }
+  }, [me, session, connected])
+
   useEffect(
     () => {
       async function connect () {
@@ -75,20 +112,16 @@ function Main () {
     [loggedIn, me, connectWithCredential, tenant]
   );
 
-  useEffect(
-      () => {
-      if (connected && session && me) {
-        publishCamera({
-          session,
-          user: me,
-          onError: publishErrorListener
-        });
-        setPublishFailed(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [connected, session, me, publishErrorListener]
-  );
+  useEffect(() => {
+    if (tenant && customerDetails) {
+      AMAAPI.create({ tenant, participant: customerDetails });
+    }
+  }, [tenant, customerDetails])
+
+  useEffect(() => {
+      // check if source link is valid
+      if (lobbySource && connected && cameraPublisher) checkLobbySrc();
+  }, [lobbySource, connected, cameraPublisher])
 
   useEffect(
     () => {
@@ -104,7 +137,12 @@ function Main () {
 
   return (
     <>
-      {!connected && <FullPageLoading />}
+      <PrecallDialog
+        visible={precallOpen}
+        setVisible={setPrecallOpen}
+        onApprove={handleApproveClick}
+      />
+      {(!connected || !cameraPublisher) ? <FullPageLoading /> : null}
       <div className={mStyles.container}>
         <div className={mStyles.leftSection}>
           <div className={mStyles.item} style={{ 

@@ -4,6 +4,7 @@ import "regenerator-runtime/runtime";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import * as fsx from "fs-extra"; 
 
 import config from "./config";
 import DatabaseAPI from "./api/database";
@@ -20,6 +21,8 @@ import AMARouter from "./router/ama";
 import PollRouter from "./router/poll";
 import ConfigurationRouter from "./router/configuration";
 import AuthRouter from "./router/auth";
+import UploadRouter from "./router/upload";
+
 
 (async () => {
   Firebase.init();
@@ -29,6 +32,9 @@ import AuthRouter from "./router/auth";
   console.log("Firebase initialised");
   console.log("Database initialised");
   console.log("Database migrated");
+
+  let createDir = __dirname + '/uploads/lobby';
+  fsx.ensureDir(createDir);
   
   const app = express();
   
@@ -44,7 +50,10 @@ import AuthRouter from "./router/auth";
   app.use("/pollings", PollRouter);
   app.use("/configurations", ConfigurationRouter);
   app.use("/auth", AuthRouter);
+  app.use("/upload", UploadRouter);
   
+  app.use("/uploaded/lobby", express.static(__dirname + '/uploads/lobby'));
+
   app.listen(process.env.PORT, () => {
     console.log(`Express is listening on port: ${config.port || 2000}`);
     console.log("NODE_ENV:", process.env.NODE_ENV);

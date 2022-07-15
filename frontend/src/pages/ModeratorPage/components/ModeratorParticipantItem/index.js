@@ -12,6 +12,7 @@ import ShareScreenButton from 'components/ShareScreenButton';
 import ControlButton from 'components/ControlButton';
 import BackgroundBlurButton from 'components/BackgroundBlurButton';
 import ExperienceRendererButton from '../ExperienceRendererButton';
+import RoomControlButton from '../RoomControlButton';
 
 import * as VideoEffects from '@vonage/video-effects';
 
@@ -175,6 +176,11 @@ function ModeratorParticipantItem({
             fontSize={16}
             style={{ marginRight: 8, marginBottom: 8 }}
           />
+          <RoomControlButton
+              size={32}
+              fontSize={16}
+              style={{ marginRight: 8, marginBottom: 8 }}
+            />
         </>
       }
     />
