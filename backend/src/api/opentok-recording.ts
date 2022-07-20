@@ -3,29 +3,29 @@ import Recording from "../entities/recording";
 import { Duration, DateTime } from "luxon";
 import { Archive } from "opentok";
 
-interface IList { 
+interface IList {
   sessionID: string;
 }
 
-class OpentokRecording{
-  async create(sessionID: string): Promise<Recording>{
+class OpentokRecording {
+  async create(sessionID: string): Promise<Recording> {
     const archive = await new Promise((resolve: (value: Archive) => void, reject) => {
-      OT.getInstance().startArchive(sessionID, { resolution: "1280x720" }, (err: any, archive: Archive) => {
-        if(err) reject(err);
+      OT.getInstance().startArchive(sessionID, { resolution: "1920x1080" }, (err: any, archive: Archive) => {
+        if (err) reject(err);
         else resolve(archive);
       });
     });
-    const recording = new Recording({ 
+    const recording = new Recording({
       id: archive.id,
       sessionID: archive.sessionId
     });
     return recording;
   }
-  
-  async destroy(recording: Recording): Promise<void>{
+
+  async destroy(recording: Recording): Promise<void> {
     await new Promise((resolve, reject) => {
       OT.getInstance().stopArchive(recording.id, (err: any) => {
-        if(err) reject(err);
+        if (err) reject(err);
         else resolve();
       });
     });
@@ -40,7 +40,7 @@ class OpentokRecording{
         } else resolve(archives)
       })
     });
-    
+
     const recordings = rawRecordings.map((raw) => {
       return new Recording({
         id: raw.id,

@@ -6,19 +6,19 @@ import axios from "axios";
 import jwt = require("jsonwebtoken");
 
 const rendererStatus = {
-    archiveStarted:  "RENDERER_ARCHIVE_STARTED",
-    archiveStopped:  "RENDERER_ARCHIVE_STOPPED",
+  archiveStarted: "RENDERER_ARCHIVE_STARTED",
+  archiveStopped: "RENDERER_ARCHIVE_STOPPED",
 };
 
-class OT{
+class OT {
   static instance: OpenTok;
-  
-  static init(): void{
+
+  static init(): void {
     OT.instance = new OpenTok(config.apiKey, config.apiSecret);
   }
-  
-  static getInstance(): OpenTok{
-    if(!OT.instance) OT.init();
+
+  static getInstance(): OpenTok {
+    if (!OT.instance) OT.init();
     return OT.instance;
   }
 
@@ -47,12 +47,12 @@ class OT{
     });
   }
 
-  static startArchive(sessionId: string): Promise<Archive>{
+  static startArchive(sessionId: string): Promise<Archive> {
     return new Promise((resolve, reject) => {
-        OT.getInstance().startArchive(
-            sessionId,
+      OT.getInstance().startArchive(
+        sessionId,
         {
-          resolution: "1280x720",
+          resolution: "1920x1080",
         },
         function (error, archive) {
           if (error) {
@@ -64,36 +64,36 @@ class OT{
       );
     });
   }
-  
-  static stopArchive(archiveId: string): Promise<Archive>{
+
+  static stopArchive(archiveId: string): Promise<Archive> {
     return new Promise((resolve, reject) => {
-        OT.getInstance().getArchive(archiveId, function (err: Error, archive:Archive) {
-            if (err) {
-              reject(err);
+      OT.getInstance().getArchive(archiveId, function (err: Error, archive: Archive) {
+        if (err) {
+          reject(err);
+        } else {
+          // @ts-ignore
+          archive.stop(function (error, archiveStopped) {
+            if (error) {
+              reject(error);
             } else {
-                // @ts-ignore
-                archive.stop(function (error, archiveStopped) {
-                    if (error) {
-                      reject(error);
-                    } else {
-                        console.log("[stopArchive] - Archive Stopped", archiveStopped);
-                      resolve(archiveStopped);
-                    }
-                  });
+              console.log("[stopArchive] - Archive Stopped", archiveStopped);
+              resolve(archiveStopped);
             }
           });
+        }
+      });
     });
   }
 
   static async getArchive(sessionId: string): Promise<Archive[]> {
     return new Promise((resolve, reject) => {
-        //todo need to use listArchive by sessionId
-        OT.getInstance().listArchives({ sessionId }, (err: any, archives: Archive[]) => {
-            if (err) {
-              console.log(err);
-              resolve([]);
-            } else resolve(archives);
-          });
+      //todo need to use listArchive by sessionId
+      OT.getInstance().listArchives({ sessionId }, (err: any, archives: Archive[]) => {
+        if (err) {
+          console.log(err);
+          resolve([]);
+        } else resolve(archives);
+      });
     });
   }
 
@@ -121,7 +121,7 @@ class OT{
   static async createRender(roomName: string): Promise<any> {
     try {
       const { sessionId, token, apiKey } = await this.getCredentials();
-        
+
       let rendererURL = "https://www.youtube.com/watch?v=h-ce3gPMsGc";
       let statusURL = process.env.RENDERER_URL_DEVELOPMENT;
       if (process.env.NODE_ENV !== "development") {
@@ -136,7 +136,7 @@ class OT{
         projectId: apiKey,
         statusCallbackUrl: `${statusURL}renderer/status`,
       });
-  
+
       const axiosConfig = {
         method: "post",
         url: `https://api.opentok.com/v2/project/${apiKey}/render`,
@@ -156,8 +156,8 @@ class OT{
     }
   }
 
-  static async deleteRender(id: string): Promise<any>{
-      // deleteRender apiKey
+  static async deleteRender(id: string): Promise<any> {
+    // deleteRender apiKey
     const axiosConfig = {
       method: "delete",
       url: `https://api.opentok.com/v2/project/${config.apiKey}/render/${id}`,
@@ -166,9 +166,9 @@ class OT{
         "Content-Type": "application/json",
       },
     };
-  
+
     try {
-        // @ts-ignore: Unreachable code error
+      // @ts-ignore: Unreachable code error
       const response = await axios(axiosConfig);
       return response.data;
     } catch (e) {
@@ -179,38 +179,38 @@ class OT{
 
   static async listRenderers(): Promise<any> {
     try {
-        console.log("[listRenderers]", config.apiKey);
-        const axiosConfig = {
-            method: "get",
-            url: `https://api.opentok.com/v2/project/${config.apiKey}/render`,
-            headers: {
-              "X-OPENTOK-AUTH": await OT.generateRestToken(),
-              "Content-Type": "application/json",
-            }
-          };
-          // @ts-ignore: Unreachable code error
-          const response = await axios(axiosConfig);
-          console.log("[OT Utils] - data", response.data);
-          return response.data;
-        } catch (e) {
-          console.log("createRender", e);
-          return e;
+      console.log("[listRenderers]", config.apiKey);
+      const axiosConfig = {
+        method: "get",
+        url: `https://api.opentok.com/v2/project/${config.apiKey}/render`,
+        headers: {
+          "X-OPENTOK-AUTH": await OT.generateRestToken(),
+          "Content-Type": "application/json",
         }
+      };
+      // @ts-ignore: Unreachable code error
+      const response = await axios(axiosConfig);
+      console.log("[OT Utils] - data", response.data);
+      return response.data;
+    } catch (e) {
+      console.log("createRender", e);
+      return e;
+    }
   }
 
-  
+
 
   static async sendSignal(type: string, data: any, sessionId: string, connectionId?: string): Promise<any> {
-      const toSend = {type,data};
-      return new Promise((resolve, reject)=>{
-        OT.getInstance().signal(sessionId, connectionId, toSend, (err)=>{
-            if (err) {
-                reject(err);
-            }
-            resolve("OK");
-        });
+    const toSend = { type, data };
+    return new Promise((resolve, reject) => {
+      OT.getInstance().signal(sessionId, connectionId, toSend, (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve("OK");
       });
-    
+    });
+
   }
 
   static async sendRendererStartStatuts(sessionId: string, connectionId: string): Promise<any> {
