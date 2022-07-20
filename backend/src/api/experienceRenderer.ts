@@ -1,5 +1,4 @@
 import OT from "../utils/opentok";
-import admin from "firebase-admin";
 import Firestore from "../utils/firestore";
 import ExperienceRenderer from "../entities/experienceRenderer";
 
