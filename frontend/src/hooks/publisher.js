@@ -12,7 +12,7 @@ interface BasePublishOptions {
   session: Session;
 }
 
-interface UnpublishOptions extends BasePublishOptions {};
+interface UnpublishOptions extends BasePublishOptions { };
 interface PublishOptions extends BasePublishOptions {
   user: User;
   extraData?: any;
@@ -28,15 +28,15 @@ interface IReturnValue {
   publisher?: Publisher;
 }
 
-interface IPublisher{
+interface IPublisher {
   containerID: string;
   autoLayout?: boolean;
   name?: string;
 }
 
-function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IReturnValue{
+function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IReturnValue {
   const { addStream, removeStream } = useSession();
-  const publisherRef = React.useRef<Publisher | void>();
+  const publisherRef = React.useRef < Publisher | void> ();
 
   const streamCreatedListener = React.useCallback(
     ({ stream }) => {
@@ -57,10 +57,10 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
       console.log(`Attempting to publish in ${attempt} try`)
 
       if (!publisherRef.current) {
-        const options = { 
+        const options = {
           insertMode: "append",
-          name: name? name: user.name,
-          style: { 
+          name: name ? name : user.name,
+          style: {
             buttonDisplayMode: "off",
             nameDisplayMode: "on",
             backgroundImageURI: AvatarImage
@@ -70,6 +70,9 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
         if (videoSource) {
           options['mirror'] = true;
           options['videoSource'] = videoSource;
+        }
+        if (videoSource === "screen") {
+          options['scalableScreenshare'] = true;
         }
 
         const finalOptions = Object.assign({}, options, extraData);
@@ -125,7 +128,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
     ]
   );
 
-  const unpublish =  React.useCallback(
+  const unpublish = React.useCallback(
     async ({ session }: UnpublishOptions) => {
       if (publisherRef.current) await session.unpublish(publisherRef.current);
       if (publisherRef.current) publisherRef.current.destroy()
@@ -134,7 +137,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
     []
   );
 
-  return { 
+  return {
     publisher: publisherRef.current,
     publish,
     unpublish
