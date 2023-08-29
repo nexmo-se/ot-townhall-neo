@@ -32,6 +32,7 @@ function Main () {
   const [refreshToken, setRefreshToken] = useState<string>(uuid());
   const [precallOpen, setPrecallOpen] = useState<boolean>(false);
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
+  const [videoHoverVisible, setVideoHoverVisible] = useState<boolean>(false);
   const [publisherFailedOpen, setPublisherFailedOpen] = useState<boolean>(false);
   
   const { me, loggedIn, customerDetails } = useMe();
@@ -144,7 +145,10 @@ function Main () {
         <div className={clsx(mStyles.leftContainer, mStyles.black)}>
           <MainScreen />
           {cameraPublisher? (
-            <VideoHoverContainer>
+            <VideoHoverContainer
+            videoHoverVisible={videoHoverVisible}
+            setVideoHoverVisible={setVideoHoverVisible}
+            >
               <VideoControl 
                 publisher={cameraPublisher} 
                 unpublish={unpublish}
