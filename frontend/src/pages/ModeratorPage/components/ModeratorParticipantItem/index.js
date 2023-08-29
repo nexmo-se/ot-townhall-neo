@@ -42,7 +42,7 @@ function ModeratorParticipantItem({
     publish: screenPublish,
     unpublish: screenUnpublish
   } = usePublisher({ containerID: 'cameraContainer' });
-  const { connected, session } = useSession();
+  const { connected, session, streams } = useSession();
 
   const backgroundBlur = React.useRef(null);
   const localMediaTrack = React.useRef(null);
@@ -51,41 +51,30 @@ function ModeratorParticipantItem({
   const domCameraContainer = document.getElementById('cameraContainer');
 
   // Screen Sharing
-  async function handleShareScreenClick() {
+  async function handleShareScreenClick(videoContentHint = "") {
     if (session && !sharing) {
       const screenUser = new User({ name: '', role: 'sharescreen' });
       await screenPublish({
         session: session,
         user: screenUser,
-        extraData: { videoSource: 'screen' }
+        extraData: { videoSource: 'screen',  videoContentHint},
+        attempt: 3 // Do not retry
       });
-      setSharing(true);
     } else if (session && sharing) {
       await screenUnpublish({ session: session });
-      setSharing(false);
     }
   }
 
-  const streamCreatedListener = React.useCallback(() => setSharing(true), []);
-
-  const streamDestroyedListener = React.useCallback(async () => {
-    await screenUnpublish({ session: session });
-    setSharing(false);
-  }, [session, screenUnpublish]);
-
   React.useEffect(() => {
-    if (screenPublisher)
-      screenPublisher.on('streamCreated', streamCreatedListener);
-    if (screenPublisher)
-      screenPublisher.on('streamDestroyed', streamDestroyedListener);
-
-    return function cleanup() {
-      if (screenPublisher)
-        screenPublisher.off('streamCreated', streamCreatedListener);
-      if (screenPublisher)
-        screenPublisher.off('streamDestroyed', streamDestroyedListener);
-    };
-  }, [screenPublisher, streamCreatedListener, streamDestroyedListener]);
+    if (!streams || !screenPublisher) return
+    const myShareStreamFound = streams.find((stream) => screenPublisher.stream && stream.id == screenPublisher.stream.id)
+    if (!sharing && myShareStreamFound ) {
+      setSharing(true)
+    }
+    else if (sharing && !myShareStreamFound) {
+      setSharing(false)
+    }
+  }, [streams, screenPublisher])
 
   // Background Blur
   async function handleBackgroundBlurEffectClick() {
@@ -167,7 +156,7 @@ function ModeratorParticipantItem({
             size={32}
             fontSize={16}
             style={{ marginRight: 8 }}
-            onClick={handleShareScreenClick}
+            screenShareClick={handleShareScreenClick}
             isSharing={sharing}
           />
           <ControlButton.CycleCamera
