@@ -174,6 +174,13 @@ export default function SessionProvider({
     );
   }
 
+  function sessionDisconectedListener(event) {
+    if (event.reason == "forceDisconnected") {
+      sessionRef.current = null
+      window.location.replace("/thank-you");
+    }
+  }
+
   const connectWithCredential = React.useCallback(
     async (credential: Credential) => {
       if (!sessionRef.current) {
@@ -189,6 +196,7 @@ export default function SessionProvider({
         );
         sessionRef.current.on('streamCreated', streamCreatedListener);
         sessionRef.current.on('streamDestroyed', streamDestroyedListener);
+        sessionRef.current.on('sessionDisconnected', sessionDisconectedListener);
 
         await new Promise((resolve, reject) => {
           sessionRef.current.connect(credential.token, (err) => {
@@ -204,7 +212,8 @@ export default function SessionProvider({
       connectionCreatedListener,
       connectionDestroyedListener,
       streamCreatedListener,
-      streamDestroyedListener
+      streamDestroyedListener,
+      sessionDisconectedListener
     ]
   );
 

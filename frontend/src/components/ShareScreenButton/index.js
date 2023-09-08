@@ -14,8 +14,9 @@ const contentHints = [
 ]
 
 function ShareScreenButton({ isSharing, ...props }){
-  const [open, setOpen] = useState(null);
-  const { screenShareClick, videoHoverVisible } = props
+  const [open, setOpen] = useState(false);
+  const { screenShareClick, videoHoverVisible, ...otherProps  } = props
+  
   const inputEl = useRef(null);
 
   const handleClick = (event) => {
@@ -42,7 +43,7 @@ function ShareScreenButton({ isSharing, ...props }){
     <ControlButton 
       active={isSharing}
       tooltip={isSharing? "Stop Sharing": "Share Screen"}
-      {...props}
+      {...otherProps}
       onClick={handleClick}
     >
       <ShareScreenIcon fontSize="inherit" ref={inputEl}/>

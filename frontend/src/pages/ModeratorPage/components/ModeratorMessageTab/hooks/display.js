@@ -22,6 +22,7 @@ function useDisplay({ tenant }: IArgs){
   });
 
   React.useEffect(() => {
+    if (!tenant) return
     async function fetch(){
       const configuration = await ConfigurationService.retrieve({ tenant });
       setDisplay(configuration.tabs);

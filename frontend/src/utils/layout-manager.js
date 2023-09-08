@@ -20,7 +20,7 @@ class LayoutManager implements ILayoutManager{
     if(element) this.manager = LM(element, { 
       fixedRatio: true, 
       bigFirst: false,
-      bigFixedRatio: true,
+      // bigFixedRatio: true,
       bigAlignItems: "left"
     });
     else throw new Error("Cannot find container");

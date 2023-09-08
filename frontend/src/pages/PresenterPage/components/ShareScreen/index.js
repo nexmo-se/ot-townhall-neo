@@ -33,6 +33,7 @@ function ShareScreen(props){
     }
     else if (sharing && !myShareStreamFound) {
       setSharing(false)
+      unpublish({ session: session })
     }
   }, [streams, screenPublisher])
 

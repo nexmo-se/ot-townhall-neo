@@ -72,10 +72,10 @@ function InviteLiveButton ({ user }: InviteLiveButtonProps) {
     <button
       className="Vlt-btn Vlt-btn--app"
       disabled={disabled}
-      style={{ margin: 0 }}
+      style={{ margin: "0 4px" }}
       onClick={handleInviteClick}
     >
-      Invite Live
+      Live
     </button>
   )
 }

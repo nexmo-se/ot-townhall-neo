@@ -12,9 +12,10 @@ import ShareScreenButton from 'components/ShareScreenButton';
 import ControlButton from 'components/ControlButton';
 import BackgroundBlurButton from 'components/BackgroundBlurButton';
 import ExperienceRendererButton from '../ExperienceRendererButton';
-import RoomControlButton from '../RoomControlButton';
+import LockRoomButton from '../LockRoomButton';
 
 import * as VideoEffects from '@vonage/video-effects';
+import RemoveParticipantsButton from '../RemoveParticipantsButton';
 
 const { BackgroundBlurEffect } = VideoEffects;
 
@@ -73,6 +74,7 @@ function ModeratorParticipantItem({
     }
     else if (sharing && !myShareStreamFound) {
       setSharing(false)
+      screenUnpublish({ session: session });
     }
   }, [streams, screenPublisher])
 
@@ -165,11 +167,16 @@ function ModeratorParticipantItem({
             fontSize={16}
             style={{ marginRight: 8, marginBottom: 8 }}
           />
-          <RoomControlButton
+          <LockRoomButton
               size={32}
               fontSize={16}
               style={{ marginRight: 8, marginBottom: 8 }}
-            />
+          />
+           <RemoveParticipantsButton
+              size={32}
+              fontSize={16}
+              style={{ marginRight: 8, marginBottom: 8 }}
+          />
         </>
       }
     />
