@@ -5,6 +5,7 @@ import useStyles from "./styles";
 import User from "entities/user";
 
 import InviteLiveButton from "../InviteLiveButton";
+import RemoveParticipantButton from "../RemoveParticipantButton"
 import Avatar from "components/Avatar";
 
 interface IParticipantItem { user: User };
@@ -23,8 +24,11 @@ function ParticipantItem({ user }: IParticipantItem){
       <div className={clsx("Vlt-card__content", mStyles.content)}>
         <Avatar user={user} className={mStyles.avatar} size={50} />
         <div className={mStyles.nameContent}>
-          <p><b>{user.name}</b></p>    
-          <InviteLiveButton user={user} />
+          <p><b>{user.name}</b></p>
+          <div>
+            <InviteLiveButton user={user}/>
+            <RemoveParticipantButton user={user} />
+          </div> 
         </div>
       </div>
     </div>

@@ -162,7 +162,6 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
               flexWrap: "wrap"
             }}
           >
-            {additionalControls}
             <ControlButton.Video 
               size={32} 
               fontSize={16} 
@@ -179,6 +178,7 @@ function LiveParticipantItem (props: LiveParticipantItemProps) {
               hasAudio={hasAudio}
               disabled={(subscriber || publisher)? false: true}
             />
+            {additionalControls}
             { showHangup && <Hangup subscriber={subscriber} /> }
           </div> 
         </div>

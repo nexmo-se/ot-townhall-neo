@@ -27,6 +27,7 @@ function ControlButton(props: ControlButtonProps) {
     className,
     children,
     tooltip,
+    forceColor,
     ...otherProps 
   } = props
 
@@ -45,11 +46,11 @@ function ControlButton(props: ControlButtonProps) {
       className={
         clsx({
           [className]: true,
-          [otherProps.forceColor]: !!otherProps.forceColor,
+          [forceColor]: !!forceColor,
           "Vlt-white": true,
-          "Vlt-bg-green": (active && !loading) && !otherProps.forceColor,
-          "Vlt-bg-red": (!active && !loading) && !otherProps.forceColor,
-          "Vlt-bg-grey": (loading || otherProps.disabled) && !otherProps.forceColor,
+          "Vlt-bg-green": (active && !loading) && !forceColor,
+          "Vlt-bg-red": (!active && !loading) && !forceColor,
+          "Vlt-bg-grey": (loading || otherProps.disabled) && !forceColor,
           [mStyles.icon]: true,
         })
       }

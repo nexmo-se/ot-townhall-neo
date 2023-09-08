@@ -11,12 +11,12 @@ import LockRoomModal from "../LockRoomModal";
 
 import { useSettings } from "../SettingsProvider";
 
-interface IRoomControlButton {
+interface ILockRoomButton {
   size: number,
   fontSize: number
 }
 
-function RoomControlButton({ ...props }: IRoomControlButton){
+function LockRoomButton({ ...props }: ILockRoomButton){
   const [ isLocked, setIsLocked ] = useState<boolean>(true);
   const [openRoomModal, setOpenRoomModal] = useState<boolean>(false);
   const [lockRoomModal, setLockRoomModal] = useState<boolean>(false);
@@ -54,7 +54,7 @@ function RoomControlButton({ ...props }: IRoomControlButton){
       {isLocked? <LockIcon fontSize="inherit"/>: <UnlockIcon fontSize="inherit"/>}
     </ControlButton>
     <OpenRoomModal
-      name="RoomControlOpenRoomModal"
+      name="LockRoomOpenRoomModal"
       open={openRoomModal}
       onActionCompleted={toggleOpenRoomModal}
       onCancelClick={toggleOpenRoomModal}
@@ -68,5 +68,5 @@ function RoomControlButton({ ...props }: IRoomControlButton){
   )
 }
 
-RoomControlButton.defaultProps = { size: 50, fontSize: 24 }
-export default RoomControlButton;
+LockRoomButton.defaultProps = { size: 50, fontSize: 24 }
+export default LockRoomButton;
