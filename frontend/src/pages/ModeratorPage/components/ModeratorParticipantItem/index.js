@@ -67,14 +67,13 @@ function ModeratorParticipantItem({
   }
 
   React.useEffect(() => {
-    if (!streams || !screenPublisher) return
-    const myShareStreamFound = streams.find((stream) => screenPublisher.stream && stream.id == screenPublisher.stream.id)
+    if (!streams) return
+    const myShareStreamFound = streams.find((stream) => screenPublisher && screenPublisher.stream && stream.id == screenPublisher.stream.id)
     if (!sharing && myShareStreamFound ) {
       setSharing(true)
     }
     else if (sharing && !myShareStreamFound) {
       setSharing(false)
-      screenUnpublish({ session: session });
     }
   }, [streams, screenPublisher])
 
