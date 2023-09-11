@@ -48,6 +48,7 @@ function usePublisher({ containerID, autoLayout = true, name }: IPublisher): IRe
   const streamDestroyedListener = React.useCallback(
     ({ stream }) => {
       removeStream({ stream });
+      publisherRef.current = undefined;
     },
     [removeStream]
   )
