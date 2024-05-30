@@ -4,12 +4,14 @@ import User from "entities/user";
 
 import useSession from "hooks/session";
 import usePublisher from "hooks/publisher";
+import useMessage from "hooks/message";
 import ShareScreenButton from "components/ShareScreenButton";
 
 function ShareScreen(props){
   const [ sharing, setSharing ] = React.useState<boolean>(false);
   const { publisher: screenPublisher, publish, unpublish } = usePublisher({ containerID: "cameraContainer" });
   const { session, streams} = useSession();
+  const { intendedForMe } = useMessage();
 
   async function handleShareScreenClick(videoContentHint = ""){
     if(session && !sharing){
@@ -24,6 +26,29 @@ function ShareScreen(props){
       await unpublish({ session: session });
     }
   }
+
+  const forceUnpublishListener = React.useCallback(
+    async ({ data }) => {
+      if (intendedForMe({ data })) {
+        await unpublish({ session });
+      }
+    },
+    [
+      session,
+      unpublish,
+      intendedForMe
+    ]
+  )
+
+  React.useEffect(
+    () => {
+      if (session) session.on("signal:force-unpublish", forceUnpublishListener);
+      return function cleanup () {
+        if (session) session.off("signal:force-unpublish", forceUnpublishListener);
+      }
+    },
+    [session, forceUnpublishListener]
+  )
 
   React.useEffect(() => {
     if (!streams) return

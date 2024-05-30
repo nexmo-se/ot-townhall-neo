@@ -20,13 +20,13 @@ interface BackgroundBlurProps {
 function BackgroundBlur({
   publisher,
   unpublish,
-  publish
+  publish,
+  hasBackgroundBlurEffect,
+  setHasBackgroundBlurEffect
 }: BackgroundBlurProps) {
   const { connected, session } = useSession();
   const { me } = useMe();
 
-  const [hasBackgroundBlurEffect, setHasBackgroundBlurEffect] =
-    React.useState<boolean>(false);
   const [isBackgroundLoading, setIsBackgroundLoading] =
     React.useState<boolean>(false);
 
@@ -77,12 +77,8 @@ function BackgroundBlur({
       }
 
       setHasBackgroundBlurEffect(true);
-      setIsBackgroundLoading(false);
     } else {
       setIsBackgroundLoading(true);
-
-      backgroundBlur.current.stopEffect();
-      localMediaTrack.current.getTracks().forEach((t) => t.stop());
 
       await unpublish({ session: session });
 
@@ -95,8 +91,8 @@ function BackgroundBlur({
           videoSource: currentDeviceId.current
         });
       }
+
       setHasBackgroundBlurEffect(false);
-      setIsBackgroundLoading(false);
     }
   }
 
