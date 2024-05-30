@@ -25,6 +25,7 @@ import FullPageLoading from "components/FullPageLoading";
 import VideoControl from "components/VideoControl";
 import VideoHoverContainer from "components/VideoHoverContainer";
 import MainScreen from "components/MainScreen";
+import ShareScreen from "components/ShareScreen";
 
 interface IParam { tenant: string }
 function Main () {
@@ -34,7 +35,7 @@ function Main () {
   const [infoOpen, setInfoOpen] = useState<boolean>(false);
   const [videoHoverVisible, setVideoHoverVisible] = useState<boolean>(false);
   const [publisherFailedOpen, setPublisherFailedOpen] = useState<boolean>(false);
-  
+
   const { me, loggedIn, customerDetails } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
@@ -151,8 +152,11 @@ function Main () {
             >
               <VideoControl 
                 publisher={cameraPublisher} 
-                unpublish={unpublish}
-              />
+                unpublish={unpublish}>
+                <ShareScreen
+                  videoHoverVisible={videoHoverVisible}
+                />
+                </VideoControl>
             </VideoHoverContainer>
           ): null}
           <div className={mStyles.logoContainer}>

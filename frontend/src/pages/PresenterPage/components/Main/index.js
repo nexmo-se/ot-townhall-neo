@@ -11,8 +11,8 @@ import usePublisher from "hooks/publisher";
 import useSession from "hooks/session";
 import { useParams } from "react-router-dom";
 
-import ShareScreen from "../ShareScreen";
 import BackgroundBlur from "../BackgroundBlur";
+import ShareScreen from "components/ShareScreen";
 import PublisherFailedDialog from "components/PublisherFailedDialog";
 import FullPageLoading from "components/FullPageLoading";
 import VideoHoverContainer from "components/VideoHoverContainer"
@@ -30,6 +30,7 @@ function Main () {
   const [precallOpen, setPrecallOpen] = React.useState<boolean>(false);
   const [publishFailed, setPublishFailed] = React.useState<boolean>(false);
   const [videoHoverVisible, setVideoHoverVisible] = React.useState<boolean>(false);
+  const [hasBackgroundBlurEffect, setHasBackgroundBlurEffect] = React.useState<boolean>(false);
   const { me, loggedIn, customerDetails } = useMe();
   const { connected, session, connectWithCredential } = useSession();
   const { unpublish, publish: publishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
@@ -115,6 +116,8 @@ function Main () {
                     publisher={cameraPublisher}
                     unpublish={unpublish}
                     publish={publishCamera}
+                    hasBackgroundBlurEffect={hasBackgroundBlurEffect}
+                    setHasBackgroundBlurEffect={setHasBackgroundBlurEffect}
                   />
                 </VideoControl>
               </VideoHoverContainer>
