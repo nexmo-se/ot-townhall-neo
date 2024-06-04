@@ -32,7 +32,7 @@ function RemoveParticipantButton ({ user }: RemoveParticipantButtonProps) {
       style={{ margin: 0 }}
       onClick={handleRemoveParticipantClick}
     >
-      Diconnect
+      Disconnect
     </button>
   )
 }
