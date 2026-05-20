@@ -1,6 +1,5 @@
 import User from "./user";
 import moment from "moment";
-import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
 
 export type TStatus = "answered" | "open" | "selected" | "deleted";
@@ -20,6 +19,7 @@ class Question implements IQuestion{
   voters: User[];
   vote: number;
   status: TStatus;
+  createdAt: number;
   
   constructor(args: IQuestion){
     this.owner = args.owner;
@@ -28,33 +28,51 @@ class Question implements IQuestion{
     this.vote = args.vote || 0;
     this.id = args.id ?? uuid();
     this.status = args.status ?? "open";
+    this.createdAt = moment().unix();
   }
   
-  toDatabase(): Record<string, string | Record<string, string>>{
-    const jsonData = {
+  toDatabase(): Record<string, any>{
+    return {
+      id: this.id,
       owner: {
         id: this.owner.id,
         name: this.owner.name,
         role: this.owner.role
       },
       content: this.content,
-      created_at: moment().unix(),
+      created_at: this.createdAt,
       status: this.status,
-      vote: 0
+      vote: this.vote,
+      voters: this.voters.map((v) => v.toDatabase())
     };
-    return JSON.parse(JSON.stringify(jsonData));
+  }
+
+  toResponse(): Record<string, any> {
+    return {
+      id: this.id,
+      owner: {
+        id: this.owner.id,
+        name: this.owner.name,
+        role: this.owner.role
+      },
+      content: this.content,
+      created_at: this.createdAt,
+      status: this.status,
+      vote: this.vote,
+      voters: this.voters.map((v) => v.toDatabase())
+    };
   }
   
-  static fromDatabase(data: admin.firestore.DocumentData): Question{
-    const values = data.data();
+  static fromDatabase(data: Record<string, any>): Question{
     const question = new Question({
-      id: data.ref.id,
-      owner: User.fromDatabase(values.owner),
-      content: values.content,
-      voters: values.voters?.map((voter: any) => User.fromDatabase(voter)) || [],
-      vote: values.vote,
-      status: values.status ?? "deleted"
+      id: data.id,
+      owner: User.fromDatabase(data.owner),
+      content: data.content,
+      voters: data.voters?.map((voter: any) => User.fromDatabase(voter)) || [],
+      vote: data.vote,
+      status: data.status ?? "deleted"
     });
+    question.createdAt = data.created_at;
     return question;
   }
 }

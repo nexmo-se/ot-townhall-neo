@@ -1,7 +1,9 @@
 import QuestionAPI from "../api/question";
 import Question from "../entities/question";
 import User from "../entities/user";
+import SSEBroadcaster from "../utils/sse";
 import { Request, Response } from "express";
+import { v4 as uuid } from "uuid";
 
 class QuestionListener{
   static async create(req: Request, res: Response): Promise<void> {
@@ -50,6 +52,24 @@ class QuestionListener{
     });
     await Promise.all(promises);
     return res.json({}).end();
+  }
+
+  static async list(req: Request, res: Response): Promise<void> {
+    const { session_id: sessionID } = req.query;
+    const questions = await QuestionAPI.list({ sessionID: `${sessionID}` });
+    const payload = questions.map((q) => q.toResponse());
+    return res.json(payload).end();
+  }
+
+  static async stream(req: Request, res: Response): Promise<void> {
+    const { session_id: sessionID } = req.query;
+    const clientId = uuid();
+    SSEBroadcaster.addClient(`${sessionID}`, clientId, res);
+
+    // Send initial data
+    const questions = await QuestionAPI.list({ sessionID: `${sessionID}` });
+    const payload = questions.map((q) => q.toResponse());
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
   }
 }
 export default QuestionListener;

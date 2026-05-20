@@ -1,5 +1,3 @@
-import admin from "firebase-admin";
-
 interface IExperienceRenderer {
     rendererSession: string;
     rendererId: string;
@@ -46,15 +44,14 @@ class ExperienceRenderer {
         };
     }
 
-    static fromDatabase(data: admin.firestore.DocumentData): ExperienceRenderer{
-        const values = data.data();
-        console.log("[retrieveArchive] - fromDatabase", values);
+    static fromDatabase(data: Record<string, any>): ExperienceRenderer{
+        console.log("[retrieveArchive] - fromDatabase", data);
         const renderer = new ExperienceRenderer({
-            rendererSession: values.rendererSession,
-            currentSessionId: values.currentSessionId,
-            rendererId: values.rendererId,
-            roomName: values.roomName,
-            archiveId: values.archiveId,
+            rendererSession: data.rendererSession,
+            currentSessionId: data.currentSessionId,
+            rendererId: data.rendererId,
+            roomName: data.roomName,
+            archiveId: data.archiveId,
         });
         return renderer;
       }

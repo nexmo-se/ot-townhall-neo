@@ -6,6 +6,8 @@ import QuestionListener from "../../listeners/question";
 import Validator from "./validation";
 
 const router = express.Router();
+router.get("/", ash(QuestionListener.list));
+router.get("/stream", ash(QuestionListener.stream));
 router.post("/", validate(Validator.create), ash(QuestionListener.create));
 router.post("/:question_id/vote", validate(Validator.vote), ash(QuestionListener.vote));
 router.post("/:question_id/mark_as", ash(QuestionListener.markAs));

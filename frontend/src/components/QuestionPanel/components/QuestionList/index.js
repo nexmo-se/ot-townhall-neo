@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import Firestore from "utils/firestore";
+import QuestionStream from "utils/firestore";
 
 import Question from "entities/question";
 import User from "entities/user";
@@ -16,16 +16,14 @@ function QuestionList(){
   
   React.useEffect(() => {
     if(mSession.session){
-      const db = Firestore.getInstance();
       const { sessionId: sessionID } = mSession.session;
-      db.collection(`questions_${sessionID}`).orderBy("vote", "desc").onSnapshot((querySnapshot) => {
-        const questions = querySnapshot.docs.map((documentSnapshop) => {
-          const data = documentSnapshop.data();
+      const unsubscribe = QuestionStream.subscribe(sessionID, (questionsData) => {
+        const questions = questionsData.map((data) => {
           const user = new User({ name: data.owner.name, role: data.owner.role });
           user.id = data.owner.id;
           
           const question = new Question({
-            id: documentSnapshop.id,
+            id: data.id,
             owner: user,
             content: data.content,
             vote: data.vote,
@@ -34,8 +32,11 @@ function QuestionList(){
           });
           return question;
         });
+        // Sort by vote descending
+        questions.sort((a, b) => b.vote - a.vote);
         setQuestions(questions);
-      })
+      });
+      return () => unsubscribe();
     }
   }, [ mSession.session ])
   

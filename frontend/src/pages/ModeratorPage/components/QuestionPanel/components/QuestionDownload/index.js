@@ -3,7 +3,7 @@ import styles from "./QuestionDownload.module.css";
 
 import React from "react";
 import Papa from "papaparse";
-import Firestore from "utils/firestore";
+import QuestionStream from "utils/firestore";
 import DownloadService from "services/download";
 import lodash from "lodash";
 import clsx from "clsx";
@@ -24,28 +24,21 @@ function QuestionDownload () {
   const { modalContainer } = useMessage();
 
   /**
-   * Retrieve the questions directly from Firebase firestore `once`.
-   * It will retrieve for every status. Even if you don't see your data in the UI
-   * The data can be in the database itself.
+   * Retrieve the questions from the backend REST API.
+   * It will retrieve for every status.
    */
   const retrieveQuestions = React.useCallback(
     async () => {
-      const convertFirebase = (doc) => {
-        const data = lodash(doc.data())
-        return ({
-          owner_name: data.get("owner.name"),
-          content: data.get("content"),
-          vote: data.get("vote"),
-          status: data.get("status"),
-          created_at: DateTime.fromSeconds(parseInt(data.get("created_at")))
-        })
-      }
-
-      const db = Firestore.getInstance();
       const sessionId = lodash(session).get("sessionId");
-      const querySnapshot = await db.collection(`questions_${sessionId}`).get();
-      const data = lodash(querySnapshot.docs).map(convertFirebase).value();
-      return data;
+      if (!sessionId) return [];
+      const data = await QuestionStream.fetchQuestions(sessionId);
+      return data.map((item) => ({
+        owner_name: lodash(item).get("owner.name"),
+        content: lodash(item).get("content"),
+        vote: lodash(item).get("vote"),
+        status: lodash(item).get("status"),
+        created_at: DateTime.fromSeconds(parseInt(lodash(item).get("created_at")))
+      }));
     },
     [session]
   )

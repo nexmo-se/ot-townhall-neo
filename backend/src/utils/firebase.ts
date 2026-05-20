@@ -1,12 +1,7 @@
-import serviceAccount from "./serviceAccount";
-import admin from "firebase-admin";
-
+// Firebase removed — using in-memory storage
 class Firebase{
   static init(): void{
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: "https://vonage-townhall.firebaseio.com"
-    });
+    // No-op
   }
 }
 export default Firebase;

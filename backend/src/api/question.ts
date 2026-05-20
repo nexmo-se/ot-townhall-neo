@@ -1,8 +1,6 @@
-import admin from "firebase-admin";
-import Firestore from "../utils/firestore";
-
 import Question from "../entities/question";
 import User from "../entities/user";
+import SSEBroadcaster from "../utils/sse";
 import type { TStatus } from "../entities/question";
 
 interface IMarkAs {
@@ -15,46 +13,67 @@ interface IList {
   sessionID: string;
 }
 
+// In-memory store: sessionID -> Map<questionID, question data>
+const questionStore: Map<string, Map<string, any>> = new Map();
+
+function getSessionQuestions(sessionID: string): Map<string, any> {
+  if (!questionStore.has(sessionID)) {
+    questionStore.set(sessionID, new Map());
+  }
+  return questionStore.get(sessionID)!;
+}
+
+function broadcastQuestions(sessionID: string): void {
+  const questions = getSessionQuestions(sessionID);
+  const list = Array.from(questions.values())
+    .map((q) => Question.fromDatabase(q))
+    .map((q) => q.toResponse());
+  SSEBroadcaster.broadcast(sessionID, list);
+}
+
 class QuestionAPI{
-  static async create(sessionID:string, question:Question): Promise<admin.firestore.DocumentReference>{
-    const db = Firestore.getInstance();
-    const ref = await db.collection(`questions_${sessionID}`).add(question.toDatabase());
-    return ref;
+  static async create(sessionID: string, question: Question): Promise<{ id: string }>{
+    const questions = getSessionQuestions(sessionID);
+    const data = question.toDatabase();
+    questions.set(question.id, data);
+    broadcastQuestions(sessionID);
+    return { id: question.id };
   }
   
-  static async vote(sessionID:string, voter:User, questionID: string): Promise<void>{
-    const db = Firestore.getInstance();
-    const doc = await db.collection(`questions_${sessionID}`).doc(questionID).get();
-    if(!doc.exists) return;
-    const foundQuestion = Question.fromDatabase(doc);
-    const foundVoter = foundQuestion.voters.find((v) => v.id === voter.id);
-    if(foundVoter){
+  static async vote(sessionID: string, voter: User, questionID: string): Promise<void>{
+    const questions = getSessionQuestions(sessionID);
+    const data = questions.get(questionID);
+    if (!data) return;
+
+    const voters: any[] = data.voters || [];
+    const existingIndex = voters.findIndex((v: any) => v.id === voter.id);
+
+    if (existingIndex >= 0) {
       // Remove the vote
-      await db.collection(`questions_${sessionID}`).doc(questionID).update({
-        voters: admin.firestore.FieldValue.arrayRemove(voter.toDatabase()),
-        vote: admin.firestore.FieldValue.increment(-1)
-      });
-    }else{
-      await db.collection(`questions_${sessionID}`).doc(questionID).update({
-        voters: admin.firestore.FieldValue.arrayUnion(voter.toDatabase()),
-        vote: admin.firestore.FieldValue.increment(1)
-      });
+      voters.splice(existingIndex, 1);
+      data.vote = (data.vote || 0) - 1;
+    } else {
+      voters.push(voter.toDatabase());
+      data.vote = (data.vote || 0) + 1;
     }
+    data.voters = voters;
+    questions.set(questionID, data);
+    broadcastQuestions(sessionID);
   }
 
   static async list({ sessionID }: IList): Promise<Question[]> {
-    const db = Firestore.getInstance();
-    const querySnapshot = await db.collection(`questions_${sessionID}`).get();
-    const questions = querySnapshot.docs.map((docData) => {
-      return Question.fromDatabase(docData);
-    })
-    return questions;
+    const questions = getSessionQuestions(sessionID);
+    return Array.from(questions.values()).map((q) => Question.fromDatabase(q));
   }
 
   static async markAs({ questionID, sessionID, status }: IMarkAs): Promise<void>{
-    const db = Firestore.getInstance();
-    const docRef = await db.collection(`questions_${sessionID}`).doc(questionID);
-    await docRef.update({ status });
+    const questions = getSessionQuestions(sessionID);
+    const data = questions.get(questionID);
+    if (data) {
+      data.status = status;
+      questions.set(questionID, data);
+      broadcastQuestions(sessionID);
+    }
   }
 }
 export default QuestionAPI;

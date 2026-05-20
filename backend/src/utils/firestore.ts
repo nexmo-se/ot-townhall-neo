@@ -1,15 +1,6 @@
-import admin from "firebase-admin";
-
+// Firestore removed — using in-memory storage
 class Firestore{
-  static instance: admin.firestore.Firestore;
-  
-  static init(): void{
-    Firestore.instance = admin.firestore();
-  }
-  
-  static getInstance(): admin.firestore.Firestore{
-    if(!Firestore.instance) Firestore.init();
-    return Firestore.instance;
-  }
+  static init(): void{}
+  static getInstance(): any{ return null; }
 }
 export default Firestore;

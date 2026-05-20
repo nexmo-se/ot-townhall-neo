@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import Firestore from "utils/firestore";
+import QuestionStream from "utils/firestore";
 import clsx from "clsx";
 
 import Question from "entities/question";
@@ -18,24 +18,22 @@ function SelectedQuestion(){
   
   React.useEffect(() => {
     if(session){
-      const db = Firestore.getInstance();
-      db.collection(`questions_${session.id}`).onSnapshot((querySnapshot) => {
-        const [ question ] = querySnapshot.docs.map((documentSnapshot) => {
-          const data = documentSnapshot.data();
-          const question = new Question({
-            id: documentSnapshot.id,
-            owner:  new User({ 
+      const unsubscribe = QuestionStream.subscribe(session.id, (questions) => {
+        const [ question ] = questions.map((data) => {
+          return new Question({
+            id: data.id,
+            owner: new User({ 
               id: data.owner.id,
               name: data.owner.name, 
               role: data.owner.role 
             }),
             content: data.content,
             status: data.status
-          })
-          return question;
+          });
         }).filter((question) => question.status === "selected");
         setSelected(question);
-      })
+      });
+      return () => unsubscribe();
     }
   }, [ session ])
 
