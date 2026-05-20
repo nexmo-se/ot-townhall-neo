@@ -7,11 +7,10 @@ import morgan from "morgan";
 import * as fsx from "fs-extra"; 
 
 import config from "./config";
-import DatabaseAPI from "./api/database";
+import InMemoryStore from "./api/database";
 import ErrorHandler from "./middleware/error-handler";
 
 import Firebase from "./utils/firebase";
-import MongoDBService from "./utils/mongodb";
 
 import QuestionRouter from "./router/question";
 import RecordingRouter from "./router/recording";
@@ -26,12 +25,10 @@ import UploadRouter from "./router/upload";
 
 (async () => {
   Firebase.init();
-  DatabaseAPI.initialize();
-  await DatabaseAPI.migrate();
+  InMemoryStore.initialize();
 
   console.log("Firebase initialised");
-  console.log("Database initialised");
-  console.log("Database migrated");
+  console.log("In-memory store initialised");
 
   let createDir = __dirname + '/uploads/lobby';
   fsx.ensureDir(createDir);
@@ -60,4 +57,4 @@ import UploadRouter from "./router/upload";
   });
   
   app.use(ErrorHandler.handle);
-})().catch(console.dir).finally(() => MongoDBService.close());
+})().catch(console.dir);

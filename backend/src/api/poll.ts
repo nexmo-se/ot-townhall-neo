@@ -1,5 +1,4 @@
-import DatabaseAPI from "../api/database";
-import { PoolClient } from "pg";
+import InMemoryStore from "../api/database";
 import { v4 as uuid } from "uuid";
 
 import Poll from "../entities/poll";
@@ -27,71 +26,121 @@ interface IUpdate {
 
 class PollAPI{
   static async create(poll: Poll): Promise<void>{
-    await DatabaseAPI.query(async (client: PoolClient) => {
-      const pollingID = uuid();
-      await client.query("UPDATE pollings SET status=$1 WHERE session_id=$2", [ "finished", poll.sessionID ]);
-      await client.query(
-        "INSERT INTO pollings(id, session_id, title, status, created_at) VALUES($1, $2, $3, $4, NOW())",
-        [ pollingID, poll.sessionID, poll.title, poll.status ]
-      );
+    const pollingID = uuid();
 
-      const promises = poll.items.map(async (item) => {
-        await client.query(
-          "INSERT INTO poll_items(id, polling_id, option, count, order_number, updated_at, created_at) VALUES($1, $2, $3, $4, $5, NOW(), NOW())",
-          [ uuid(), pollingID, item.option, item.count, item.orderNumber ]
-        );
-      });
-      await Promise.all(promises);
+    // Mark existing pollings for this session as finished
+    for (const p of InMemoryStore.pollings.values()) {
+      if (p.session_id === poll.sessionID) {
+        p.status = "finished";
+      }
+    }
+
+    InMemoryStore.pollings.set(pollingID, {
+      id: pollingID,
+      session_id: poll.sessionID,
+      title: poll.title,
+      status: poll.status,
+      created_at: new Date()
     });
+
+    for (const item of poll.items) {
+      const itemID = uuid();
+      InMemoryStore.pollItems.set(itemID, {
+        id: itemID,
+        polling_id: pollingID,
+        option: item.option,
+        count: item.count,
+        order_number: item.orderNumber,
+        updated_at: new Date(),
+        created_at: new Date()
+      });
+    }
   }
 
   static async list({ sessionID }: IList): Promise<Poll[]>{
-    return await DatabaseAPI.query(async (client: PoolClient) => {
-      const queryResponse = await client.query(
-        "SELECT * FROM pollings WHERE session_id=$1 AND status != $2 AND status != $3",
-        [ sessionID, "finished", "deleted" ]
-      );
-      if(queryResponse.rowCount === 0) throw new CustomError("NotFound", "Cannot find pollings");
-      
-      const polls = queryResponse.rows.map((response) => Poll.fromDatabase(response));
-      const promises = polls.map(async (poll) => {
-        const queryResponse = await client.query("SELECT * FROM poll_items WHERE polling_id=$1", [ poll.id ]);
-        const pollItems = queryResponse.rows.map((response) => PollItem.fromDatabase(response));
-        return new Poll({ ...poll, items: pollItems });
-      });
-      const finalPolls = await Promise.all(promises);
-      return finalPolls;
+    const matchingPollings: any[] = [];
+    for (const p of InMemoryStore.pollings.values()) {
+      if (p.session_id === sessionID && p.status !== "finished" && p.status !== "deleted") {
+        matchingPollings.push(p);
+      }
+    }
+
+    if (matchingPollings.length === 0) throw new CustomError("NotFound", "Cannot find pollings");
+
+    const polls = matchingPollings.map((p) => Poll.fromDatabase({
+      id: p.id,
+      title: p.title,
+      session_id: p.session_id,
+      status: p.status
+    }));
+
+    const finalPolls = polls.map((poll) => {
+      const items: PollItem[] = [];
+      for (const item of InMemoryStore.pollItems.values()) {
+        if (item.polling_id === poll.id) {
+          items.push(PollItem.fromDatabase({
+            id: item.id,
+            option: item.option,
+            count: String(item.count),
+            order_number: String(item.order_number)
+          }));
+        }
+      }
+      return new Poll({ ...poll, items });
     });
+
+    return finalPolls;
   }
 
   static async poll({ pollID, itemID, userID, name }: IPoll): Promise<void>{
-    await DatabaseAPI.query(async (client: PoolClient) => {
-      await client.query(
-        "INSERT INTO polls(id, polling_id, item_id, user_id , name, created_at) VALUES($1, $2, $3, $4, $5, NOW())",
-        [ uuid(), pollID, itemID, userID, name ]
-      );
-      await client.query("UPDATE poll_items SET count = count + 1 WHERE polling_id=$1 AND id=$2", [ pollID, itemID ]);
+    const id = uuid();
+    InMemoryStore.polls.set(id, {
+      id,
+      polling_id: pollID,
+      item_id: itemID,
+      user_id: userID,
+      name,
+      created_at: new Date()
     });
+
+    // Increment count on the poll item
+    for (const item of InMemoryStore.pollItems.values()) {
+      if (item.polling_id === pollID && item.id === itemID) {
+        item.count += 1;
+        break;
+      }
+    }
   }
 
   static async retrievePoll({ pollingID, userID }: IRetrievePoll): Promise<PollItem>{
-    return await DatabaseAPI.query(async (client: PoolClient) => {
-      const queryResponse = await client.query(
-        "SELECT * FROM polls WHERE polling_id=$1 AND user_id=$2 ORDER BY created_at", 
-        [ pollingID, userID ]
-      );
-      const [ item ] = queryResponse.rows.map((response) => response.item_id);
+    // Find the user's poll vote, sorted by created_at
+    const userPolls: any[] = [];
+    for (const p of InMemoryStore.polls.values()) {
+      if (p.polling_id === pollingID && p.user_id === userID) {
+        userPolls.push(p);
+      }
+    }
+    userPolls.sort((a, b) => a.created_at.getTime() - b.created_at.getTime());
 
-      const itemResponse = await client.query("SELECT * FROM poll_items WHERE id=$1", [ item ]);
-      const [ poll ] = itemResponse.rows.map((response) => PollItem.fromDatabase(response));
-      return poll;
+    const itemId = userPolls.length > 0 ? userPolls[0].item_id : undefined;
+    if (!itemId) return undefined;
+
+    const item = InMemoryStore.pollItems.get(itemId);
+    if (!item) return undefined;
+
+    return PollItem.fromDatabase({
+      id: item.id,
+      option: item.option,
+      count: String(item.count),
+      order_number: String(item.order_number)
     });
   }
 
   static async update({ pollingID, status }: IUpdate): Promise<void>{
-    await DatabaseAPI.query(async (client: any) => {
-      await client.query("UPDATE pollings SET status=$1 WHERE id=$2", [ status, pollingID ]);
-    });
+    const polling = InMemoryStore.pollings.get(pollingID);
+    if (polling) {
+      polling.status = status;
+    }
   }
 }
 export default PollAPI;

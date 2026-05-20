@@ -1,33 +1,29 @@
 import OT from "../utils/opentok";
-import DatabaseAPI from "../api/database";
+import InMemoryStore from "../api/database";
 import opentok from "../config/opentok";
-import { QueryResult } from "pg";
 import { v4 as uuid } from "uuid";
 
 import Room from "../entities/room";
 import CustomError from "../entities/error";
 
 class RoomAPI{
-  static parseQueryResponse(queryResponse: QueryResult<any>): Array<Room>{
-    return queryResponse.rows.map((response: any) => Room.fromDatabase(response));
-  }
-
   static async createRoom(room: Room): Promise<void>{
-    await DatabaseAPI.query(async (client: any) => {
-      await client.query(
-        "INSERT INTO rooms(id, name, session_id, is_active) VALUES($1, $2, $3, $4)", 
-        [ uuid(), room.name, room.sessionID, 1 ]
-      );
+    const id = uuid();
+    InMemoryStore.rooms.set(id, {
+      id,
+      name: room.name,
+      session_id: room.sessionID,
+      is_active: 1
     });
   }
 
   static async destroy(room: Room): Promise<void>{
-    await DatabaseAPI.query(async (client: any) => {
-      await client.query(
-        "UPDATE rooms SET is_active = 0 WHERE name = $1",
-        [ room.name ]
-      );
-    });
+    for (const [id, r] of InMemoryStore.rooms) {
+      if (r.name === room.name) {
+        r.is_active = 0;
+        InMemoryStore.rooms.set(id, r);
+      }
+    }
   }
 
   static async generateSession(room: Room): Promise<Room>{
@@ -50,11 +46,18 @@ class RoomAPI{
   }
 
   static async getDetailById(room: Room): Promise<Room[]>{
-    return await DatabaseAPI.query<Room[]>(async (client) => {
-      const queryResponse = await client.query("SELECT * FROM rooms WHERE name = $1 AND is_active = 1", [ room.name ]);
-      if(queryResponse.rowCount === 0) throw new CustomError("room/not-found", "Cannot find room");
-      else return Promise.resolve(RoomAPI.parseQueryResponse(queryResponse));
-    });
+    const results: Room[] = [];
+    for (const r of InMemoryStore.rooms.values()) {
+      if (r.name === room.name && r.is_active === 1) {
+        results.push(Room.fromDatabase({
+          id: r.id,
+          name: r.name,
+          session_id: r.session_id
+        }));
+      }
+    }
+    if (results.length === 0) throw new CustomError("room/not-found", "Cannot find room");
+    return results;
   }
 
   static async isExistsById(room: Room): Promise<boolean>{

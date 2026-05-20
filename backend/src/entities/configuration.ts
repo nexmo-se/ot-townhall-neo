@@ -1,6 +1,4 @@
 import lodash from "lodash";
-import { FilterQuery, UpdateOneOptions, UpdateQuery } from "mongodb";
-import MongoDBService from "../utils/mongodb";
 
 export type AcceptedRole = "participant" | "moderator" | "presenter";
 interface Role {
@@ -105,14 +103,9 @@ class Configuration {
         link: args.configuration.lobbySource.link
       },
       state: {
-        status: args.configuration.state.status ?? "locked" // default configuration for the status
+        status: args.configuration.state.status ?? "locked"
       }
     })
-  }
-
-  static async updateOne (filter: FilterQuery<any>, update: UpdateQuery<any>, options?: UpdateOneOptions) {
-    const db = await MongoDBService.getInstance();
-    await db.collection(Configuration._collectionName).updateOne(filter, update, options);
   }
 }
 export default Configuration;

@@ -1,81 +1,63 @@
-import CustomError from "../entities/error";
-import database from "../config/database";
-import { Pool, PoolClient } from "pg";
-
-class DatabaseAPI{
-  static pool: Pool;
-
-  static initialize(): void{
-    if(DatabaseAPI.pool) throw new CustomError("database/initialized", "You can only initialized once");
-    DatabaseAPI.pool = new Pool({ connectionString: database.url });
-  }
-
-  static async migrate(): Promise<void>{
-    return DatabaseAPI.query(async (client: PoolClient) => {
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS rooms(
-          id VARCHAR(255) PRIMARY KEY,
-          name VARCHAR(255),
-          session_id VARCHAR(255),
-          is_active INT2
-        )
-      `);
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS participants(
-          id VARCHAR(255) PRIMARY KEY,
-          tenant VARCHAR(255),
-          first_name VARCHAR(255),
-          last_name VARCHAR(255),
-          email VARCHAR(255),
-          company_name VARCHAR(255),
-          created_at TIMESTAMP,
-          is_deleted INT2
-        );
-      `);
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS pollings(
-          id VARCHAR(255) PRIMARY KEY,
-          session_id VARCHAR(255),
-          title VARCHAR(255),
-          status VARCHAR(255),
-          created_at TIMESTAMP
-        )
-      `);
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS poll_items(
-          id VARCHAR(255) PRIMARY KEY,
-          polling_id VARCHAR(255),
-          option VARCHAR(255),
-          count INT,
-          order_number INT,
-          updated_at TIMESTAMP,
-          created_at TIMESTAMP
-        )
-      `);
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS polls(
-          id VARCHAR(255) PRIMARY KEY,
-          polling_id VARCHAR(255),
-          item_id VARCHAR(255),
-          user_id VARCHAR(255),
-          name VARCHAR(255),
-          created_at TIMESTAMP
-        )
-      `);
-    });
-  }
-
-  static async query<T>(func: (client: PoolClient) => Promise<any>): Promise<T>{
-    const client = await DatabaseAPI.client.connect();
-    try{
-      return await func(client);
-    }finally{ client.release() }
-  }
-
-  static get client(): Pool{
-    if(!DatabaseAPI.pool) throw new CustomError("database/not-initialized", "You need to initialize first");
-    else return DatabaseAPI.pool;
-  }
-
+export interface RoomRecord {
+  id: string;
+  name: string;
+  session_id: string;
+  is_active: number;
 }
-export default DatabaseAPI;
+
+export interface ParticipantRecord {
+  id: string;
+  tenant: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  company_name: string;
+  created_at: Date;
+  is_deleted: number;
+}
+
+export interface PollingRecord {
+  id: string;
+  session_id: string;
+  title: string;
+  status: string;
+  created_at: Date;
+}
+
+export interface PollItemRecord {
+  id: string;
+  polling_id: string;
+  option: string;
+  count: number;
+  order_number: number;
+  updated_at: Date;
+  created_at: Date;
+}
+
+export interface PollRecord {
+  id: string;
+  polling_id: string;
+  item_id: string;
+  user_id: string;
+  name: string;
+  created_at: Date;
+}
+
+class InMemoryStore {
+  static rooms: Map<string, RoomRecord> = new Map();
+  static participants: Map<string, ParticipantRecord> = new Map();
+  static pollings: Map<string, PollingRecord> = new Map();
+  static pollItems: Map<string, PollItemRecord> = new Map();
+  static polls: Map<string, PollRecord> = new Map();
+  static configurations: Map<string, any> = new Map();
+
+  static initialize(): void {
+    // No-op for in-memory store
+  }
+
+  static async migrate(): Promise<void> {
+    // No-op for in-memory store
+  }
+}
+
+export default InMemoryStore;

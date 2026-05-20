@@ -1,7 +1,6 @@
-import DatabaseAPI from "../api/database";
+import InMemoryStore from "../api/database";
 import Participant from "../entities/participant";
 import { v4 as uuid } from "uuid";
-import { PoolClient } from "pg";
 
 interface BaseOptions {
   tenant: string
@@ -16,45 +15,41 @@ interface DeleteParticipantOptions extends BaseOptions {};
 
 class AMAAPI{
   static async createParticipant({ tenant, participant }: CreateOptions): Promise<void>{
-    await DatabaseAPI.query(async (client: PoolClient) => {
-      const query = "INSERT INTO participants(id, first_name, last_name, email, company_name, tenant, created_at, is_deleted) VALUES ($1, $2, $3, $4, $5, $6, NOW(), 0)";
-      const params = [ uuid(), participant.firstName, participant.lastName, participant.email, participant.companyName, tenant ];
-      await client.query(query, params);
+    const id = uuid();
+    InMemoryStore.participants.set(id, {
+      id,
+      tenant,
+      first_name: participant.firstName,
+      last_name: participant.lastName,
+      email: participant.email,
+      company_name: participant.companyName,
+      created_at: new Date(),
+      is_deleted: 0
     });
   }
 
   static async listParticipant ({ tenant } : ListParticipantOptions) {
-    const participants = await DatabaseAPI.query<Participant[]>(
-      async (client: PoolClient) => {
-        const query = "SELECT * FROM participants WHERE tenant = $1 AND is_deleted = 0";
-        const params = [tenant];
-        const response = await client.query(query, params);
-
-        // convert response to participants
-        const participants = response.rows.map(
-          (row) => {
-            return new Participant({
-              firstName: row.first_name,
-              lastName: row.last_name,
-              email: row.email,
-              companyName: row.company_name
-            })
-          }
-        )
-        return participants;
+    const participants: Participant[] = [];
+    for (const p of InMemoryStore.participants.values()) {
+      if (p.tenant === tenant && p.is_deleted === 0) {
+        participants.push(new Participant({
+          firstName: p.first_name,
+          lastName: p.last_name,
+          email: p.email,
+          companyName: p.company_name
+        }));
       }
-    );
+    }
     return participants;
   }
 
   static async deleteParticipants ({ tenant }: DeleteParticipantOptions) {
-    await DatabaseAPI.query(
-      async (client: PoolClient) => {
-        const query = "UPDATE participants SET is_deleted = 1 WHERE tenant = $1";
-        const params = [tenant];
-        await client.query(query, params);
+    for (const [id, p] of InMemoryStore.participants) {
+      if (p.tenant === tenant) {
+        p.is_deleted = 1;
+        InMemoryStore.participants.set(id, p);
       }
-    )
+    }
   }
 }
 export default AMAAPI;
