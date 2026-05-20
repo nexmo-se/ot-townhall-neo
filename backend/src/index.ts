@@ -1,6 +1,7 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
+import path from "path";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -38,7 +39,10 @@ import UploadRouter from "./router/upload";
   app.use(express.json());
   app.use(cors());
   app.use(morgan("dev"));
-  
+
+  // VCR health check endpoint
+  app.get("/_/health", (_, res) => res.sendStatus(200));
+
   app.use("/questions", QuestionRouter);
   app.use("/recordings", RecordingRouter);
   app.use("/renderer", RendererRouter);
@@ -51,8 +55,13 @@ import UploadRouter from "./router/upload";
   
   app.use("/uploaded/lobby", express.static(__dirname + '/uploads/lobby'));
 
-  app.listen(process.env.PORT, () => {
-    console.log(`Express is listening on port: ${config.port || 2000}`);
+  // Serve built React frontend
+  const frontendBuild = path.join(__dirname, "../../frontend/build");
+  app.use(express.static(frontendBuild));
+  app.get("*", (_, res) => res.sendFile(path.join(frontendBuild, "index.html")));
+
+  app.listen(config.port, () => {
+    console.log(`Express is listening on port: ${config.port}`);
     console.log("NODE_ENV:", process.env.NODE_ENV);
   });
   
