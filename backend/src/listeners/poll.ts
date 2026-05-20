@@ -50,6 +50,7 @@ class PollListener{
     const { polling_id: pollingID } = req.params;
     const { user_id: userID } = req.query;
     const pollItem = await PollAPI.retrievePoll({ pollingID, userID: `${userID}` });
+    if (!pollItem) return res.json(null).end();
     return res.json(pollItem.toResponse()).end();
   }
 
@@ -73,13 +74,18 @@ class PollListener{
     const { session_id: querySessionID } = req.query;
     const sessionID = `${querySessionID}`;
 
-    const polls = await PollAPI.list({ sessionID });
+    let polls: Poll[];
+    try {
+      polls = await PollAPI.list({ sessionID });
+    } catch {
+      return res.json({}).end();
+    }
     const promises = polls.map((poll) => {
       const acceptedStatus = [ "started", "pending" ];
       if (acceptedStatus.includes(poll.status)) {
         return PollAPI.update({ pollingID: poll.id, status: "deleted" });
       }else return undefined;
-    }).filter((promise) => !promise);
+    }).filter(Boolean);
 
     await Promise.all(promises);
     return res.json({}).end();
