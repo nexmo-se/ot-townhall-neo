@@ -6,7 +6,6 @@ interface SSEClient {
 }
 
 class SSEBroadcaster {
-  // Map<sessionID, SSEClient[]>
   private static clients: Map<string, SSEClient[]> = new Map();
 
   static addClient(sessionID: string, clientId: string, res: Response): void {
@@ -41,7 +40,15 @@ class SSEBroadcaster {
     const clients = SSEBroadcaster.clients.get(sessionID) || [];
     const payload = `data: ${JSON.stringify(data)}\n\n`;
     clients.forEach((client) => {
-      client.res.write(payload);
+      try {
+        if (!client.res.writable) {
+          SSEBroadcaster.removeClient(sessionID, client.id);
+          return;
+        }
+        client.res.write(payload);
+      } catch (_error) {
+        SSEBroadcaster.removeClient(sessionID, client.id);
+      }
     });
   }
 }

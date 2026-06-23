@@ -3,17 +3,14 @@ This is an updated Townhall application that combines frontend and backend in a 
 
 # To Run App
 ```js
-// backend
-cd backend
-yarn install
-
-// frontend
-cd frontend
-// paste credentials
+cd backend/public
+// paste credentials if needed
 vi .env
-yarn install
-yarn start
-localhost:3001/{room-name}/moderator
+
+cd ../..
+yarn build
+yarn start:prod
+http://localhost:3000/{room-name}/moderator
 ```
 
 # To Deploy the App in the AWS Instance
@@ -21,18 +18,20 @@ localhost:3001/{room-name}/moderator
 1. Create a new release from github and create a Tag associated to it.
 2. SSH into the EC2 Instance
 3. `git fetch` and `git checkout tags/{your-tag}`
-4. `cd backend && yarn install && yarn build && cd ..`
-5. `cd frontend && yarn install && yarn build && cd ..`
-6. `pm2 restart townhall`
-7. Check that the Express server is running `pm2 logs townhall`
+4. `yarn build`
+5. `pm2 restart townhall`
+6. Check that the Express server is running `pm2 logs townhall`
+
+# VCR Config
+
+Use the sample config in `vcr.yaml.sample` and create a local `vcr.yml` with real values before deployment.
+
+```bash
+cp vcr.yaml.sample vcr.yml
+# edit vcr.yml and set your secrets
+```
 
 ```js
-
-// frontend
-cd frontend
-// paste credentials
-vi .env
-yarn install
-yarn start
-localhost:3001/{room-name}/moderator
+// run production service
+yarn start:prod
 ```

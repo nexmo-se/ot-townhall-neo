@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 
 class QuestionListener{
   static async create(req: Request, res: Response): Promise<void> {
+    console.log("Creating question with body", req.body);
     const { session_id: sessionID, content, owner, status } = req.body;
     const question = new Question({
       owner: new User({
@@ -63,13 +64,15 @@ class QuestionListener{
 
   static async stream(req: Request, res: Response): Promise<void> {
     const { session_id: sessionID } = req.query;
+
     const clientId = uuid();
     SSEBroadcaster.addClient(`${sessionID}`, clientId, res);
 
-    // Send initial data
     const questions = await QuestionAPI.list({ sessionID: `${sessionID}` });
     const payload = questions.map((q) => q.toResponse());
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   }
+
 }
+
 export default QuestionListener;

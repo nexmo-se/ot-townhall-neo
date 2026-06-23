@@ -1,15 +1,17 @@
 # Townhall Application - Backend
-Backend service for genering rooms, questions, polling and many more. This Backend is linked to Townhall Application.
+Backend service for rooms, questions, polling, renderer status, and tenant configuration.
 
-This backend server uses `Postgre SQL` and `MongoDB` for the database. However, not ORM is introduced in this backend code. 
-
-Why do we have 2 databases? At first I thought PGSQL is enought. However, since the application support multi tenant, and we want to store configuration for each tenant in JSON format. I believe, `MongoDB` will help a lot.
-
-## Database Migration
-You need to create your own migration script inside `src/api/database.js`. There are samples inside. The migration is only valid for `Postgre SQL`.
+This backend now uses MongoDB for persistent storage (no in-memory-only runtime state).
 
 ## MongoDB Configuration
-You can configure your MongoDB to use SSL. However, you need to place your key under `src/certs/*` folder. Set the SSL in `.env` file properly.
+Set these environment variables in `.env`:
+
+- `MONGODB_URL` (or `DATABASE_URL`)
+- `MONGODB_NAME` (or `MONGODB_DB_NAME`)
+- `MONGODB_USE_TLS` (`true`/`false`)
+- `MONGODB_TLS_CERTIFICATE` (optional CA certificate path when TLS is enabled)
+
+On startup, the app connects to MongoDB and ensures required indexes exist.
 
 ## Commands
 

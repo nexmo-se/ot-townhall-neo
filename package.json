@@ -7,11 +7,10 @@
     "concurrently": "^5.3.0"
   },
   "scripts": {
-    "start:frontend:prod": "cd frontend && yarn start:prod",
-    "start:backend:prod": "cd backend && yarn start:prod",
-    "start:frontend:dev": "cd frontend && yarn start",
-    "start:backend:dev": "cd backend && yarn start:dev",
-    "start:prod": "concurrently \"yarn start:frontend:prod\" \"yarn start:backend:prod\"",
-    "start:dev": "concurrently \"yarn start:backend:dev\" \"yarn start:frontend:dev\""
+    "start:frontend": "cd backend/public && yarn start",
+    "start:backend": "cd backend && yarn start:dev",
+    "start": "cd backend && yarn start:dev",
+    "start:prod": "cd backend && yarn start:prod",
+    "build": "bash build.sh"
   }
 }

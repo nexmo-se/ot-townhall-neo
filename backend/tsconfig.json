@@ -11,7 +11,11 @@
     "outDir": "./build",
     "baseUrl": "./src",
     "allowJs": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
+      "mongodb": [
+        "types/mongodb"
+      ],
         "*": [
             "node_modules/*",
             "src/types/*"

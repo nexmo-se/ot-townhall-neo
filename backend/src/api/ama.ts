@@ -1,4 +1,4 @@
-import InMemoryStore from "../api/database";
+import MongoDBStore from "../api/database";
 import Participant from "../entities/participant";
 import { v4 as uuid } from "uuid";
 
@@ -16,7 +16,7 @@ interface DeleteParticipantOptions extends BaseOptions {};
 class AMAAPI{
   static async createParticipant({ tenant, participant }: CreateOptions): Promise<void>{
     const id = uuid();
-    InMemoryStore.participants.set(id, {
+    await MongoDBStore.participants().insertOne({
       id,
       tenant,
       first_name: participant.firstName,
@@ -29,27 +29,25 @@ class AMAAPI{
   }
 
   static async listParticipant ({ tenant } : ListParticipantOptions) {
-    const participants: Participant[] = [];
-    for (const p of InMemoryStore.participants.values()) {
-      if (p.tenant === tenant && p.is_deleted === 0) {
-        participants.push(new Participant({
-          firstName: p.first_name,
-          lastName: p.last_name,
-          email: p.email,
-          companyName: p.company_name
-        }));
-      }
-    }
+    const records = await MongoDBStore.participants()
+      .find({ tenant, is_deleted: 0 })
+      .toArray();
+
+    const participants: Participant[] = records.map((p: any) => new Participant({
+      firstName: p.first_name,
+      lastName: p.last_name,
+      email: p.email,
+      companyName: p.company_name
+    }));
+
     return participants;
   }
 
   static async deleteParticipants ({ tenant }: DeleteParticipantOptions) {
-    for (const [id, p] of InMemoryStore.participants) {
-      if (p.tenant === tenant) {
-        p.is_deleted = 1;
-        InMemoryStore.participants.set(id, p);
-      }
-    }
+    await MongoDBStore.participants().updateMany(
+      { tenant },
+      { $set: { is_deleted: 1 } }
+    );
   }
 }
 export default AMAAPI;

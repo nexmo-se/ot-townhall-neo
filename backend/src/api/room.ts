@@ -1,5 +1,5 @@
 import OT from "../utils/opentok";
-import InMemoryStore from "../api/database";
+import MongoDBStore from "../api/database";
 import opentok from "../config/opentok";
 import { v4 as uuid } from "uuid";
 
@@ -9,7 +9,7 @@ import CustomError from "../entities/error";
 class RoomAPI{
   static async createRoom(room: Room): Promise<void>{
     const id = uuid();
-    InMemoryStore.rooms.set(id, {
+    await MongoDBStore.rooms().insertOne({
       id,
       name: room.name,
       session_id: room.sessionID,
@@ -18,12 +18,10 @@ class RoomAPI{
   }
 
   static async destroy(room: Room): Promise<void>{
-    for (const [id, r] of InMemoryStore.rooms) {
-      if (r.name === room.name) {
-        r.is_active = 0;
-        InMemoryStore.rooms.set(id, r);
-      }
-    }
+    await MongoDBStore.rooms().updateMany(
+      { name: room.name, is_active: 1 },
+      { $set: { is_active: 0 } }
+    );
   }
 
   static async generateSession(room: Room): Promise<Room>{
@@ -46,16 +44,14 @@ class RoomAPI{
   }
 
   static async getDetailById(room: Room): Promise<Room[]>{
-    const results: Room[] = [];
-    for (const r of InMemoryStore.rooms.values()) {
-      if (r.name === room.name && r.is_active === 1) {
-        results.push(Room.fromDatabase({
-          id: r.id,
-          name: r.name,
-          session_id: r.session_id
-        }));
-      }
-    }
+    const rows = await MongoDBStore.rooms()
+      .find({ name: room.name, is_active: 1 })
+      .toArray();
+    const results: Room[] = rows.map((r: any) => Room.fromDatabase({
+      id: r.id,
+      name: r.name,
+      session_id: r.session_id
+    }));
     if (results.length === 0) throw new CustomError("room/not-found", "Cannot find room");
     return results;
   }

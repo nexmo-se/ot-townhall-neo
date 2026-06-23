@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
@@ -8,10 +10,9 @@ import morgan from "morgan";
 import * as fsx from "fs-extra"; 
 
 import config from "./config";
-import InMemoryStore from "./api/database";
 import ErrorHandler from "./middleware/error-handler";
 
-import Firebase from "./utils/firebase";
+import MongoDBService from "./utils/mongodb";
 
 import QuestionRouter from "./router/question";
 import RecordingRouter from "./router/recording";
@@ -23,13 +24,12 @@ import ConfigurationRouter from "./router/configuration";
 import AuthRouter from "./router/auth";
 import UploadRouter from "./router/upload";
 
+const serverStartedAt = Date.now();
 
 (async () => {
-  Firebase.init();
-  InMemoryStore.initialize();
+  await MongoDBService.init();
 
-  console.log("Firebase initialised");
-  console.log("In-memory store initialised");
+  console.log("MongoDB initialised");
 
   let createDir = __dirname + '/uploads/lobby';
   fsx.ensureDir(createDir);
@@ -40,8 +40,22 @@ import UploadRouter from "./router/upload";
   app.use(cors());
   app.use(morgan("dev"));
 
-  // VCR health check endpoint
-  app.get("/_/health", (_, res) => res.sendStatus(200));
+  // Health check endpoint with MongoDB connectivity verification
+  app.get("/_/health", async (_, res) => {
+    const database = await MongoDBService.health();
+    const uptimeSeconds = Math.floor((Date.now() - serverStartedAt) / 1000);
+
+    const payload = {
+      status: database.connected ? "ok" : "degraded",
+      service: "townhall-api",
+      uptime_seconds: uptimeSeconds,
+      timestamp: new Date().toISOString(),
+      database
+    };
+
+    const statusCode = database.connected ? 200 : 503;
+    return res.status(statusCode).json(payload).end();
+  });
 
   app.use("/questions", QuestionRouter);
   app.use("/recordings", RecordingRouter);
@@ -56,13 +70,23 @@ import UploadRouter from "./router/upload";
   app.use("/uploaded/lobby", express.static(__dirname + '/uploads/lobby'));
 
   // Serve built React frontend
-  const frontendBuild = path.join(__dirname, "../../frontend/build");
+  const frontendBuild = path.join(__dirname, "../public/build");
   app.use(express.static(frontendBuild));
   app.get("*", (_, res) => res.sendFile(path.join(frontendBuild, "index.html")));
 
   app.listen(config.port, () => {
     console.log(`Express is listening on port: ${config.port}`);
     console.log("NODE_ENV:", process.env.NODE_ENV);
+  });
+
+  process.on("SIGINT", async () => {
+    await MongoDBService.close();
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", async () => {
+    await MongoDBService.close();
+    process.exit(0);
   });
   
   app.use(ErrorHandler.handle);

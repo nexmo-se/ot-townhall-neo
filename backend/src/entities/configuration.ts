@@ -1,4 +1,6 @@
 import lodash from "lodash";
+import PinConfiguration from "../config/pin";
+import LobbyConfiguration from "../config/lobby";
 
 export type AcceptedRole = "participant" | "moderator" | "presenter";
 interface Role {
@@ -79,31 +81,33 @@ class Configuration {
   }
 
   static fromDatabase (args: Record<string, any>): Configuration {
+    const configuration = args?.configuration ?? {};
+
     return new Configuration({
       tabs: {
-        questions: args.configuration.tabs.questions,
-        chat: args.configuration.tabs.chat,
-        participants: args.configuration.tabs.participants,
-        polling: args.configuration.tabs.polling
+        questions: configuration.tabs?.questions ?? true,
+        chat: configuration.tabs?.chat ?? true,
+        participants: configuration.tabs?.participants ?? true,
+        polling: configuration.tabs?.polling ?? true
       },
       presenter: {
-        loginType: args.configuration.presenter.login_type,
-        pin: args.configuration.presenter.pin
+        loginType: configuration.presenter?.login_type ?? "default",
+        pin: configuration.presenter?.pin ?? PinConfiguration.presenter
       },
       participant: {
-        loginType: args.configuration.participant.login_type,
-        pin: args.configuration.participant.pin,
-        raiseHand: args.configuration.participant.raise_hand ?? true
+        loginType: configuration.participant?.login_type ?? "default",
+        pin: configuration.participant?.pin ?? PinConfiguration.participant,
+        raiseHand: configuration.participant?.raise_hand ?? true
       },
       moderator: {
-        loginType: args.configuration.moderator.login_type,
-        pin: args.configuration.moderator.pin
+        loginType: configuration.moderator?.login_type ?? "default",
+        pin: configuration.moderator?.pin ?? PinConfiguration.moderator
       },
       lobbySource: {
-        link: args.configuration.lobbySource.link
+        link: configuration.lobbySource?.link ?? LobbyConfiguration.lobbySource
       },
       state: {
-        status: args.configuration.state.status ?? "locked"
+        status: configuration.state?.status ?? "locked"
       }
     })
   }

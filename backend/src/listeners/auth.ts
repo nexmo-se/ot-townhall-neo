@@ -20,6 +20,7 @@ class AuthListener {
         const configuration = await ConfigurationAPI.retrieve({ tenant: tenantString });
         if (configuration){
           const pin = configuration.retrievePin(roleString as AcceptedRole);
+          console.log(`AuthListener: authenticate: tenant=${tenantString}, role=${roleString}, inputPin=${inputPin}, pin=${pin}`);
           if (inputPin === pin) return res.json({}).end();
         }
       }

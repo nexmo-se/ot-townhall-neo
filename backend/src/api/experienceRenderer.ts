@@ -1,9 +1,6 @@
 import OT from "../utils/opentok";
 import ExperienceRenderer from "../entities/experienceRenderer";
-
-// In-memory stores replacing Firestore collections
-const rendererStore: Map<string, any> = new Map(); // rendererId -> renderer data
-const rendererRoomStore: Map<string, any> = new Map(); // `${roomName}_${sessionId}` -> renderer data
+import MongoDBStore from "../api/database";
 
 class ExperienceRendererAPI {
   static async create(roomName: string, sessionId: string): Promise<any> {
@@ -19,8 +16,16 @@ class ExperienceRendererAPI {
       });
       console.log("experienceRendererEntity", experienceRendererEntity);
 
-      rendererStore.set(rendererId, experienceRendererEntity.saveRendererToDatabase());
-      rendererRoomStore.set(`${roomName}_${sessionId}`, experienceRendererEntity.saveRendererRoomNameToDatabase());
+      await MongoDBStore.renderers().updateOne(
+        { rendererId },
+        { $set: experienceRendererEntity.saveRendererToDatabase() },
+        { upsert: true }
+      );
+      await MongoDBStore.rendererRooms().updateOne(
+        { roomName, currentSessionId: sessionId },
+        { $set: experienceRendererEntity.saveRendererRoomNameToDatabase() },
+        { upsert: true }
+      );
 
       console.log("[experienceRenderer - create] - Result", result);
       return result;
@@ -34,14 +39,16 @@ class ExperienceRendererAPI {
   static async destroy(rendererId: string): Promise<any> {
     try {
       console.log("[experienceRenderer] Destroy rendererId", rendererId);
-      const data = rendererStore.get(rendererId);
+      const data = await MongoDBStore.renderers().findOne({ rendererId });
       if (!data) {
         console.log("destroy - Doc not exists");
         return null;
       }
       const rendererInstance = ExperienceRenderer.fromDatabase(data);
       console.log("[destroy] - rendererInstance", rendererInstance);
-      await OT.stopArchive(rendererInstance.archiveId);
+      if (rendererInstance.archiveId) {
+        await OT.stopArchive(rendererInstance.archiveId);
+      }
       const result = await OT.deleteRender(rendererId);
       return result;
     } catch (err) {
@@ -55,14 +62,16 @@ class ExperienceRendererAPI {
     rendererSessionId: string
   ): Promise<any> {
     try {
-      const data = rendererStore.get(rendererId);
+      const data = await MongoDBStore.renderers().findOne({ rendererId });
       if (!data) {
         console.log("handleStartedStatus - Doc not exists");
         return {};
       }
       console.log("handleStartedStatus", rendererId);
-      data.status = "started";
-      rendererStore.set(rendererId, data);
+      await MongoDBStore.renderers().updateOne(
+        { rendererId },
+        { $set: { status: "started" } }
+      );
 
       const rendererInstance = ExperienceRenderer.fromDatabase(data);
       if (
@@ -71,15 +80,17 @@ class ExperienceRendererAPI {
       ) {
         const archive = await OT.startArchive(rendererSessionId);
         if (archive) {
-          data.archiveId = archive.id;
-          rendererStore.set(rendererId, data);
-
-          const roomKey = `${rendererInstance.roomName}_${rendererInstance.currentSessionId}`;
-          const roomData = rendererRoomStore.get(roomKey);
-          if (roomData) {
-            roomData.archiveId = archive.id;
-            rendererRoomStore.set(roomKey, roomData);
-          }
+          await MongoDBStore.renderers().updateOne(
+            { rendererId },
+            { $set: { archiveId: archive.id } }
+          );
+          await MongoDBStore.rendererRooms().updateOne(
+            {
+              roomName: rendererInstance.roomName,
+              currentSessionId: rendererInstance.currentSessionId
+            },
+            { $set: { archiveId: archive.id } }
+          );
         }
       }
     } catch (err) {
@@ -90,7 +101,7 @@ class ExperienceRendererAPI {
 
   static async handleStoppedStatus(rendererId: string): Promise<any> {
     try {
-      const data = rendererStore.get(rendererId);
+      const data = await MongoDBStore.renderers().findOne({ rendererId });
       if (!data) {
         console.log("handleStoppedStatus - Doc not exists");
         return {};
@@ -98,14 +109,15 @@ class ExperienceRendererAPI {
       const rendererInstance = ExperienceRenderer.fromDatabase(data);
       console.log("rendererInstance", rendererInstance);
 
-      const roomKey = `${rendererInstance.roomName}_${rendererInstance.currentSessionId}`;
-      const roomData = rendererRoomStore.get(roomKey);
-      if (roomData) {
-        roomData.status = "stopped";
-        rendererRoomStore.set(roomKey, roomData);
-      }
+      await MongoDBStore.rendererRooms().updateOne(
+        {
+          roomName: rendererInstance.roomName,
+          currentSessionId: rendererInstance.currentSessionId
+        },
+        { $set: { status: "stopped" } }
+      );
 
-      rendererStore.delete(rendererId);
+      await MongoDBStore.renderers().deleteOne({ rendererId });
     } catch (err) {
       console.log("handleStoppedStatus", err);
       return err;
@@ -114,11 +126,10 @@ class ExperienceRendererAPI {
 
   static async handleFailedStatus(rendererId: string): Promise<any> {
     try {
-      const data = rendererStore.get(rendererId);
-      if (data) {
-        data.status = "failed";
-        rendererStore.set(rendererId, data);
-      }
+      await MongoDBStore.renderers().updateOne(
+        { rendererId },
+        { $set: { status: "failed" } }
+      );
     } catch (err) {
       console.log("handleFailedStatus", err);
       return err;
@@ -136,8 +147,10 @@ class ExperienceRendererAPI {
   ): Promise<any> {
     try {
       console.log("[retrieveArchive] - params", roomName, sessionId);
-      const roomKey = `${roomName}_${sessionId}`;
-      const data = rendererRoomStore.get(roomKey);
+      const data = await MongoDBStore.rendererRooms().findOne({
+        roomName,
+        currentSessionId: sessionId
+      });
       if (!data) {
         console.log("retrieveArchive - Doc not exists");
         return {};

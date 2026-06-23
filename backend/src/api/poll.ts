@@ -1,4 +1,4 @@
-import InMemoryStore from "../api/database";
+import MongoDBStore from "../api/database";
 import { v4 as uuid } from "uuid";
 
 import Poll from "../entities/poll";
@@ -29,13 +29,12 @@ class PollAPI{
     const pollingID = uuid();
 
     // Mark existing pollings for this session as finished
-    for (const p of InMemoryStore.pollings.values()) {
-      if (p.session_id === poll.sessionID) {
-        p.status = "finished";
-      }
-    }
+    await MongoDBStore.pollings().updateMany(
+      { session_id: poll.sessionID },
+      { $set: { status: "finished" } }
+    );
 
-    InMemoryStore.pollings.set(pollingID, {
+    await MongoDBStore.pollings().insertOne({
       id: pollingID,
       session_id: poll.sessionID,
       title: poll.title,
@@ -43,58 +42,69 @@ class PollAPI{
       created_at: new Date()
     });
 
-    for (const item of poll.items) {
+    const now = new Date();
+    const items = poll.items.map((item) => {
       const itemID = uuid();
-      InMemoryStore.pollItems.set(itemID, {
+      return {
         id: itemID,
         polling_id: pollingID,
         option: item.option,
         count: item.count,
         order_number: item.orderNumber,
-        updated_at: new Date(),
-        created_at: new Date()
-      });
+        updated_at: now,
+        created_at: now
+      };
+    });
+
+    if (items.length > 0) {
+      await MongoDBStore.pollItems().insertMany(items);
     }
   }
 
   static async list({ sessionID }: IList): Promise<Poll[]>{
-    const matchingPollings: any[] = [];
-    for (const p of InMemoryStore.pollings.values()) {
-      if (p.session_id === sessionID && p.status !== "finished" && p.status !== "deleted") {
-        matchingPollings.push(p);
-      }
-    }
+    const matchingPollings = await MongoDBStore.pollings()
+      .find({
+        session_id: sessionID,
+        status: { $nin: ["finished", "deleted"] }
+      })
+      .toArray();
 
     if (matchingPollings.length === 0) throw new CustomError("NotFound", "Cannot find pollings");
 
-    const polls = matchingPollings.map((p) => Poll.fromDatabase({
+    const polls = matchingPollings.map((p: any) => Poll.fromDatabase({
       id: p.id,
       title: p.title,
       session_id: p.session_id,
       status: p.status
     }));
 
-    const finalPolls = polls.map((poll) => {
-      const items: PollItem[] = [];
-      for (const item of InMemoryStore.pollItems.values()) {
-        if (item.polling_id === poll.id) {
-          items.push(PollItem.fromDatabase({
-            id: item.id,
-            option: item.option,
-            count: String(item.count),
-            order_number: String(item.order_number)
-          }));
-        }
-      }
+    const pollingIDs = polls.map((poll: Poll) => poll.id);
+    const itemRows = await MongoDBStore.pollItems()
+      .find({ polling_id: { $in: pollingIDs } })
+      .sort({ order_number: 1 })
+      .toArray();
+
+    const itemsByPollingID = new Map<string, PollItem[]>();
+    for (const row of itemRows) {
+      const currentItems = itemsByPollingID.get(row.polling_id) || [];
+      currentItems.push(PollItem.fromDatabase({
+        id: row.id,
+        option: row.option,
+        count: String(row.count),
+        order_number: String(row.order_number)
+      }));
+      itemsByPollingID.set(row.polling_id, currentItems);
+    }
+
+    return polls.map((poll: Poll) => {
+      const items = itemsByPollingID.get(poll.id) || [];
       return new Poll({ ...poll, items });
     });
-
-    return finalPolls;
   }
 
   static async poll({ pollID, itemID, userID, name }: IPoll): Promise<void>{
     const id = uuid();
-    InMemoryStore.polls.set(id, {
+    await MongoDBStore.polls().insertOne({
       id,
       polling_id: pollID,
       item_id: itemID,
@@ -103,29 +113,22 @@ class PollAPI{
       created_at: new Date()
     });
 
-    // Increment count on the poll item
-    for (const item of InMemoryStore.pollItems.values()) {
-      if (item.polling_id === pollID && item.id === itemID) {
-        item.count += 1;
-        break;
-      }
-    }
+    await MongoDBStore.pollItems().updateOne(
+      { polling_id: pollID, id: itemID },
+      { $inc: { count: 1 }, $set: { updated_at: new Date() } }
+    );
   }
 
   static async retrievePoll({ pollingID, userID }: IRetrievePoll): Promise<PollItem>{
-    // Find the user's poll vote, sorted by created_at
-    const userPolls: any[] = [];
-    for (const p of InMemoryStore.polls.values()) {
-      if (p.polling_id === pollingID && p.user_id === userID) {
-        userPolls.push(p);
-      }
-    }
-    userPolls.sort((a, b) => a.created_at.getTime() - b.created_at.getTime());
+    const userPoll = await MongoDBStore.polls().findOne(
+      { polling_id: pollingID, user_id: userID },
+      { sort: { created_at: 1 } }
+    );
 
-    const itemId = userPolls.length > 0 ? userPolls[0].item_id : undefined;
+    const itemId = userPoll?.item_id;
     if (!itemId) return undefined;
 
-    const item = InMemoryStore.pollItems.get(itemId);
+    const item = await MongoDBStore.pollItems().findOne({ id: itemId });
     if (!item) return undefined;
 
     return PollItem.fromDatabase({
@@ -137,10 +140,10 @@ class PollAPI{
   }
 
   static async update({ pollingID, status }: IUpdate): Promise<void>{
-    const polling = InMemoryStore.pollings.get(pollingID);
-    if (polling) {
-      polling.status = status;
-    }
+    await MongoDBStore.pollings().updateOne(
+      { id: pollingID },
+      { $set: { status } }
+    );
   }
 }
 export default PollAPI;
