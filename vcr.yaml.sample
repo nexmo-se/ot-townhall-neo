@@ -1,0 +1,44 @@
+project:
+	name: ot-townhall
+
+instance:
+	name: dev
+	runtime: nodejs22
+	region: aws.apse1
+	application-id: <your-application-id>
+	entrypoint:
+		- node
+		- backend/build/index.js
+	build-script: ./build.sh
+	environment:
+		- name: NODE_ENV
+			value: "production"
+		- name: DEFAULT_PARTICIPANT_PIN
+			value: "1111"
+		- name: DEFAULT_PRESENTER_PIN
+			value: "2222"
+		- name: DEFAULT_MODERATOR_PIN
+			value: "3333"
+		- name: OPENTOK_API_KEY
+			value: <your-opentok-api-key>
+		- name: OPENTOK_API_SECRET
+			value: <your-opentok-api-secret>
+		- name: OPENTOK_RECORDING_MODE
+			value: ""
+		- name: OPENTOK_MEDIA_SOURCE
+			value: ""
+		- name: MONGODB_URL
+			value: "mongodb://<username>:<password>@<host>:27017/<database>"
+		- name: MONGODB_NAME
+			value: "townhall"
+		- name: MONGODB_USE_TLS
+			value: "false"
+		- name: MONGODB_TLS_CERTIFICATE
+			value: ""
+
+debug:
+	name: debug
+	entrypoint:
+		- node
+		- --inspect
+		- backend/build/index.js
