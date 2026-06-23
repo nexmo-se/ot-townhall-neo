@@ -24,10 +24,10 @@ http://localhost:3000/{room-name}/moderator
 
 # VCR Config
 
-Use the sample config in `vcr.yaml.sample` and create a local `vcr.yml` with real values before deployment.
+Use the sample config in `vcr.yml.sample` and create a local `vcr.yml` with real values before deployment.
 
 ```bash
-cp vcr.yaml.sample vcr.yml
+cp vcr.yml.sample vcr.yml
 # edit vcr.yml and set your secrets
 ```
 
