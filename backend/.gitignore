@@ -2,8 +2,8 @@ build/
 !public/
 !public/src/
 !public/src/**
-!public/build/
-!public/build/**
+public/build/
+public/build/**
 uploads/*
 experiment.js
 serviceAccount.json
