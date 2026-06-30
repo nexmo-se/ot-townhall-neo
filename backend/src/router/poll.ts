@@ -3,6 +3,7 @@ import ash from "express-async-handler";
 import PollListener from "../listeners/poll";
 
 const router = express.Router();
+router.get("/stream", ash(PollListener.stream));
 router.post("/", ash(PollListener.create));
 router.post("/:poll_id/poll", ash(PollListener.poll));
 

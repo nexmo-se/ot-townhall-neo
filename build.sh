@@ -2,12 +2,13 @@
 set -e
 
 echo "=== Building frontend ==="
-cd backend/public
+cd frontend
 yarn install --production=false
-NODE_OPTIONS=--openssl-legacy-provider REACT_APP_API_URL="" yarn build
-# Frontend dependencies are only needed for build-time; remove to keep image small.
-rm -rf node_modules
-cd ../..
+NODE_OPTIONS=--openssl-legacy-provider REACT_APP_API_URL="" PUBLIC_URL="" yarn build
+# Copy built output to public folder for backend to serve
+rm -rf public/static public/index.html public/asset-manifest.json public/service-worker.js public/precache-manifest* && \
+cp -r build/* public/
+cd ..
 
 echo "=== Building backend ==="
 cd backend

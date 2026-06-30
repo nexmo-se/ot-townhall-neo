@@ -38,15 +38,19 @@ class SSEBroadcaster {
 
   static broadcast(sessionID: string, data: any): void {
     const clients = SSEBroadcaster.clients.get(sessionID) || [];
+    console.log(`[SSEBroadcaster.broadcast] Broadcasting to ${clients.length} clients for session ${sessionID}`);
     const payload = `data: ${JSON.stringify(data)}\n\n`;
     clients.forEach((client) => {
       try {
         if (!client.res.writable) {
+          console.log(`[SSEBroadcaster.broadcast] Client ${client.id} response is not writable, removing`);
           SSEBroadcaster.removeClient(sessionID, client.id);
           return;
         }
         client.res.write(payload);
+        console.log(`[SSEBroadcaster.broadcast] Sent data to client ${client.id}`);
       } catch (_error) {
+        console.log(`[SSEBroadcaster.broadcast] Error sending to client ${client.id}: ${_error}`);
         SSEBroadcaster.removeClient(sessionID, client.id);
       }
     });
