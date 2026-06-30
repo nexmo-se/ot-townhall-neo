@@ -1,26 +1,37 @@
 // @flow
 import config from "config";
+import { io } from "socket.io-client";
 
 class QuestionStream {
   static subscribe(sessionID: string, callback: Function) {
-    const url = `${config.apiURL}/questions/stream?session_id=${sessionID}`;
-    const eventSource = new EventSource(url);
+    const socket = io(config.apiURL, {
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
+    });
 
-    eventSource.onmessage = (event) => {
+    socket.on("connect", () => {
+      console.log("[QuestionStream] Connected to WebSocket");
+      socket.emit("join:session", sessionID);
+    });
+
+    socket.on("questions:update", (questions) => {
       try {
-        const questions = JSON.parse(event.data);
+        console.log("[QuestionStream] Received questions update:", questions);
         callback(questions);
       } catch (e) {
-        console.error("Error parsing SSE data", e);
+        console.error("WebSocket questions parse error", e);
       }
-    };
+    });
 
-    eventSource.onerror = (err) => {
-      console.error("SSE connection error", err);
-    };
+    socket.on("error", (error) => {
+      console.error("[QuestionStream] WebSocket error:", error);
+    });
 
     return () => {
-      eventSource.close();
+      socket.emit("leave:session", sessionID);
+      socket.disconnect();
     };
   }
 

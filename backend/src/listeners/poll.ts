@@ -98,30 +98,22 @@ class PollListener{
   }
 
   static async stream(req: Request, res: Response): Promise<void> {
-    try {
-      const { session_id: sessionID } = req.query;
-      console.log(`[PollListener.stream] Starting stream for session: ${sessionID}`);
-      const clientId = uuid();
-      SSEBroadcaster.addClient(`poll:${sessionID}`, clientId, res);
-      console.log(`[PollListener.stream] Added client ${clientId} for session poll:${sessionID}`);
+    const { session_id: sessionID } = req.query;
+    console.log(`[PollListener.stream] Starting stream for session: ${sessionID}`);
+    const clientId = uuid();
+    SSEBroadcaster.addClient(`poll:${sessionID}`, clientId, res);
+    console.log(`[PollListener.stream] Added client ${clientId} for session poll:${sessionID}`);
 
-      // Push the current poll state immediately on connect
-      let polls: Poll[];
-      try {
-        polls = await PollAPI.list({ sessionID: `${sessionID}` });
-      } catch {
-        polls = [];
-      }
-      console.log(`[PollListener.stream] Found ${polls.length} polls for session ${sessionID}`);
-      res.write(`data: ${JSON.stringify(polls.map((p) => p.toResponse()))}\n\n`);
-      console.log(`[PollListener.stream] Sent initial payload with ${polls.length} polls`);
-    } catch (error) {
-      console.error(`[PollListener.stream] Error: ${error instanceof Error ? error.message : String(error)}`);
-      console.error(error);
-      if (!res.writableEnded) {
-        res.status(500).json({ error: "Stream initialization failed" });
-      }
+    // Push the current poll state immediately on connect
+    let polls: Poll[];
+    try {
+      polls = await PollAPI.list({ sessionID: `${sessionID}` });
+    } catch {
+      polls = [];
     }
+    console.log(`[PollListener.stream] Found ${polls.length} polls for session ${sessionID}`);
+    res.write(`data: ${JSON.stringify(polls.map((p) => p.toResponse()))}\n\n`);
+    console.log(`[PollListener.stream] Sent initial payload with ${polls.length} polls`);
   }
 }
 export default PollListener;

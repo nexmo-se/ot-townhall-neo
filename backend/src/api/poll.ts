@@ -5,7 +5,7 @@ import Poll from "../entities/poll";
 import CustomError from "../entities/error";
 import PollItem from "../entities/poll-item";
 import type { Status } from "../entities/poll";
-import SSEBroadcaster from "../utils/sse";
+import WebSocketBroadcaster from "../utils/websocket-broadcaster";
 
 async function broadcastPolls(sessionID: string): Promise<void> {
   let polls: Poll[];
@@ -14,7 +14,7 @@ async function broadcastPolls(sessionID: string): Promise<void> {
   } catch {
     polls = [];
   }
-  SSEBroadcaster.broadcast(`poll:${sessionID}`, polls.map((p) => p.toResponse()));
+  WebSocketBroadcaster.broadcastPolls(sessionID, polls.map((p) => p.toResponse()));
 }
 
 interface IList { sessionID: string; }

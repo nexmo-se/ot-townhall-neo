@@ -7,12 +7,14 @@ import path from "path";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import * as fsx from "fs-extra"; 
+import * as fsx from "fs-extra";
+import http from "http";
 
 import config from "./config";
 import ErrorHandler from "./middleware/error-handler";
 
 import MongoDBService from "./utils/mongodb";
+import WebSocketBroadcaster from "./utils/websocket-broadcaster";
 
 import QuestionRouter from "./router/question";
 import RecordingRouter from "./router/recording";
@@ -35,6 +37,40 @@ const serverStartedAt = Date.now();
   fsx.ensureDir(createDir);
   
   const app = express();
+  const server = http.createServer(app);
+  
+  // Initialize Socket.IO
+  const socketIO = require("socket.io");
+  const io = new socketIO.Server(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    },
+    transports: ["websocket", "polling"]
+  });
+
+  WebSocketBroadcaster.initialize(io);
+
+  // Handle Socket.IO connections
+  io.on("connection", (socket: any) => {
+    console.log(`[WebSocket] Client connected: ${socket.id}`);
+
+    // Handle joining a session
+    socket.on("join:session", (sessionID: string) => {
+      console.log(`[WebSocket] Client ${socket.id} joining session: ${sessionID}`);
+      WebSocketBroadcaster.joinSession(socket, sessionID);
+    });
+
+    // Handle leaving a session
+    socket.on("leave:session", (sessionID: string) => {
+      console.log(`[WebSocket] Client ${socket.id} leaving session: ${sessionID}`);
+      WebSocketBroadcaster.leaveSession(socket, sessionID);
+    });
+
+    socket.on("disconnect", () => {
+      console.log(`[WebSocket] Client disconnected: ${socket.id}`);
+    });
+  });
   
   app.use(express.json());
   app.use(cors());
@@ -74,8 +110,8 @@ const serverStartedAt = Date.now();
   app.use(express.static(frontendBuild));
   app.get("*", (_, res) => res.sendFile(path.join(frontendBuild, "index.html")));
 
-  app.listen(config.port, () => {
-    console.log(`Express is listening on port: ${config.port}`);
+  server.listen(config.port, () => {
+    console.log(`Express + WebSocket server listening on port: ${config.port}`);
     console.log("NODE_ENV:", process.env.NODE_ENV);
   });
 

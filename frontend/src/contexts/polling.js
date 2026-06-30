@@ -6,6 +6,7 @@ import type { Node } from "react";
 import type { ICreate } from "api/polling";
 import type { IPoll } from "api/polling";
 import type { IRetrieveSelected } from "api/polling";
+import { io } from "socket.io-client";
 
 import config from "config";
 import Polling from "entities/polling";
@@ -36,24 +37,42 @@ export default function PollingProvider({ children }: IPollingProvider){
   const [ polling, setPolling ] = React.useState<Polling | void>();
   const { session } = useSession();
 
-  // Subscribe to SSE stream for real-time poll updates
+  // Subscribe to WebSocket stream for real-time poll updates
   React.useEffect(() => {
     if (!session) return;
-    const url = `${config.apiURL}/pollings/stream?session_id=${session.id}`;
-    const es = new EventSource(url);
-    es.onmessage = (event) => {
+    
+    const socket = io(config.apiURL, {
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
+    });
+
+    socket.on("connect", () => {
+      console.log("[PollingProvider] Connected to WebSocket");
+      socket.emit("join:session", session.id);
+    });
+
+    socket.on("polls:update", (data) => {
       try {
-        const data = JSON.parse(event.data);
+        console.log("[PollingProvider] Received polls update:", data);
         setPolling(data && data.length > 0 ? Polling.fromResponse(data[0]) : undefined);
       } catch (e) {
-        console.error("SSE polling parse error", e);
+        console.error("WebSocket polls parse error", e);
       }
+    });
+
+    socket.on("error", (error) => {
+      console.error("[PollingProvider] WebSocket error:", error);
+    });
+
+    return () => {
+      socket.emit("leave:session", session.id);
+      socket.disconnect();
     };
-    es.onerror = () => {};
-    return () => es.close();
   }, [ session ]);
 
-  // retrieve is a no-op — SSE keeps polling state current
+  // retrieve is a no-op — WebSocket keeps polling state current
   const retrieve = React.useCallback(() => Promise.resolve(), []);
 
   async function create({ title, items }: ICreate){

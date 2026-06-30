@@ -1,6 +1,6 @@
 import Question from "../entities/question";
 import User from "../entities/user";
-import SSEBroadcaster from "../utils/sse";
+import WebSocketBroadcaster from "../utils/websocket-broadcaster";
 import type { TStatus } from "../entities/question";
 import MongoDBStore from "./database";
 
@@ -24,7 +24,7 @@ async function broadcastQuestions(sessionID: string): Promise<void> {
     .map((q: any) => Question.fromDatabase(q))
     .map((q: Question) => q.toResponse());
   console.log(`[broadcastQuestions] Sending broadcast with ${list.length} questions`);
-  SSEBroadcaster.broadcast(sessionID, list);
+  WebSocketBroadcaster.broadcastQuestions(sessionID, list);
 }
 
 class QuestionAPI{
