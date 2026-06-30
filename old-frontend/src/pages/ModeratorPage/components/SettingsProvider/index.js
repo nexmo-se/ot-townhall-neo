@@ -1,0 +1,137 @@
+// @flow
+
+import React from "react";
+import ConfigurationService from "services/configuration";
+import UploadService from "services/upload";
+import config from "config";
+
+import { useSettings } from "../../hooks/settings";
+import { SettingsContext } from "../../contexts/settings";
+
+interface ISettingsProvider {
+  children: any;
+  tenant: string;
+}
+
+function SettingsProvider({ children, tenant }: ISettingsProvider) {
+  const [presenterPin, setPresenterPin] = React.useState<string>("");
+  const [participantPin, setParticipantPin] = React.useState<string>("");
+  const [moderatorPin, setModeratorPin] = React.useState<string>("");
+  const [presenterLoginType, setPresenterLoginType] = React.useState<string>("default");
+  const [participantLoginType, setParticipantLoginType] = React.useState<string>("default");
+  const [moderatorLoginType, setModeratorLoginType] = React.useState<string>("default");
+  const [participantsTab, setParticipantsTab] = React.useState<boolean>(false);
+  const [chatTab, setChatTab] = React.useState<boolean>(false);
+  const [questionsTab, setQuestionsTab] = React.useState<boolean>(false);
+  const [pollingTab, setPollingTab] = React.useState<boolean>(false);
+  const [allowRaiseHand, setAllowRaiseHand] = React.useState<boolean>(false);
+  const [roomState, setRoomState] = React.useState<string>('locked');
+  const [lobbySource, setLobbySource] = React.useState<string>();
+  const [lobbySourceform, setLobbySourceForm] = React.useState<FormData | void>();
+
+  async function saveSettings() {
+    let lobbySourceFileName;
+    if (lobbySourceform) {
+      const response = await UploadService.upload({ tenant, formData: lobbySourceform });
+      lobbySourceFileName = response.fileName ?? null;
+    }
+    const payload = {
+      participant: {
+        pin: participantPin? participantPin: undefined,
+        login_type: participantLoginType,
+        raise_hand: allowRaiseHand
+      },
+      presenter:
+      {
+        pin: presenterPin? presenterPin: undefined,
+        login_type: presenterLoginType
+      },
+      moderator:{
+        pin: moderatorPin? moderatorPin: undefined,
+        login_type: moderatorLoginType
+      },
+      tabs: {
+        questions: questionsTab,
+        participants: participantsTab,
+        chat: chatTab,
+        polling: pollingTab
+      },
+      lobbySource: {
+        link: lobbySourceform? `${config.apiURL}/uploaded/lobby/${lobbySourceFileName}` : lobbySource
+      },
+      state: {
+        status: roomState
+      }
+    }
+    const cleanPayload = JSON.parse(JSON.stringify(payload));
+
+    await ConfigurationService.update({ tenant, data: cleanPayload });
+
+    setParticipantPin("");
+    setPresenterPin("");
+    setModeratorPin("");
+    fetchConfiguration();
+  }
+
+  const fetchConfiguration = React.useCallback(
+    async () => {
+      const configuration = await ConfigurationService.retrieve({ tenant });
+      
+      setParticipantsTab(configuration.tabs.participants);
+      setChatTab(configuration.tabs.chat);
+      setQuestionsTab(configuration.tabs.questions);
+      setPollingTab(configuration.tabs.polling);
+
+      setParticipantLoginType(configuration.participant.loginType);
+      setPresenterLoginType(configuration.presenter.loginType);
+      setModeratorLoginType(configuration.moderator.loginType);
+
+      setAllowRaiseHand(configuration.participant.raiseHand ?? true);
+      setRoomState(configuration.state.status);
+      setLobbySource(configuration.lobbySource.link);
+    },
+    [tenant]
+  )
+
+  return (
+    <SettingsContext.Provider
+      value={{
+        participantPin,
+        presenterPin,
+        moderatorPin,
+        participantsTab,
+        chatTab,
+        questionsTab,
+        pollingTab,
+        participantLoginType,
+        presenterLoginType,
+        moderatorLoginType,
+        allowRaiseHand,
+        roomState,
+        lobbySource,
+        lobbySourceform,
+        setAllowRaiseHand,
+        setParticipantLoginType,
+        setPresenterLoginType,
+        setModeratorLoginType,
+        setParticipantsTab,
+        setChatTab,
+        setQuestionsTab,
+        setPollingTab,
+        setParticipantPin,
+        setModeratorPin,
+        setPresenterPin,
+        setRoomState,
+        setLobbySource,
+        setLobbySourceForm,
+        saveSettings,
+        fetchConfiguration
+      }}
+    >
+      {children}
+    </SettingsContext.Provider>
+  )
+}
+
+export { useSettings };
+export default SettingsProvider;
