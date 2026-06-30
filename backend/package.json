@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "copy-certs": "mkdir ./build/certs && cp -a ./src/certs/. ./build/certs/",
+    "copy-certs": "if [ -d ./src/certs ]; then mkdir -p ./build/certs && cp -a ./src/certs/. ./build/certs/; fi",
     "debug": "nodemon --inspect src/index.ts",
     "start:dev": "NODE_ENV=development nodemon",
     "start:prod": "NODE_ENV=production node -r dotenv/config build/index.js",
