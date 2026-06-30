@@ -105,8 +105,10 @@ const serverStartedAt = Date.now();
   
   app.use("/uploaded/lobby", express.static(__dirname + '/uploads/lobby'));
 
-  // Serve built React frontend
-  const frontendBuild = path.join(__dirname, "../../frontend/public");
+  // Serve built React frontend (prefer build output, fallback to legacy public dir)
+  const frontendBuild = fsx.existsSync(path.join(__dirname, "../../frontend/build/index.html"))
+    ? path.join(__dirname, "../../frontend/build")
+    : path.join(__dirname, "../../frontend/public");
   app.use(express.static(frontendBuild));
   app.get("*", (_, res) => res.sendFile(path.join(frontendBuild, "index.html")));
 
