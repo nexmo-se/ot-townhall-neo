@@ -1,0 +1,236 @@
+// @flow
+import React from "react";
+import CredentialAPI from "api/credential";
+import AMAAPI from "api/ama";
+import clsx from "clsx";
+import config from "config";
+
+import useSession from "hooks/session";
+import useStyles from "./styles";
+import useMe from "hooks/me";
+import usePublisher from "hooks/publisher";
+import { useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+
+import LiveParticipantList from "../LiveParticipantList";
+import ModeratorParticipantItem from "../ModeratorParticipantItem";
+import RaisedHandList from "../RaisedHandList";
+import ModeratorMessageTab from "../ModeratorMessageTab";
+import MainScreen from "../MainScreen";
+import ParticipantDownload from "../ParticipantDownload";
+import PublisherFailedDialog from "components/PublisherFailedDialog";
+import InfoDialog from "components/InfoDialog";
+import FullPageLoading from "components/FullPageLoading";
+import ParticipantList from "components/ParticipantList";
+import PrecallDialog from "components/PrecallDialog";
+import { useSettings } from "../SettingsProvider";
+
+interface URLParamters { tenant: string }
+
+function Main () {
+  const [precallOpen, setPrecallOpen] = useState<boolean>(false);
+  const [publishFailed, setPublishFailed] = useState<boolean>(false);
+  const [publishFailedOpen, setPublishFailedOpen] = useState<boolean>(false);
+  const [rejectedOpen, setRejectedOpen] = useState<boolean>(false);
+  const { me, loggedIn, customerDetails } = useMe();
+  const { session, connected, connections, connectWithCredential } = useSession();
+  const { lobbySource, fetchConfiguration } = useSettings()
+  const { publish: publishCamera, unpublish: unpublishCamera, publisher: cameraPublisher } = usePublisher({ containerID: "cameraContainer" });
+  const { tenant } = useParams<URLParamters>();
+  const mStyles = useStyles();
+
+  const publishErrorListener = useCallback(
+    (error: any) => {
+      setPublishFailed(true);
+    },
+    []
+  );
+
+  const remotePublishFailedListener = useCallback(
+    () => {
+      // Open a dialog mentioning that the remote publisher
+      // has failed to publish the stream
+      setPublishFailedOpen(true);
+    },
+    []
+  )
+
+  const rejectedRaiseHandListener = useCallback(
+    () => {
+      // When the participant reject the Go Live request,
+      // show the dialog
+      setRejectedOpen(true);
+    },
+    []
+  )
+
+  const checkLobbySrc = useCallback(async () => {
+    const domain = (new URL(lobbySource));
+    if (domain.origin !== config.apiURL) return;
+    const response = await fetch(lobbySource);
+    if (!response.ok) {
+      alert("Lobby Marketing Link is invalid, upload a new video/image to Setting -> Lobby Marketing.")
+    }
+  }, [lobbySource])
+
+  function handleApproveClick ({ publisher, hasAudio, hasVideo }) {
+    if (!me) return;
+    publishCamera({
+      session,
+      user: me,
+      onError: publishErrorListener,
+      extraData: {
+        videoSource: publisher.getVideoSource(),
+        publishAudio: hasAudio,
+        publishVideo: hasVideo
+      }
+    });
+    setPublishFailed(false);
+  }
+
+  useEffect(() => {
+    if (me && session && connected) {
+      fetchConfiguration()
+      setPrecallOpen(true);
+    }
+  }, [me, session, connected])
+
+  useEffect(
+    () => {
+      async function connect () {
+        if (loggedIn && me) {
+          const credential = await CredentialAPI.generateCredential({
+            role: "moderator",
+            data: me.toJSON(),
+            tenant
+          });
+          await connectWithCredential(credential);
+        }
+      }
+      connect();
+    }, 
+    [loggedIn, me, connectWithCredential, tenant]
+  );
+
+  useEffect(() => {
+    if (tenant && customerDetails) {
+      AMAAPI.create({ tenant, participant: customerDetails });
+    }
+  }, [tenant, customerDetails])
+
+  useEffect(() => {
+      // check if source link is valid
+      if (lobbySource && connected && cameraPublisher) checkLobbySrc();
+  }, [lobbySource, connected, cameraPublisher])
+
+  useEffect(
+    () => {
+      if (session) session.on("signal:publish-failed", remotePublishFailedListener);
+      if (session) session.on("signal:raisehand.rejected", rejectedRaiseHandListener);
+      return function cleanup () {
+        if (session) session.off("signal:publish-failed", remotePublishFailedListener);
+        if (session) session.off("signal:raisehand.rejected", rejectedRaiseHandListener);
+      }
+    },
+    [session, remotePublishFailedListener, rejectedRaiseHandListener]
+  )
+
+  return (
+    <>
+      <PrecallDialog
+        visible={precallOpen}
+        setVisible={setPrecallOpen}
+        onApprove={handleApproveClick}
+      />
+      {(!connected || !cameraPublisher) ? <FullPageLoading /> : null}
+      <div className={mStyles.container}>
+        <div className={mStyles.leftSection}>
+          <div className={mStyles.item} style={{ 
+              borderBottom: "1px solid #e7ebee",
+              flexBasis: "30%"
+            }}
+          >
+            <h4 className="Vlt-center">REQUESTS TO GO LIVE</h4>
+            <RaisedHandList />
+          </div>
+          <div className={mStyles.item} style={{ 
+              flexBasis: "70%",
+              paddingLeft: 32, 
+              paddingRight: 32, 
+              paddingTop: 32 
+            }}
+          >
+            <ModeratorMessageTab />
+          </div>
+        </div>
+        <div className={mStyles.centerPanel}>
+          <div className={mStyles.item} style={{ flexBasis: "50%", borderBottom: "1px solid #e7ebee" }}>
+            <h4 className="Vlt-center">LIVE PARTICIPANTS</h4>
+            <LiveParticipantList>
+              {(me)? (
+                <>
+                  <ModeratorParticipantItem 
+                    user={me}
+                    publisher={cameraPublisher}
+                    unpublish={unpublishCamera}
+                    publish={publishCamera}
+                  />
+                </>
+              ): null}
+            </LiveParticipantList> 
+          </div>
+          <div
+            className={mStyles.item}
+            style={{ flexBasis: "50%", paddingTop: 32 }}
+          >
+            <div className={mStyles.titleContainer}>
+              <h4
+                className={mStyles.noMargin}
+              >
+                PARTICIPANTS ({connections.length})
+              </h4>
+              <ParticipantDownload />
+            </div>
+            <ParticipantList />
+          </div>
+        </div>
+        <div
+          className={
+            clsx(
+              mStyles.rightPanel,
+              mStyles.black
+            )
+          }
+        >
+          <MainScreen />
+          <div id="emojiContainer"></div>
+        </div>
+      </div>
+
+      <InfoDialog
+        id="remote-publish-failed"
+        title="Remote publish failed"
+        visible={publishFailedOpen}
+        setVisible={setPublishFailedOpen}
+      >
+        <p>Participant / presenter has failed to publish the stream. You can ask them to re-join the session</p>
+      </InfoDialog>
+
+      <PublisherFailedDialog
+        visible={publishFailed}
+        setVisible={setPublishFailed}
+      />
+
+      <InfoDialog
+        id="raisehand-rejected"
+        title={`"Invite Live" request has been declined`}
+        visible={rejectedOpen}
+        setVisible={setRejectedOpen}
+      >
+        <p>The participant has declined the "Invite Live" request. You may try again at a later time.</p>
+      </InfoDialog>
+    </>
+  )
+}
+
+export default Main;

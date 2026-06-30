@@ -14,14 +14,16 @@ class SSEBroadcaster {
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
     });
-    res.write("\n");
 
     const client: SSEClient = { id: clientId, res };
     const existing = SSEBroadcaster.clients.get(sessionID) || [];
     existing.push(client);
     SSEBroadcaster.clients.set(sessionID, existing);
 
+    console.log(`[SSEBroadcaster.addClient] Registered client ${clientId} for session ${sessionID}. Total clients: ${existing.length + 1}`);
+
     res.on("close", () => {
+      console.log(`[SSEBroadcaster] Client ${clientId} closed connection for session ${sessionID}`);
       SSEBroadcaster.removeClient(sessionID, clientId);
     });
   }

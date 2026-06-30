@@ -4,6 +4,8 @@ build/
 !public/src/**
 public/build/
 public/build/**
+old-frontend/**
+old-frontend/
 uploads/*
 experiment.js
 serviceAccount.json
