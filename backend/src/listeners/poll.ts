@@ -3,6 +3,8 @@ import PollItem from "../entities/poll-item";
 import Poll from "../entities/poll";
 import { Request, Response } from "express";
 import type { Status } from "../entities/poll";
+import SSEBroadcaster from "../utils/sse";
+import { v4 as uuid } from "uuid";
 
 class PollListener{
   static async create(req: Request, res: Response): Promise<void> {
@@ -93,6 +95,21 @@ class PollListener{
 
   static async delete(req: Request, res: Response): Promise<void> {
     throw new Error("Not yet impleted");
+  }
+
+  static async stream(req: Request, res: Response): Promise<void> {
+    const { session_id: sessionID } = req.query;
+    const clientId = uuid();
+    SSEBroadcaster.addClient(`poll:${sessionID}`, clientId, res);
+
+    // Push the current poll state immediately on connect
+    let polls: Poll[];
+    try {
+      polls = await PollAPI.list({ sessionID: `${sessionID}` });
+    } catch {
+      polls = [];
+    }
+    res.write(`data: ${JSON.stringify(polls.map((p) => p.toResponse()))}\n\n`);
   }
 }
 export default PollListener;

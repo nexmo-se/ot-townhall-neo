@@ -5,6 +5,17 @@ import Poll from "../entities/poll";
 import CustomError from "../entities/error";
 import PollItem from "../entities/poll-item";
 import type { Status } from "../entities/poll";
+import SSEBroadcaster from "../utils/sse";
+
+async function broadcastPolls(sessionID: string): Promise<void> {
+  let polls: Poll[];
+  try {
+    polls = await PollAPI.list({ sessionID });
+  } catch {
+    polls = [];
+  }
+  SSEBroadcaster.broadcast(`poll:${sessionID}`, polls.map((p) => p.toResponse()));
+}
 
 interface IList { sessionID: string; }
 interface IRetrievePoll {
@@ -59,6 +70,7 @@ class PollAPI{
     if (items.length > 0) {
       await MongoDBStore.pollItems().insertMany(items);
     }
+    await broadcastPolls(poll.sessionID);
   }
 
   static async list({ sessionID }: IList): Promise<Poll[]>{
@@ -117,6 +129,10 @@ class PollAPI{
       { polling_id: pollID, id: itemID },
       { $inc: { count: 1 }, $set: { updated_at: new Date() } }
     );
+
+    // Determine sessionID from the polling record to broadcast
+    const pollingRow = await MongoDBStore.pollings().findOne({ id: pollID });
+    if (pollingRow?.session_id) await broadcastPolls(pollingRow.session_id);
   }
 
   static async retrievePoll({ pollingID, userID }: IRetrievePoll): Promise<PollItem>{
@@ -144,6 +160,8 @@ class PollAPI{
       { id: pollingID },
       { $set: { status } }
     );
+    const pollingRow = await MongoDBStore.pollings().findOne({ id: pollingID });
+    if (pollingRow?.session_id) await broadcastPolls(pollingRow.session_id);
   }
 }
 export default PollAPI;
