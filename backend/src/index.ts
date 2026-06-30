@@ -70,7 +70,7 @@ const serverStartedAt = Date.now();
   app.use("/uploaded/lobby", express.static(__dirname + '/uploads/lobby'));
 
   // Serve built React frontend
-  const frontendBuild = path.join(__dirname, "../public/build");
+  const frontendBuild = path.join(__dirname, "../../frontend/public");
   app.use(express.static(frontendBuild));
   app.get("*", (_, res) => res.sendFile(path.join(frontendBuild, "index.html")));
 

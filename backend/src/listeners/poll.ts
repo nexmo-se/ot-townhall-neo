@@ -99,8 +99,10 @@ class PollListener{
 
   static async stream(req: Request, res: Response): Promise<void> {
     const { session_id: sessionID } = req.query;
+    console.log(`[PollListener.stream] Starting stream for session: ${sessionID}`);
     const clientId = uuid();
     SSEBroadcaster.addClient(`poll:${sessionID}`, clientId, res);
+    console.log(`[PollListener.stream] Added client ${clientId} for session poll:${sessionID}`);
 
     // Push the current poll state immediately on connect
     let polls: Poll[];
@@ -109,7 +111,9 @@ class PollListener{
     } catch {
       polls = [];
     }
+    console.log(`[PollListener.stream] Found ${polls.length} polls for session ${sessionID}`);
     res.write(`data: ${JSON.stringify(polls.map((p) => p.toResponse()))}\n\n`);
+    console.log(`[PollListener.stream] Sent initial payload with ${polls.length} polls`);
   }
 }
 export default PollListener;

@@ -104,7 +104,7 @@ class RecordingAPI{
       // @ts-ignore
       OT.getInstance().setArchiveLayout(
         recording.id, 
-        normalizedType, 
+        normalizedType as any, 
         undefined, 
         (err: any) => {
           if(err) reject(err);

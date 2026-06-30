@@ -15,12 +15,15 @@ interface IList {
 }
 
 async function broadcastQuestions(sessionID: string): Promise<void> {
+  console.log(`[broadcastQuestions] Broadcasting questions for session ${sessionID}`);
   const questions = await MongoDBStore.questions()
     .find({ session_id: sessionID })
     .toArray();
+  console.log(`[broadcastQuestions] Found ${questions.length} questions`);
   const list = questions
     .map((q: any) => Question.fromDatabase(q))
     .map((q: Question) => q.toResponse());
+  console.log(`[broadcastQuestions] Sending broadcast with ${list.length} questions`);
   SSEBroadcaster.broadcast(sessionID, list);
 }
 

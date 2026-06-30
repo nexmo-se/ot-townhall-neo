@@ -1,0 +1,51 @@
+.main {
+  background-color: rgba(243, 243, 245, 1);
+  width: 100vw;
+  height: 100vh;
+
+  position: relative;
+}
+
+.main > img {
+  position: absolute;
+  margin: 0 auto;
+  height: calc(100vh - 32px);
+  z-index: 1;
+  right: -10%;
+  top: 32px;
+  opacity: 10%;
+}
+
+.mainContent {
+  z-index: 10;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainContent > .left {
+  flex-basis: 40%;
+  padding: 32px;
+}
+
+.mainContent > .right {
+  flex-basis: 40%;
+  padding: 32px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.right > video,
+.right > figure {
+  height: calc(50vw * 0.5625);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  object-fit: cover;
+}

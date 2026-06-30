@@ -64,13 +64,17 @@ class QuestionListener{
 
   static async stream(req: Request, res: Response): Promise<void> {
     const { session_id: sessionID } = req.query;
+    console.log(`[QuestionListener.stream] Starting stream for session: ${sessionID}`);
 
     const clientId = uuid();
     SSEBroadcaster.addClient(`${sessionID}`, clientId, res);
+    console.log(`[QuestionListener.stream] Added client ${clientId} for session ${sessionID}`);
 
     const questions = await QuestionAPI.list({ sessionID: `${sessionID}` });
+    console.log(`[QuestionListener.stream] Found ${questions.length} questions for session ${sessionID}`);
     const payload = questions.map((q) => q.toResponse());
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    console.log(`[QuestionListener.stream] Sent initial payload: ${JSON.stringify(payload)}`);
   }
 
 }

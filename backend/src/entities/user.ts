@@ -8,8 +8,8 @@ interface IUser {
 }
 
 class User implements IUser{
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   role: Role;
   token?: string;
   
